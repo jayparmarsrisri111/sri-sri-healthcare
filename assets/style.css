@@ -1,0 +1,199 @@
+/* ====================================================================
+   SwasthyaSetu Pro - Light Mint Green & Pure White Healthcare Theme
+   Matched with the fresh pastel mint green & midnight navy typography
+   ==================================================================== */
+
+:root {
+    --bg-page: #EBFBF3;
+    --card-bg: #FFFFFF;
+    --primary: #00C48C;
+    --primary-dark: #009F70;
+    --primary-light: #E0F8EE;
+    --primary-hover: #00B07D;
+    --text-main: #0A1128;
+    --text-muted: #4A5568;
+    --border-color: #D1F2E3;
+    --alert-red: #E53E3E;
+    --alert-red-bg: #FFF5F5;
+    --alert-yellow: #DD6B20;
+    --alert-yellow-bg: #FFFAF0;
+    --alert-green: #00C48C;
+    --alert-green-bg: #E6FFFA;
+}
+
+/* Base App container */
+.stApp {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Gujarati', sans-serif;
+}
+
+/* Header Banner */
+.main-header {
+    background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
+    padding: 24px 32px;
+    border-radius: 20px;
+    color: #FFFFFF;
+    box-shadow: 0 10px 30px rgba(0, 196, 140, 0.18);
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    color: #FFFFFF !important;
+    letter-spacing: -0.5px;
+}
+
+.main-header p {
+    font-size: 14px;
+    margin: 6px 0 0 0;
+    color: #E0F8EE;
+    font-weight: 500;
+}
+
+/* Emergency Red Top Banner */
+.emergency-banner {
+    background-color: var(--alert-red-bg);
+    border: 1.5px solid #FEB2B2;
+    border-left: 6px solid var(--alert-red);
+    padding: 14px 22px;
+    border-radius: 14px;
+    color: #C53030;
+    font-weight: 600;
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Custom Cards */
+.medical-card {
+    background-color: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 20px rgba(0, 196, 140, 0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+.medical-card:hover {
+    box-shadow: 0 8px 26px rgba(0, 196, 140, 0.1);
+}
+
+/* Triage Badges */
+.badge-red {
+    background-color: var(--alert-red-bg);
+    color: var(--alert-red);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    border: 1.5px solid #FEB2B2;
+    display: inline-block;
+}
+
+.badge-yellow {
+    background-color: var(--alert-yellow-bg);
+    color: #C05621;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    border: 1.5px solid #FBD38D;
+    display: inline-block;
+}
+
+.badge-green {
+    background-color: var(--alert-green-bg);
+    color: #234E52;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    border: 1.5px solid #B2F5EA;
+    display: inline-block;
+}
+
+/* Dual Treatment Box: Allopathy & Ayurveda */
+.dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .dual-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.allopathy-box {
+    background: #F0F7FF;
+    border: 1.5px solid #C3DAFE;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.allopathy-box h4 {
+    color: #2B6CB0;
+    margin-top: 0;
+    font-weight: 700;
+}
+
+.ayurveda-box {
+    background: #F0FFF4;
+    border: 1.5px solid #C6F6D5;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.ayurveda-box h4 {
+    color: #22543D;
+    margin-top: 0;
+    font-weight: 700;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, #00C48C 0%, #009F70 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 14px rgba(0, 196, 140, 0.25) !important;
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #00B07D 0%, #00875F 100%) !important;
+    box-shadow: 0 6px 18px rgba(0, 196, 140, 0.35) !important;
+    transform: translateY(-1px);
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 6px;
+    background-color: #DEFAF0;
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.stTabs [data-baseweb="tab"] {
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    background-color: transparent !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #FFFFFF !important;
+    color: var(--primary-dark) !important;
+    box-shadow: 0 4px 14px rgba(0, 196, 140, 0.15) !important;
+}

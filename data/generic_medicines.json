@@ -1,0 +1,126 @@
+{
+  "medicines": [
+    {
+      "generic_name": "Paracetamol 650 mg",
+      "disease_category": "તાવ અને દુખાવો (Fever & Pain)",
+      "branded_name": "Dolo 650 / Calpol 650",
+      "branded_price_rs": 32.0,
+      "jan_aushadhi_price_rs": 6.5,
+      "savings_percentage": "80%",
+      "available_at_pmjay": "મફત (Free at Govt PHC/CHC)"
+    },
+    {
+      "generic_name": "Amoxicillin + Clavulanic Acid 625 mg",
+      "disease_category": "ફેફસાં/ગળાનું ઈન્ફેક્શન (Pneumonia/Infection)",
+      "branded_name": "Augmentin 625 / Moxikind-CV",
+      "branded_price_rs": 210.0,
+      "jan_aushadhi_price_rs": 55.0,
+      "savings_percentage": "74%",
+      "available_at_pmjay": "મફત (Free under PM-JAY)"
+    },
+    {
+      "generic_name": "Azithromycin 500 mg (3 Tablets)",
+      "disease_category": "શ્વાસ અને ગળાનું ઈન્ફેક્શન",
+      "branded_name": "Azithral 500 / Azee 500",
+      "branded_price_rs": 130.0,
+      "jan_aushadhi_price_rs": 28.0,
+      "savings_percentage": "78%",
+      "available_at_pmjay": "મફત (Free at Govt PHC)"
+    },
+    {
+      "generic_name": "Metformin 500 mg (10 Tablets)",
+      "disease_category": "ડાયાબિટીસ (Diabetes)",
+      "branded_name": "Glycomet 500",
+      "branded_price_rs": 45.0,
+      "jan_aushadhi_price_rs": 8.0,
+      "savings_percentage": "82%",
+      "available_at_pmjay": "મફત (Free lifelong at PHC NCD clinic)"
+    },
+    {
+      "generic_name": "Telmisartan 40 mg (10 Tablets)",
+      "disease_category": "હાઈ બ્લડ પ્રેશર (BP / Hypertension)",
+      "branded_name": "Telma 40 / Telmikind",
+      "branded_price_rs": 95.0,
+      "jan_aushadhi_price_rs": 14.0,
+      "savings_percentage": "85%",
+      "available_at_pmjay": "મફત (Free at PHC NCD clinic)"
+    },
+    {
+      "generic_name": "Atorvastatin 10 mg (10 Tablets)",
+      "disease_category": "હૃદયરોગ / કોલેસ્ટ્રોલ (Heart / Cholesterol)",
+      "branded_name": "Atorva 10 / Lipitor",
+      "branded_price_rs": 115.0,
+      "jan_aushadhi_price_rs": 18.0,
+      "savings_percentage": "84%",
+      "available_at_pmjay": "મફત (Free under PM-JAY)"
+    },
+    {
+      "generic_name": "Iron + Folic Acid Tablets (100 Tabs)",
+      "disease_category": "એનિમિયા / લોહીની ટકાવારી (Anemia)",
+      "branded_name": "Autrin / Orofer XT",
+      "branded_price_rs": 180.0,
+      "jan_aushadhi_price_rs": 25.0,
+      "savings_percentage": "86%",
+      "available_at_pmjay": "આંગણવાડી & PHC પર ૧૦૦% મફત"
+    },
+    {
+      "generic_name": "Cetirizine 10 mg (10 Tablets)",
+      "disease_category": "ચામડીની એલર્જી / શરદી (Allergy & Itching)",
+      "branded_name": "Cetzine / Okacet",
+      "branded_price_rs": 40.0,
+      "jan_aushadhi_price_rs": 5.0,
+      "savings_percentage": "87%",
+      "available_at_pmjay": "મફત (Free at Govt Dispensary)"
+    },
+    {
+      "generic_name": "Ibuprofen 400 mg + Paracetamol 325 mg (10 Tablets)",
+      "disease_category": "તીવ્ર સોજો અને સાંધાનો દુખાવો (Inflammation & Pain)",
+      "branded_name": "Combiflam / Flexon / Brufen",
+      "branded_price_rs": 45.0,
+      "jan_aushadhi_price_rs": 8.5,
+      "savings_percentage": "81%",
+      "available_at_pmjay": "મફત (Free at Govt PHC)"
+    },
+    {
+      "generic_name": "Pantoprazole 40 mg (10 Tablets)",
+      "disease_category": "એસિડિટી અને ગેસ (Acidity, Heartburn & GERD)",
+      "branded_name": "Pan 40 / Pantocid / Omez",
+      "branded_price_rs": 115.0,
+      "jan_aushadhi_price_rs": 14.0,
+      "savings_percentage": "88%",
+      "available_at_pmjay": "મફત (Free at Govt Dispensary)"
+    },
+    {
+      "generic_name": "Drotaverine 80 mg (10 Tablets)",
+      "disease_category": "પથરીનો અસહ્ય દુખાવો (Kidney Stone & Abdominal Colic)",
+      "branded_name": "Drotin DS",
+      "branded_price_rs": 145.0,
+      "jan_aushadhi_price_rs": 22.0,
+      "savings_percentage": "85%",
+      "available_at_pmjay": "મફત (Free at Govt PHC)"
+    }
+  ],
+  "government_schemes": [
+    {
+      "name_gu": "આયુષ્માન ભારત - પ્રધાનમંત્રી જન આરોગ્ય યોજના (PM-JAY / MAA Card)",
+      "coverage": "પરિવાર દીઠ વાર્ષિક ₹૧૦ લાખ સુધીની સંપૂર્ણ મફત કેશલેસ સારવાર",
+      "eligibility": "BPL, ગરીબ અને અંત્યોદય રેશનકાર્ડ ધારકો અને વરિષ્ઠ નાગરિકો (૭૦+ વર્ષ)",
+      "how_to_apply_gu": "નજીકના સરકારી PHC/CHC અથવા ઈ-ગ્રામ કેન્દ્ર પર જઈ આધાર કાર્ડ અને રેશનકાર્ડ બતાવી કાર્ડ કઢાવો.",
+      "helpline": "14555 / 1800 233 1022"
+    },
+    {
+      "name_gu": "પ્રધાનમંત્રી ભારતીય જન ઔષધિ પરિયોજના (PMBJP)",
+      "coverage": "બ્રાન્ડેડ દવાઓની સરખામણીમાં ૫૦% થી ૯૦% સુધી સસ્તી ગુણવત્તાયુક્ત જેનેરિક દવાઓ",
+      "eligibility": "તમામ સામાન્ય નાગરિકો માટે ખુલ્લું",
+      "how_to_apply_gu": "કોઈપણ ડૉક્ટરની દવાની ચિઠ્ઠી લઈને નજીકના જન ઔષધિ કેન્દ્ર પર જાઓ.",
+      "helpline": "1800 180 8080"
+    },
+    {
+      "name_gu": "રાષ્ટ્રીય બાલ સ્વાસ્થ્ય કાર્યક્રમ (RBSK)",
+      "coverage": "૦ થી ૧૮ વર્ષના બાળકોમાં જન્મજાત ખામીઓ અને ગંભીર રોગોની નિઃશુલ્ક સારવાર",
+      "eligibility": "ગામની આંગણવાડી અને સરકારી શાળાના તમામ બાળકો",
+      "how_to_apply_gu": "સ્થાનિક ASHA બહેન અથવા પ્રાથમિક શાળાના શિક્ષકનો સંપર્ક કરો.",
+      "helpline": "104 Health Helpline"
+    }
+  ]
+}

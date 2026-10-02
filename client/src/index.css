@@ -1,0 +1,1081 @@
+/* ====================================================================
+   Sri Sri ❤️ HealthCare - 6D Holographic & Depth Clinical Design System
+   Mint Green (#EBFBF3), Pure White (#FFFFFF), Medical Mint (#00C48C)
+   ==================================================================== */
+
+:root {
+  --bg-page: #F0FAF5;
+  --bg-sidebar: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --primary: #00C48C;
+  --primary-dark: #009F70;
+  --primary-light: #E0F8EE;
+  --primary-glow: rgba(0, 196, 140, 0.35);
+  --primary-hover: #00B07D;
+  --text-main: #0A1128;
+  --text-muted: #5A6A85;
+  --border-color: #D3F2E3;
+  --border-light: #E8F8F0;
+  --alert-red: #EF4444;
+  --alert-red-bg: #FEF2F2;
+  --alert-yellow: #F59E0B;
+  --alert-yellow-bg: #FFFBEB;
+  --alert-green: #10B981;
+  --alert-green-bg: #ECFDF5;
+  --sidebar-width: 275px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Gujarati', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 196, 140, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 159, 112, 0.06) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Master App Layout: Left Sidebar + Main Content */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: transparent;
+  width: 100%;
+  position: relative;
+}
+
+/* ====================================================================
+   1. 6D HOLOGRAPHIC & 3D FLOATING ANIMATIONS
+   ==================================================================== */
+@keyframes float3D {
+  0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+  50% { transform: translateY(-5px) rotateX(1deg) rotateY(-1deg); }
+  100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+}
+
+@keyframes holographicScan {
+  0% {
+    top: 0%;
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 25px #00C48C, 0 0 10px #FFFFFF;
+  }
+  100% {
+    top: 96%;
+    opacity: 0.9;
+  }
+}
+
+@keyframes pulseGlow6D {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 196, 140, 0.6), 0 8px 30px rgba(0, 196, 140, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(0, 196, 140, 0), 0 14px 40px rgba(0, 196, 140, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 196, 140, 0), 0 8px 30px rgba(0, 196, 140, 0.2);
+  }
+}
+
+@keyframes neonShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.anim-6d-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.anim-6d-card:hover {
+  transform: translateY(-4px) scale(1.008);
+  box-shadow: 0 16px 36px rgba(0, 196, 140, 0.16), 0 4px 12px rgba(10, 17, 40, 0.04);
+}
+
+.holographic-laser-scan {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #00C48C, #FFFFFF, #00C48C, transparent);
+  box-shadow: 0 0 18px #00C48C, 0 0 8px #FFFFFF;
+  animation: holographicScan 2s infinite ease-in-out alternate;
+  z-index: 20;
+}
+
+/* ====================================================================
+   2. ULTRA-PREMIUM LEFT SIDEBAR NAVIGATION
+   ==================================================================== */
+.app-sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1.5px solid var(--border-color);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: 4px 0 30px rgba(0, 196, 140, 0.06);
+  overflow-y: auto;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #F0FAF5 0%, #FFFFFF 100%);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 196, 140, 0.08);
+}
+
+.brand-logo h2 {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.brand-logo span {
+  font-size: 11px;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.sidebar-section-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 10px 10px 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: #4A5568;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  width: 100%;
+  position: relative;
+}
+
+.nav-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  transform: translateX(4px);
+  border-color: rgba(0, 196, 140, 0.25);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8px 22px var(--primary-glow);
+  transform: translateX(5px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 22px;
+  background: #00C48C;
+  border-radius: 4px;
+  box-shadow: 0 0 10px #00C48C;
+}
+
+/* ====================================================================
+   3. MAIN WRAPPER & GLASSMORPHIC TOP HEADER
+   ==================================================================== */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.top-header {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid var(--border-color);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: 0 4px 24px rgba(0, 196, 140, 0.05);
+  gap: 16px;
+  flex-wrap: nowrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.header-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.header-tool-btn:hover {
+  transform: translateY(-1.5px);
+}
+
+.header-btn-label {
+  display: inline;
+}
+
+.content-body {
+  padding: 24px 32px;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ====================================================================
+   4. DYNAMIC VITALS HUD BAR
+   ==================================================================== */
+.vitals-hud {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 900px) {
+  .vitals-hud {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hud-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 6px 20px rgba(0, 196, 140, 0.06);
+  transition: all 0.25s ease;
+}
+
+.hud-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0, 196, 140, 0.16);
+  border-color: #00C48C;
+}
+
+.hud-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ====================================================================
+   5. MEDICAL CARDS & CONTENT BOXES
+   ==================================================================== */
+.medical-card {
+  background-color: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 22px;
+  padding: 26px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 30px rgba(0, 196, 140, 0.06);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+@media (max-width: 850px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dual Care Boxes */
+.allopathy-box {
+  background-color: #F0F7FF;
+  border: 1.5px solid #C3DAFE;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.ayurveda-box {
+  background-color: #F0FFF4;
+  border: 1.5px solid #C6F6D5;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+/* ====================================================================
+   6. CHATBOT SLIDE-IN & FLOATING MODAL STYLING
+   ==================================================================== */
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.floating-chatbot-window {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  height: 600px;
+  max-height: calc(100vh - 120px);
+  z-index: 10000;
+  background: #FFFFFF;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 196, 140, 0.28), 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 2px solid #00C48C;
+  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animated-pulse {
+  animation: pulseGlow6D 2s infinite ease-in-out;
+}
+
+.floating-chat-bubble-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
+  color: #FFFFFF;
+  border: 2.5px solid #FFFFFF;
+  border-radius: 9999px;
+  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 13.5px;
+  box-shadow: 0 10px 30px rgba(0, 196, 140, 0.45), 0 4px 14px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pulseGlow6D 2.2s infinite;
+}
+
+.floating-chat-bubble-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 14px 40px rgba(0, 196, 140, 0.55);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  border-radius: 14px;
+  border: none;
+  padding: 12px 22px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.22s ease;
+  box-shadow: 0 6px 18px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #00B07D 0%, #00875F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 196, 140, 0.4);
+}
+
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: var(--primary-dark);
+  border: 1.5px solid var(--border-color);
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 9px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-light);
+  border-color: #00C48C;
+  transform: translateY(-1px);
+}
+
+.btn-emergency {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-emergency:hover {
+  transform: translateY(-2px);
+}
+
+/* Badges */
+.badge-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-red {
+  background-color: var(--alert-red-bg);
+  color: var(--alert-red);
+  border: 1px solid #FECACA;
+}
+
+.badge-yellow {
+  background-color: var(--alert-yellow-bg);
+  color: var(--alert-yellow);
+  border: 1px solid #FDE68A;
+}
+
+.badge-green {
+  background-color: var(--alert-green-bg);
+  color: #009F70;
+  border: 1px solid #A7F3D0;
+}
+
+/* Form Inputs */
+textarea, select, input[type="text"] {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-color);
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--text-main);
+  background-color: #FFFFFF;
+  outline: none;
+  transition: all 0.2s;
+}
+
+textarea:focus, select:focus, input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+/* Custom Table */
+.custom-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+}
+
+.custom-table th {
+  background-color: #F0FAF5;
+  color: #0A1128;
+  font-weight: 800;
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.custom-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #E8F8F0;
+  background-color: #FFFFFF;
+}
+
+.custom-table tr:hover td {
+  background-color: #F8FCF9;
+}
+
+/* ====================================================================
+   7. ULTRA-SMOOTH KEYFRAME ANIMATIONS & MICRO-INTERACTIONS
+   ==================================================================== */
+@keyframes heartbeatPulse {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.08); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.05); }
+  70% { transform: scale(1); }
+}
+
+@keyframes bounceSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes shimmerGlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rippleSweep {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 196, 140, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(0, 196, 140, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 196, 140, 0);
+  }
+}
+
+.anim-heartbeat {
+  animation: heartbeatPulse 1.6s infinite ease-in-out;
+}
+
+.anim-bounce {
+  animation: bounceSoft 2.4s infinite ease-in-out;
+}
+
+.anim-ripple {
+  animation: rippleSweep 2.2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Medical Card Interactive Animations */
+.medical-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(0, 196, 140, 0.12);
+  border-color: rgba(0, 196, 140, 0.35);
+}
+
+/* ====================================================================
+   8. QUICK UNIVERSAL CATEGORY RIBBON (FOR EVERYONE'S ACCESSIBILITY)
+   ==================================================================== */
+.quick-category-ribbon {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quick-ribbon-btn {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 196, 140, 0.04);
+  text-align: left;
+}
+
+.quick-ribbon-btn:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 22px rgba(0, 196, 140, 0.15);
+  background: #F0FAF5;
+}
+
+.quick-ribbon-btn.active {
+  background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px var(--primary-glow);
+  transform: translateY(-2px);
+}
+
+.quick-ribbon-btn.active .ribbon-text strong,
+.quick-ribbon-btn.active .ribbon-text span {
+  color: #FFFFFF !important;
+}
+
+.quick-ribbon-btn.guide-btn {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-color: #93C5FD;
+}
+
+.quick-ribbon-btn.guide-btn:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 8px 22px rgba(59, 130, 246, 0.2);
+}
+
+.ribbon-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.ribbon-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ribbon-text strong {
+  font-size: 13.5px;
+  color: var(--text-main);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.ribbon-text span {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ====================================================================
+   9. MOBILE RESPONSIVE SYSTEM & NATIVE APP BOTTOM BAR
+   ==================================================================== */
+.mobile-hamburger-btn {
+  display: none;
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 6px;
+  color: var(--text-main);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-close-sidebar-btn {
+  display: none;
+  background: #F1F5F9;
+  border: none;
+  border-radius: 10px;
+  padding: 6px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* Sleek Custom Scrollbars */
+.app-sidebar::-webkit-scrollbar,
+.custom-scroll::-webkit-scrollbar,
+.modal-body-responsive::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.app-sidebar::-webkit-scrollbar-track,
+.custom-scroll::-webkit-scrollbar-track,
+.modal-body-responsive::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb,
+.custom-scroll::-webkit-scrollbar-thumb,
+.modal-body-responsive::-webkit-scrollbar-thumb {
+  background: rgba(0, 196, 140, 0.3);
+  border-radius: 10px;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb:hover,
+.custom-scroll::-webkit-scrollbar-thumb:hover,
+.modal-body-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 196, 140, 0.6);
+}
+
+/* Home Lab Collection Responsive 2-Col Grid */
+.lab-main-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .lab-main-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Doctor Dashboard Patient Grid */
+.doctor-patient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+/* Responsive Modal System */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 17, 40, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 16px;
+}
+
+.modal-dialog {
+  background: #FFFFFF;
+  border-radius: 24px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 196, 140, 0.4);
+  border: 2px solid #00C48C;
+  animation: slideUpFade 0.3s ease;
+}
+
+.modal-header-responsive {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body-responsive {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Screen width <= 1250px (Laptops & Desktops with Sidebars) */
+@media (max-width: 1250px) {
+  .header-tool-btn .header-btn-label {
+    display: none;
+  }
+  .header-tool-btn {
+    padding: 8px 10px;
+  }
+  .quick-category-ribbon {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  /* Sidebar Drawer on Mobile */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 8px 0 35px rgba(0, 0, 0, 0.15);
+    width: 290px;
+  }
+
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 17, 40, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    animation: slideUpFade 0.2s ease;
+  }
+
+  .mobile-hamburger-btn {
+    display: flex;
+  }
+
+  .mobile-close-sidebar-btn {
+    display: flex;
+  }
+
+  .top-header {
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .content-body {
+    padding: 14px 14px 88px 14px; /* Generous bottom spacing for bottom nav */
+  }
+
+  /* Floating Chat Widget on Tablet & Mobile: Docked above Bottom Nav */
+  .floating-chat-bubble-btn {
+    bottom: 74px !important;
+    right: 14px !important;
+    padding: 10px 16px !important;
+    font-size: 12.5px !important;
+  }
+
+  .floating-chatbot-window {
+    bottom: 74px !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: calc(100vh - 145px) !important;
+    border-radius: 20px !important;
+  }
+
+  /* Native Mobile Bottom Navigation Bar */
+  .mobile-bottom-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px);
+    border-top: 1.5px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-bottom-nav-inner {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px 12px env(safe-area-inset-bottom, 8px) 12px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .mobile-nav-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 58px;
+    touch-action: manipulation;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.92);
+  }
+
+  .mobile-nav-btn.active {
+    background: var(--primary-light);
+  }
+
+  .mobile-nav-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .quick-category-ribbon {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    gap: 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .quick-category-ribbon::-webkit-scrollbar {
+    display: none;
+  }
+
+  .quick-ribbon-btn {
+    flex: 0 0 auto;
+    min-width: 165px;
+  }
+
+  /* On mobile screens, hide secondary header tool buttons that already exist in sidebar */
+  .header-hide-mobile {
+    display: none !important;
+  }
+
+  .brand-logo-text {
+    display: none;
+  }
+
+  .medical-card {
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 540px) {
+  .vitals-hud {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .hud-card {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .hud-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .modal-overlay {
+    padding: 8px !important;
+  }
+
+  .modal-dialog {
+    border-radius: 18px !important;
+    max-height: 95vh !important;
+  }
+
+  .modal-header-responsive {
+    padding: 14px 16px !important;
+  }
+
+  .modal-body-responsive {
+    padding: 14px 16px !important;
+  }
+
+  .auth-demo-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+}
+
+/* ====================================================================
+   10. PRINT MEDIA STYLES FOR OFFICIAL NMC PRESCRIPTION
+   ==================================================================== */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #prescription-paper, #prescription-paper * {
+    visibility: visible;
+  }
+
+  #prescription-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+    margin: 0 !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .no-print, .app-sidebar, .top-header, .mobile-bottom-nav, .quick-category-ribbon {
+    display: none !important;
+  }
+}

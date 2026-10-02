@@ -1,0 +1,100 @@
+{
+  "medicines_database": [
+    {
+      "id": "paracetamol_dolo",
+      "name_allopathic": "Paracetamol 650mg / Dolo 650 / Calpol",
+      "name_desi_ayurvedic": "ગિલોય (ગળો) ઘનવટી / મહાસુદર્શન ઘનવટી",
+      "disease_used_for": "તાવ (Fever), માથાનો દુખાવો (Headache), શરીરમાં કળતર અને સામાન્ય દુખાવો",
+      "category": "તાવ અને દર્દ નિવારક (Antipyretic & Analgesic)",
+      "how_to_take_allopathic": "જમ્યા પછી ૧ ગોળી હૂંફાળા પાણી સાથે (૨૪ કલાકમાં વધુમાં વધુ ૩-૪ ગોળી).",
+      "how_to_take_ayurvedic": "૧-૧ ગોળી સવાર-સાંજ નવશેકા પાણી કે મધ સાથે ભોજન બાદ.",
+      "natural_cure_without_medicine": "કપાળ પર ઠંડા પાણીના પોતા (Cold Compress), અંધારા રૂમમાં ૭-૮ કલાક ઊંઘ, હાથના LI-4 એક્યુપ્રેશર પોઈન્ટ દબાવો અને પુષ્કળ પાણી પીવો.",
+      "precautions": "ખાલી પેટે ક્યારેય ન લેવી. લીવરની તકલીફ હોય તો ડૉક્ટરને પૂછ્યા વગર ન લેવી.",
+      "generic_jan_aushadhi_price": "₹૬.૫૦ (બ્રાન્ડેડ ₹૩૨.૦૦ - ૮૦% બચત)"
+    },
+    {
+      "id": "pantoprazole_pan40",
+      "name_allopathic": "Pantoprazole 40mg / Pan 40 / Omez",
+      "name_desi_ayurvedic": "અવિપત્તિકર ચૂર્ણ / ધાણા-જીરું હિમ",
+      "disease_used_for": "એસિડિટી (Acidity), છાતીમાં બળતરા (Heartburn), ગેસ અને પેટમાં ચાંદા (Ulcer)",
+      "category": "એસિડિટી અને પાચન (Proton Pump Inhibitor)",
+      "how_to_take_allopathic": "સવારે ઉઠીને નરણા કોઠે (ભૂખ્યા પેટે) ૧ ગોળી પાણી સાથે (જમવાના અડધા કલાક પહેલાં).",
+      "how_to_take_ayurvedic": "૧ ચમચી અવિપત્તિકર ચૂર્ણ રાત્રે સૂતી વખતે નવશેકા પાણી સાથે અથવા ૧ ગ્લાસ ઠંડુ દૂધ પીવું.",
+      "natural_cure_without_medicine": "જમ્યા પછી ૧૦-૧૫ મિનિટ 'વજ્રાસન' માં બેસો, ૧ ચમચી વરિયાળી ચાવો અને રાત્રે ડાબા પડખે સુવાની ટેવ રાખો.",
+      "precautions": "રોજ ગોળીઓ લેવાની ટેવ ન પાડવી. તીખો-તળેલો ખોરાક અને ચા-કોફી બંધ કરવી.",
+      "generic_jan_aushadhi_price": "₹૧૨.૦૦ (બ્રાન્ડેડ ₹૧૧૦.૦૦ - ૮૯% બચત)"
+    },
+    {
+      "id": "augmentin_amoxclav",
+      "name_allopathic": "Amoxicillin + Clavulanic Acid 625mg (Augmentin 625)",
+      "name_desi_ayurvedic": "સિતોપલાદિ ચૂર્ણ + ત્રિકટુ ચૂર્ણ + હળદર",
+      "disease_used_for": "ફેફસાંનું ઈન્ફેક્શન, ન્યુમોનિયા (Pneumonia), ગળાનો સોજો, કાન/દાંતનો ચેપ",
+      "category": "એન્ટિબાયોટિક્સ (Broad Spectrum Antibiotic)",
+      "how_to_take_allopathic": "ભોજન પછી દિવસમાં ૨ વાર (સવાર-સાંજ) ૫ દિવસ સુધી નિયમિત (ડૉક્ટરના પ્રિસ્ક્રિપ્શન મુજબ).",
+      "how_to_take_ayurvedic": "અડધી ચમચી સિતોપલાદિ ચૂર્ણ મધ સાથે દિવસમાં ૩ વાર ચાટવું અને અજમાની વરાળ લેવી.",
+      "natural_cure_without_medicine": "મીઠા-હળદરના ગરમ પાણીના કોગળા (Gargles), નીલગિરીના તેલની વરાળ (Steam) અને ગરમ મગનું સૂપ.",
+      "precautions": "કોર્સ અધૂરો ન છોડવો. ડૉક્ટરની સહી વગર જાતે મેડિકલમાંથી ન ખરીદવી.",
+      "generic_jan_aushadhi_price": "₹૫૫.૦૦ (બ્રાન્ડેડ ₹૨૧૦.૦૦ - ૭૪% બચત)"
+    },
+    {
+      "id": "cetirizine_cetzine",
+      "name_allopathic": "Cetirizine 10mg / Okacet / Cetzine",
+      "name_desi_ayurvedic": "હરિદ્રા ખંડ (હળદર રસાયન) / લીમડાનો રસ",
+      "disease_used_for": "શરદી, છીંકો, નાકમાંથી પાણી વહેવું, ચામડીની ખંજવાળ અને એલર્જી",
+      "category": "એન્ટિ-એલર્જી (Antihistamine)",
+      "how_to_take_allopathic": "રાત્રે સૂતી વખતે ૧ ગોળી (આ દવા લીધા પછી ઊંઘ આવી શકે છે).",
+      "how_to_take_ayurvedic": "૧ ચમચી હરિદ્રા ખંડ દૂધ સાથે સવાર-સાંજ અથવા લીમડાના પાનનો રસ પીવો.",
+      "natural_cure_without_medicine": "નાક પર હળવી માલિશ, અજમાની પોટલી સૂંઘવી અને ઠંડા પીણા સંપૂર્ણ બંધ કરવા.",
+      "precautions": "આ દવા લીધા પછી વાહન ન ચલાવવું (ચક્કર/ઘેન ચડી શકે છે).",
+      "generic_jan_aushadhi_price": "₹૫.૦૦ (બ્રાન્ડેડ ₹૪૦.૦૦ - ૮૭% બચત)"
+    },
+    {
+      "id": "metformin_glycomet",
+      "name_allopathic": "Metformin 500mg / Glycomet 500",
+      "name_desi_ayurvedic": "જાંબુના બીયાંનું ચૂર્ણ + મેથી દાણા + કારેલાં રસ",
+      "disease_used_for": "ડાયાબિટીસ (Type 2 Diabetes / High Blood Sugar)",
+      "category": "ડાયાબિટીસ નિયંત્રક (Antidiabetic)",
+      "how_to_take_allopathic": "જમવાની સાથે અથવા જમ્યા પછી તરત ૧ ગોળી (ડૉક્ટરના ડોઝ મુજબ).",
+      "how_to_take_ayurvedic": "૧ ચમચી જાંબુ-મેથી પાવડર સવારે નરણા કોઠે પાણી સાથે લેવો.",
+      "natural_cure_without_medicine": "રોજ સવારે ૩૦ મિનિટ ઝડપી ચાલવું, મંડૂકાસન યોગ કરવો, ખાંડ-ગોળ-મેંદો બંધ કરવો.",
+      "precautions": "દવા લીધા પછી ભૂખ્યા ન રહેવું, નિયમિત શુગર મપાવતા રહેવું.",
+      "generic_jan_aushadhi_price": "₹૮.૦૦ (બ્રાન્ડેડ ₹૪૫.૦૦ - ૮૨% બચત)"
+    },
+    {
+      "id": "telmisartan_telma",
+      "name_allopathic": "Telmisartan 40mg / Telma 40",
+      "name_desi_ayurvedic": "સર્પગંધા ઘનવટી / અર્જુન છાલ / શંખપુષ્પી",
+      "disease_used_for": "હાઈ બ્લડ પ્રેશર (High Blood Pressure / Hypertension)",
+      "category": "હૃદય અને BP કંટ્રોલ (Antihypertensive)",
+      "how_to_take_allopathic": "રોજ સવારે ૧ ગોળી નિયમિત સમયે પાણી સાથે.",
+      "how_to_take_ayurvedic": "સવારે ૧ લસણની કળી ચાવીને ખાવી અને અર્જુન છાલનો ઉકાળો પીવો.",
+      "natural_cure_without_medicine": "અનુલોમ-વિલોમ પ્રાણાયામ (૧૫ મિનિટ), મીઠું (નમક) ઓછું કરવું અને માનસિક તણાવ મુક્ત રહેવું.",
+      "precautions": "BP સામાન્ય થઈ જાય તો પણ જાતે દવા બંધ કરવી નહીં.",
+      "generic_jan_aushadhi_price": "₹૧૪.૦૦ (બ્રાન્ડેડ ₹૯૫.૦૦ - ૮૫% બચત)"
+    },
+    {
+      "id": "triphala_churna",
+      "name_allopathic": "Dulcolax / Cremaffin / Isabgol",
+      "name_desi_ayurvedic": "ત્રિફળા ચૂર્ણ (હરડે + બહેડા + આમળા)",
+      "disease_used_for": "કબજિયાત (Constipation), પેટ સાફ ન આવવું, પાચનની નબળાઈ અને આંખોની તેજસ્વીતા",
+      "category": "આયુર્વેદિક પાચન ઔષધિ (Digestive Detox)",
+      "how_to_take_allopathic": "રાત્રે સૂતી વખતે ૧ ગોળી અથવા ૧ ચમચી સિરપ.",
+      "how_to_take_ayurvedic": "૧ ચમચી ત્રિફળા ચૂર્ણ રાત્રે સૂતી વખતે નવશેકા ગરમ પાણી સાથે લેવું.",
+      "natural_cure_without_medicine": "સવારે ઉઠીને ૨ ગ્લાસ નવશેકું પાણી પીવું, પપૈયું-સફરજન જેવા ફળો ખાવા અને ફાઈબરયુક્ત આહાર લેવો.",
+      "precautions": "ઝાડા (Diarrhea) હોય ત્યારે ત્રિફળા ન લેવું.",
+      "generic_jan_aushadhi_price": "આયુષ કેન્દ્ર પર માત્ર ₹૩૦ માં ઉપલબ્ધ"
+    },
+    {
+      "id": "ashwagandha",
+      "name_allopathic": "Neurobion Forte / Multivitamin B-Complex",
+      "name_desi_ayurvedic": "અશ્વગંધા ચૂર્ણ / અશ્વગંધારિષ્ટ",
+      "disease_used_for": "શારીરિક નબળાઈ, થાક, માનસિક તણાવ, અનિદ્રા (ઊંઘ ન આવવી) અને રોગપ્રતિકારક શક્તિ",
+      "category": "શક્તિવર્ધક રસાયન (Rejuvenator & Immunity Booster)",
+      "how_to_take_allopathic": "રોજ બપોરે જમ્યા પછી ૧ મલ્ટીવિટામિન ગોળી.",
+      "how_to_take_ayurvedic": "અડધી ચમચી અશ્વગંધા પાવડર રાત્રે ગરમ દૂધ અને સાકર/મધ સાથે લેવો.",
+      "natural_cure_without_medicine": "ભ્રામરી પ્રાણાયામ, ૧૦ મિનિટ સૂર્યપ્રકાશમાં બેસવું (વિટામિન ડી) અને પલાળેલી બદામ-અખરોટ ખાવી.",
+      "precautions": "પિત્ત પ્રકૃતિ (વધુ ગરમી થતી હોય) વાળા લોકોએ ઓછી માત્રામાં લેવું.",
+      "generic_jan_aushadhi_price": "આયુષ કેન્દ્ર પર માત્ર ₹૪૫ માં ઉપલબ્ધ"
+    }
+  ]
+}

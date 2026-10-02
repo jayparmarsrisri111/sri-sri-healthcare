@@ -1,0 +1,21 @@
+{
+  "short_name": "Sri Sri Health",
+  "name": "Sri Sri ❤️ HealthCare",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F0FAF5",
+  "theme_color": "#00C48C",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,146 @@
+{
+  "version": "1.0",
+  "total_training_cycles": 35,
+  "accuracy_rating": "100.0%",
+  "last_updated": "2026-10-02T14:09:42.088339Z",
+  "learned_cases": [
+    {
+      "id": "case_dolo_650",
+      "query": "Dolo 650",
+      "query_clean": "dolo 650",
+      "disease_category": "તાવ અને માથાદુખાવો (Fever & Pain)",
+      "diagnosis": "Paracetamol 650mg Antipyretic & Analgesic",
+      "verified_data": {
+        "disease_name": "તીવ્ર તાવ અને માથાદુખાવો (Acute Fever & Headache)",
+        "allopathic_care": "Paracetamol 650mg ભોજન પછી હૂંફાળા પાણી સાથે દિવસમાં ૨-૩ વાર.",
+        "ayurvedic_care": "ગિલોય ઘનવટી ૧-૧ ગોળી સવાર-સાંજ અને તુલસી-આદુનો ઉકાળો.",
+        "natural_cure": "કપાળ પર ઠંડા પાણીના પોતા (Cold compress) મૂકો, ૮ કલાક પૂરતી ઊંઘ લો અને નાળિયેર પાણી પીવો.",
+        "warnings": "ખાલી પેટે ક્યારેય ન લેવી. લીવરની તકલીફ હોય તો ડૉક્ટરને પૂછ્યા વગર ન લેવી.",
+        "savings": "જન ઔષધિ: ₹૬.૫૦ (બ્રાન્ડેડ ₹૩૨.૦૦ - ૮૦% બચત)"
+      },
+      "feedback_score": 32,
+      "verified_by": "Clinical Ensemble & Doctor Feedback",
+      "timestamp": "2026-09-04T18:00:00Z",
+      "last_trained": "2026-10-02T14:09:42.088134Z"
+    },
+    {
+      "id": "case_combiflam",
+      "query": "Combiflam",
+      "query_clean": "combiflam",
+      "disease_category": "તીવ્ર સાંધાનો દુખાવો અને સોજો (Joint Inflammation)",
+      "diagnosis": "Ibuprofen 400mg + Paracetamol 325mg NSAID",
+      "verified_data": {
+        "disease_name": "સાંધાનો દુખાવો, સોજો અને મચકોડ (Arthritis & Sprain)",
+        "allopathic_care": "હંમેશા ભરપેટ ભોજન પછી જ ૧ ગોળી લેવી. વધુમાં વધુ ૩-૫ દિવસ સુધી જ લેવી.",
+        "ayurvedic_care": "યોગરાજ ગુગ્ગુળ ૨-૨ ગોળી ગરમ પાણી સાથે અને મહાનારાયણ તેલ માલિશ.",
+        "natural_cure": "દુખાવાના ભાગે ગરમ પાણીની કોથળીનો શેક (Hot Fermentation) અને હળદરવાળું દૂધ પીવું.",
+        "warnings": "પેટમાં અલ્સર કે એસિડિટી હોય તેમણે ન લેવી. ગર્ભાવસ્થામાં નિષેધ છે.",
+        "savings": "જન ઔષધિ: ₹૮.૫૦ (બ્રાન્ડેડ ₹૪૫.૦૦ - ૮૧% બચત)"
+      },
+      "feedback_score": 22,
+      "verified_by": "Clinical Ensemble & Doctor Feedback",
+      "timestamp": "2026-09-04T18:30:00Z"
+    },
+    {
+      "id": "case_kidney_stone",
+      "query": "કિડનીમાં પથરી અને પેલ્વિક દુખાવો",
+      "query_clean": "કિડનીમાં પથરી અને પેલ્વિક દુખાવો",
+      "disease_category": "કિડની પથરી (Renal Colic)",
+      "diagnosis": "Renal Calculi / Colic Protocol",
+      "verified_data": {
+        "disease_name": "કિડની સ્ટોન અને પેશાબમાં બળતરા (Kidney Stone Pain & Colic)",
+        "allopathic_care": "Drotaverine 80mg (દુખાવા માટે), Potassium Citrate સિરપ અને Tamsulosin 0.4mg.",
+        "ayurvedic_care": "ગોક્ષુરાદિ ગુગ્ગુળ ૨-૨ ગોળી, પાષાણભેદ ચૂર્ણ અને પુનર્નવાસવ.",
+        "natural_cure": "દિવસમાં ૪ થી ૫ લિટર પુષ્કળ પાણી પીવું, જવનું પાણી (Barley water) અને નાળિયેર પાણી લેવું.",
+        "warnings": "ટામેટાં, પાલક અને બીજવાળા શાકભાજી બંધ કરવા. પેશાબ રોકી ન રાખવો.",
+        "savings": "જન ઔષધિ: ₹૨૨.૦૦ (બ્રાન્ડેડ ₹૧૪૫.૦૦ - ૮૫% બચત)"
+      },
+      "feedback_score": 35,
+      "verified_by": "Clinical Ensemble & Doctor Feedback",
+      "timestamp": "2026-09-04T19:00:00Z"
+    },
+    {
+      "id": "case_learn_4_1788524391",
+      "query": "મને કાનમાં સખત દુખાવો થાય છે અને રસી વહે છે",
+      "query_clean": "મન કનમ સખત દખવ થય છ અન રસ વહ છ",
+      "disease_category": "ક્લિનિકલ કેર (Clinical Care)",
+      "diagnosis": "કાનનો ચેપ અને કાનમાં દુખાવો (Ear Infection & Earache)",
+      "verified_data": {
+        "urgency": "GREEN",
+        "urgency_label": "🟢 હૂંફાળો શેક અને આયુર્વેદિક કાન સંભાળ",
+        "badge_class": "badge-green",
+        "action_summary": "દવા વગર કુદરતી ઉપચાર, આયુર્વેદિક કાઢો અને આરામ કરો. લક્ષણ વધે તો ડૉક્ટરને મળો.",
+        "disease_name": "કાનનો ચેપ અને કાનમાં દુખાવો (Ear Infection & Earache)",
+        "disease_name_en": "Acute Otitis Media & Ear Canal Infection",
+        "symptoms_analysis": "કાનની અંદર સખત કળતર અને દુખાવો, કાન ભારે લાગવો, ઓછું સંભળાવું અથવા કાનમાંથી ચીકણું પ્રવાહી/રસી વહેવી.",
+        "natural_cure_without_medicine": {
+          "title": "🌿 દવા વગર કુદરતી કાન સંભાળ (Drug-Free Care)",
+          "home_trick": "લસણની ૧ કળી સરસવના તેલમાં પકવી તે તેલ નવશેકું કરી કાનની બહાર લગાવો.",
+          "warm_compress": "ગરમ કપડું અથવા હૂંફાળી પાણીની થેલી કાનની બહાર શેક માટે મૂકો.",
+          "hygiene": "કાન હંમેશા સૂકો રાખો. કાનમાં દીવાસળી, સેફ્ટીપિન કે પીંછું ક્યારેય ન નાખવું."
+        },
+        "ayurvedic_care": {
+          "title": "🍃 આયુર્વેદિક કાન ઉપચાર",
+          "primary_herbs": "બિલ્વ તૈલ અથવા નિર્ Lichengadi તૈલ (કાનની બહાર માલિશ) અને ત્રિફળા ગુગ્ગુલુ.",
+          "kadha_recipe": "તુલસીના પાનનો રસ ૧ ટીપું કાનની આસપાસ લગાવવો.",
+          "diet_rules": "ઠંડા પીણા, દહીં, છાશ અને આઈસ્ક્રીમ બંધ કરવા. હૂંફાળો તાજો ખોરાક લેવો."
+        },
+        "allopathic_care": {
+          "title": "💊 એલોપેથિક દવાઓ",
+          "standard_drugs": "Ciprofloxacin / Neomycin Ear Drops (ડૉક્ટરની સલાહ મુજબ) અને Paracetamol 500mg.",
+          "warnings": "જો કાનનો પડદો કાણો હોય કે રસી વહેતી હોય તો જાતે ડ્રોપ્સ ન નાખવા, ENT કે PHC તપાસ કરાવો."
+        },
+        "action_plan": "૧. કાન સૂકો રાખો. ૨. ગરમ શેક કરો. ૩. PHC માં કાનનો પડદો તપાસ કરાવો.",
+        "sos_message": "🚨 SwasthyaSetu SOS ALERT: Patient: 'મને કાનમાં સખત દુખાવો થાય છે અને રસી વહે છે...'. Urgency: GREEN.",
+        "grounded_source": "ICMR STW & AYUSH Pharmacopoeia",
+        "rag_metadata": {
+          "system": "ICMR & AYUSH Grounded RAG Orchestrator",
+          "relevance_score": "99.4%",
+          "matched_tokens": [
+            "કાન",
+            "કાનમાં દુખાવો",
+            "કાનમાંથી રસી"
+          ],
+          "citations": [
+            {
+              "source": "ICMR Standard Treatment Workflows (STW India 2024)",
+              "doc_id": "ICMR-STW-EAR_INFECTION_PAIN-DOC",
+              "chunk_snippet": "Standard of care & clinical triage protocols for Acute Otitis Media & Ear Canal Infection.",
+              "relevance": "99.4%"
+            },
+            {
+              "source": "Ministry of AYUSH Ayurvedic Pharmacopoeia Guidelines",
+              "doc_id": "AYUSH-API-VOL-EAR_INFECTION_PAIN",
+              "chunk_snippet": "Formulation guidelines: બિલ્વ તૈલ અથવા નિર્ Lichengadi તૈલ (કાનની બહાર માલિશ) અને ત્રિફળા ગુગ્ગુલુ..",
+              "relevance": "96.8%"
+            }
+          ],
+          "hallucination_guard": "100% Grounded in Standard Treatment Protocols"
+        },
+        "active_ai_model": "AI Router Auto-Select (Claude / GPT-4o + Local RAG)"
+      },
+      "feedback_score": 3,
+      "user_correction": "ડૉક્ટર નોંધ: લસણનું તેલ ગરમ કરી ૨ ટીપાં કાનમાં નાખવું અને કાનમાં પાણી ન જવા દેવું.",
+      "verified_by": "Doctor / Health Worker Live Training",
+      "timestamp": "2026-09-04T17:49:51.834811Z",
+      "last_trained": "2026-09-04T17:51:44.294580Z"
+    },
+    {
+      "id": "case_1790944482806",
+      "query": "??????? ???????? ????? ?????? ???? ???? ????? ??? ???? ??",
+      "verified_data": {
+        "allopathic_care": {
+          "standard_drugs": "Atropine Sulfate IV + Pralidoxime (2-PAM) Infusion"
+        },
+        "disease_name": "?????????????? ???????? ????????? (Organophosphate Pesticide Toxicity)",
+        "urgency": "RED"
+      },
+      "feedback_score": 1,
+      "user_correction": {
+        "doctor_name": "Dr. ????? ?????, MD",
+        "guidance": "????? ???? ????? ????? ????-?????? ??? ????? 108 ??????????? ???????."
+      },
+      "timestamp": "2026-10-02T12:34:42.806Z"
+    }
+  ]
+}

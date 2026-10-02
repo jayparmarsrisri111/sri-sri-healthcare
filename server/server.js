@@ -1,0 +1,58 @@
+/**
+ * Sri Sri ❤️ HealthCare - Express.js & MongoDB Backend Gateway
+ * Serves both API endpoints and Production React Web App
+ */
+
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
+const connectDB = require('./config/db');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Connect Database (with safe offline fallback)
+connectDB();
+
+// Middlewares
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Health Route
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'online',
+        service: 'Sri Sri ❤️ HealthCare Express API Gateway',
+        version: '3.0.0',
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
+// Mount Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/triage', require('./routes/triageRoutes'));
+app.use('/api/facilities', require('./routes/facilityRoutes'));
+app.use('/api/pharmacies', require('./routes/pharmacyRoutes'));
+app.use('/api/schemes', require('./routes/schemeRoutes'));
+app.use('/api/ai', require('./routes/aiProxyRoutes'));
+
+// Serve Production React Frontend
+const clientDistPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
+
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(clientDistPath, 'index.html'));
+    }
+});
+
+// Start Server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🏥 Sri Sri ❤️ HealthCare Gateway running on port ${PORT}`);
+    console.log(`🔗 Web App: http://localhost:${PORT}`);
+    console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
+});

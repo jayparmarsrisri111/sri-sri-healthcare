@@ -1,0 +1,24 @@
+services:
+  # 1. Python FastAPI AI Microservice
+  - type: web
+    name: srisri-ai-engine
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn ai_engine.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  # 2. Node.js / Express Backend Gateway
+  - type: web
+    name: srisri-backend
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
+    plan: free
+
+  # 3. React Frontend Web App
+  - type: web
+    name: srisri-frontend
+    env: static
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    plan: free
