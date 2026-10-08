@@ -25,10 +25,12 @@ import { ContinuousLearningHubModal } from './components/ContinuousLearningHubMo
 import { HowToUseGuideModal } from './components/HowToUseGuideModal';
 import { DisadvantagesToAdvantagesHubModal } from './components/DisadvantagesToAdvantagesHubModal';
 import { HomeLabCollectionTab } from './components/HomeLabCollectionTab';
+import { GlobalDoctorDirectoryTab } from './components/GlobalDoctorDirectoryTab';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { FloatingChatWidget } from './components/FloatingChatWidget';
+import { PWAInstallModal } from './components/PWAInstallModal';
 
-import { getTranslation } from './services/languageService';
+import { getTranslation, applyGlobalLanguage } from './services/languageService';
 import { authService } from './services/authService';
 
 export default function App() {
@@ -47,9 +49,7 @@ export default function App() {
 
   const setLang = (lang) => {
     setLangState(lang);
-    try {
-      localStorage.setItem('preferred_language', lang);
-    } catch (e) {}
+    applyGlobalLanguage(lang);
   };
 
   const [selectedModel, setSelectedModel] = useState('auto');
@@ -62,6 +62,14 @@ export default function App() {
   const [showContinuousLearnModal, setShowContinuousLearnModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showAdvantagesModal, setShowAdvantagesModal] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+    return false;
+  });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [selectedCasePrompt, setSelectedCasePrompt] = useState(null);
   const [selectedMedForLocator, setSelectedMedForLocator] = useState('Dolo 650');
@@ -75,6 +83,30 @@ export default function App() {
     };
     window.addEventListener('auth_user_changed', handleAuthChange);
     return () => window.removeEventListener('auth_user_changed', handleAuthChange);
+  }, []);
+
+  // Native PWA Install Lifecycle Listener for Android, Windows, Mac, Chrome & Edge
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      console.log('💡 PWA native install prompt captured and ready');
+    };
+
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+      setShowInstallModal(false);
+      console.log('✅ Sri Sri HealthCare App Installed Successfully!');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   const handleAuthSuccess = (user) => {
@@ -109,7 +141,21 @@ export default function App() {
   };
 
   const handleInstallClick = () => {
-    alert(t.installAppPrompt);
+    setShowInstallModal(true);
+  };
+
+  const handleNativeInstall = async () => {
+    if (!deferredPrompt) {
+      setShowInstallModal(true);
+      return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+      setShowInstallModal(false);
+    }
   };
 
   const handleSelectCase = (prompt) => {
@@ -119,6 +165,16 @@ export default function App() {
 
   return (
     <div className="dashboard-layout">
+      {/* Native Cross-Platform PWA Installation Modal (Mobile, Tablet, Desktop) */}
+      <PWAInstallModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        deferredPrompt={deferredPrompt}
+        isInstalled={isAppInstalled}
+        onNativeInstall={handleNativeInstall}
+        currentLang={currentLang}
+      />
+
       {/* Login & Sign Up Modal with Patient, Doctor, Admin Personas */}
       <AuthModal
         isOpen={showAuthModal}
@@ -191,6 +247,7 @@ export default function App() {
         onClose={() => setMobileSidebarOpen(false)}
         onOpenGuideModal={() => setShowGuideModal(true)}
         onOpenAdvantagesModal={() => setShowAdvantagesModal(true)}
+        onInstallClick={handleInstallClick}
       />
 
       {/* Main Content Wrapper */}
@@ -280,12 +337,23 @@ export default function App() {
             </button>
 
             <button
+              onClick={() => setActiveTab('doctorDirectory')}
+              className={`quick-ribbon-btn ${activeTab === 'doctorDirectory' ? 'active' : ''}`}
+            >
+              <span className="ribbon-icon">🌍</span>
+              <div className="ribbon-text">
+                <strong>{t.ribbonDoctorTitle || '6. Doctor Directory'}</strong>
+                <span>{t.ribbonDoctorSub || 'Gujarat • India • Global'}</span>
+              </div>
+            </button>
+
+            <button
               onClick={() => setShowGuideModal(true)}
               className="quick-ribbon-btn guide-btn"
             >
               <span className="ribbon-icon">📖</span>
               <div className="ribbon-text">
-                <strong>{t.ribbonGuideTitle || '6. Easy App Guide'}</strong>
+                <strong>{t.ribbonGuideTitle || '7. Easy App Guide'}</strong>
                 <span>{t.ribbonGuideSub || '🔊 Listen in Voice'}</span>
               </div>
             </button>
@@ -371,10 +439,19 @@ export default function App() {
           {activeTab === 'encyclopedia' && (
             <MedicineEncyclopediaTab
               currentLang={currentLang}
+              currentUser={currentUser}
               onLocateMedicine={(med) => {
                 setSelectedMedForLocator(med);
                 setActiveTab('medLocator');
               }}
+            />
+          )}
+
+          {activeTab === 'doctorDirectory' && (
+            <GlobalDoctorDirectoryTab
+              currentLang={currentLang}
+              currentUser={currentUser}
+              onOpenAuthModal={(role) => setShowAuthModal(true)}
             />
           )}
 

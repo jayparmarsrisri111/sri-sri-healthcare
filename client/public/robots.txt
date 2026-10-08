@@ -1,0 +1,36 @@
+# ====================================================================
+# Robots.txt for Sri Sri ❤️ HealthCare (https://srisrihealthcare.netlify.app & https://www.srisri111.com)
+# ====================================================================
+
+User-agent: *
+Allow: /
+Allow: /api/health
+Disallow: /admin/internal
+Disallow: /.git
+Disallow: /node_modules
+
+# Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Sitemap Index
+Sitemap: https://srisrihealthcare.netlify.app/sitemap.xml
+Sitemap: https://www.srisri111.com/sitemap.xml

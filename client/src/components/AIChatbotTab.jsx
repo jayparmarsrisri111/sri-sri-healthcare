@@ -250,7 +250,7 @@ const PHARMACOLOGY_KB = [
   }
 ];
 
-export const AIChatbotTab = ({ currentLang }) => {
+export const AIChatbotTab = ({ currentLang, isFloating = false, onClose }) => {
   const t = getTranslation(currentLang);
 
   const initialBotGreeting = {
@@ -578,62 +578,77 @@ export const AIChatbotTab = ({ currentLang }) => {
   ];
 
   return (
-    <div>
-      <div className="medical-card anim-6d-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '82vh' }}>
+    <div style={{ height: isFloating ? '100%' : 'auto', display: 'flex', flexDirection: 'column' }}>
+      <div
+        className={`medical-card ${isFloating ? '' : 'anim-6d-card'}`}
+        style={{
+          padding: '0',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          height: isFloating ? '100%' : '82vh',
+          marginBottom: isFloating ? '0' : '22px',
+          borderRadius: isFloating ? '20px' : '22px',
+          border: isFloating ? 'none' : undefined,
+          boxShadow: isFloating ? 'none' : undefined
+        }}
+      >
         {/* Chatbot Top Header */}
         <div style={{
           background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
-          padding: '14px 20px',
+          padding: isFloating ? '10px 14px' : '14px 20px',
           color: '#FFFFFF',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '10px'
+          gap: '8px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img
               src="/logo.png"
               alt="SRI SRI AI"
               style={{
-                width: '42px',
-                height: '42px',
+                width: isFloating ? '34px' : '42px',
+                height: isFloating ? '34px' : '42px',
                 borderRadius: '50%',
                 objectFit: 'cover',
                 background: '#FFFFFF',
                 border: '2px solid #FFFFFF',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.15)'
+                boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+                flexShrink: 0
               }}
             />
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800 }}>{t.chatbotTitle}</h3>
-                <span style={{ background: '#FFFFFF', color: '#009F70', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: 900 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <h3 style={{ margin: 0, fontSize: isFloating ? '15px' : '17px', fontWeight: 800 }}>{t.chatbotTitle}</h3>
+                <span style={{ background: '#FFFFFF', color: '#009F70', padding: '1px 6px', borderRadius: '8px', fontSize: '9.5px', fontWeight: 900 }}>
                   200% TRUE AI
                 </span>
-                <span style={{ background: 'rgba(255,255,255,0.25)', color: '#FFFFFF', padding: '2px 8px', borderRadius: '10px', fontSize: '10.5px', fontWeight: 800 }}>
-                  🧠 સેલ્ફ-ટ્રેનિંગ ({learningStats.total_training_cycles} ચક્ર | {learningStats.accuracy_rating})
-                </span>
+                {!isFloating && (
+                  <span style={{ background: 'rgba(255,255,255,0.25)', color: '#FFFFFF', padding: '2px 8px', borderRadius: '10px', fontSize: '10.5px', fontWeight: 800 }}>
+                    🧠 સેલ્ફ-ટ્રેનિંગ ({learningStats.total_training_cycles} ચક્ર | {learningStats.accuracy_rating})
+                  </span>
+                )}
               </div>
-              <p style={{ margin: '2px 0 0 0', fontSize: '12px', opacity: 0.95 }}>{t.chatbotSubtitle}</p>
+              <p style={{ margin: '2px 0 0 0', fontSize: isFloating ? '11px' : '12px', opacity: 0.95 }}>{t.chatbotSubtitle}</p>
             </div>
           </div>
 
-          {/* Model Selector Pill */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Model Selector Pill & Close button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{
               background: 'rgba(255,255,255,0.2)',
               backdropFilter: 'blur(8px)',
-              padding: '4px 10px',
+              padding: '4px 8px',
               borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               fontSize: '11px',
               fontWeight: 700
             }}>
-              <Cpu size={14} />
-              <span>AI મોડેલ:</span>
+              <Cpu size={13} />
               <select
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
@@ -642,24 +657,48 @@ export const AIChatbotTab = ({ currentLang }) => {
                   color: '#009F70',
                   border: 'none',
                   borderRadius: '6px',
-                  padding: '3px 8px',
-                  fontSize: '11px',
+                  padding: '2px 6px',
+                  fontSize: '10.5px',
                   fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >
-                <option value="auto">🤖 Auto (Gemini + Claude RAG)</option>
-                <option value="gemini">✨ Google Gemini 1.5 Pro</option>
-                <option value="claude">🧠 Claude 3.5 Sonnet</option>
-                <option value="perplexity">🌐 Perplexity Sonar</option>
-                <option value="gpt4o">⚡ OpenAI GPT-4o</option>
-                <option value="icmr_local">🛡️ ICMR Grounded Local</option>
+                <option value="auto">🤖 Auto</option>
+                <option value="gemini">✨ Gemini</option>
+                <option value="claude">🧠 Claude</option>
+                <option value="perplexity">🌐 Perplexity</option>
+                <option value="gpt4o">⚡ GPT-4o</option>
+                <option value="icmr_local">🛡️ ICMR</option>
               </select>
             </div>
 
-            <span style={{ background: 'rgba(255,255,255,0.28)', padding: '5px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, letterSpacing: '0.4px' }}>
-              ● 24/7 સક્રિય
+            <span style={{ background: 'rgba(255,255,255,0.28)', padding: '4px 8px', borderRadius: '10px', fontSize: '10.5px', fontWeight: 800 }}>
+              ● સક્રિય
             </span>
+
+            {isFloating && onClose && (
+              <button
+                onClick={onClose}
+                aria-label="Close chat"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.25)',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  fontWeight: 800,
+                  marginLeft: '2px'
+                }}
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 

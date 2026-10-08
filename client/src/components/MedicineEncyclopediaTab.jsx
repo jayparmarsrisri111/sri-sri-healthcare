@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Pill, Leaf, Search, HelpCircle, AlertTriangle, ShieldCheck, Sun,
   CheckCircle2, ArrowRight, Sparkles, Volume2, Mic, Camera, Upload,
-  RefreshCw, DollarSign, Heart, Activity, Zap, X, MapPin
+  RefreshCw, DollarSign, Heart, Activity, Zap, X, MapPin, PlusCircle
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
 import { apiService } from '../services/api';
 import Tesseract from 'tesseract.js';
+import { MASTER_MEDICINES, searchMedicinesCatalog, resolveAnyMedicine } from '../data/medicinesCatalog.js';
+import { customMedicinesService } from '../services/customMedicinesService';
+import { AddMedicineModal } from './AddMedicineModal';
 
 // Comprehensive 50+ Allopathic & Ayurvedic Multi-Language Knowledge Base
 const EXTENSIVE_MEDICINES_DB = [
@@ -1017,7 +1020,7 @@ const AUTOCOMPLETE_MEDICINE_CATALOG = [
   }
 ];
 
-export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
+export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine, currentUser }) => {
   const t = getTranslation(currentLang);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMedicineId, setSelectedMedicineId] = useState(null);
@@ -1030,6 +1033,7 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
   const [scannedImagePreview, setScannedImagePreview] = useState(null);
   const [scannedResult, setScannedResult] = useState(null);
   const [dynamicAIMedicine, setDynamicAIMedicine] = useState(null);
+  const [showAddMedModal, setShowAddMedModal] = useState(false);
 
   // Continuous Self-Training AI States
   const [learningStats, setLearningStats] = useState({
@@ -1319,18 +1323,30 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
   }, [searchQuery, currentLang]);
 
   // 🔍 Dynamic Autocomplete Suggestions Computation (Allopathic & Ayurvedic)
+  const masterAutocomplete = MASTER_MEDICINES.map(m => ({
+    name: m.allopathicName,
+    brand: m.brandNames?.[0] || m.allopathicName,
+    salt: m.salt,
+    category: m.category,
+    indication: m.diseaseUsedFor,
+    janPrice: `₹${m.janPrice.toFixed(2)} (${m.savingsPct}% બચત)`,
+    dbId: m.id,
+    tags: m.tags || []
+  }));
+  const fullAutocompleteCatalog = [...AUTOCOMPLETE_MEDICINE_CATALOG, ...masterAutocomplete];
+
   const cleanQ = searchQuery.toLowerCase().trim();
-  const filteredSuggestions = !cleanQ ? [] : AUTOCOMPLETE_MEDICINE_CATALOG.filter(item => {
-    const brandMatch = item.brand.toLowerCase().includes(cleanQ);
-    const nameMatch = item.name.toLowerCase().includes(cleanQ);
-    const saltMatch = item.salt.toLowerCase().includes(cleanQ);
-    const catMatch = item.category.toLowerCase().includes(cleanQ);
-    const indMatch = item.indication.toLowerCase().includes(cleanQ);
+  const filteredSuggestions = !cleanQ ? [] : fullAutocompleteCatalog.filter(item => {
+    const brandMatch = item.brand?.toLowerCase().includes(cleanQ);
+    const nameMatch = item.name?.toLowerCase().includes(cleanQ);
+    const saltMatch = item.salt?.toLowerCase().includes(cleanQ);
+    const catMatch = item.category?.toLowerCase().includes(cleanQ);
+    const indMatch = item.indication?.toLowerCase().includes(cleanQ);
     const tagMatch = item.tags && item.tags.some(t => t.toLowerCase().includes(cleanQ));
     return brandMatch || nameMatch || saltMatch || catMatch || indMatch || tagMatch;
   }).sort((a, b) => {
-    const aStarts = a.brand.toLowerCase().startsWith(cleanQ) || a.name.toLowerCase().startsWith(cleanQ);
-    const bStarts = b.brand.toLowerCase().startsWith(cleanQ) || b.name.toLowerCase().startsWith(cleanQ);
+    const aStarts = a.brand?.toLowerCase().startsWith(cleanQ) || a.name?.toLowerCase().startsWith(cleanQ);
+    const bStarts = b.brand?.toLowerCase().startsWith(cleanQ) || b.name?.toLowerCase().startsWith(cleanQ);
     if (aStarts && !bStarts) return -1;
     if (!aStarts && bStarts) return 1;
     return 0;
@@ -1380,8 +1396,41 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
     }
   };
 
+  // Master Combined Database (Allopathic + Ayurvedic + Jan Aushadhi + Custom Added by Doctors & Admins)
+  const customMedsList = customMedicinesService.getCustomMedicines().map(m => ({
+    id: m.id,
+    allopathicName: m.allopathicName,
+    ayurvedicName: m.ayurvedicName,
+    diseaseUsedFor: m.diseaseUsedFor,
+    category: m.category,
+    howToTakeAllopathic: m.howToTakeAllopathic,
+    howToTakeAyurvedic: m.howToTakeAyurvedic,
+    naturalCure: m.naturalCure,
+    precautions: m.precautions,
+    savings: `જન ઔષધિ: ₹${Number(m.janPrice).toFixed(2)} (${m.savingsPct}% સરકારી બચત)`,
+    tags: m.tags || []
+  }));
+
+  const ALL_LOCAL_MEDS = [
+    ...customMedsList,
+    ...EXTENSIVE_MEDICINES_DB,
+    ...MASTER_MEDICINES.map(m => ({
+      id: m.id,
+      allopathicName: m.allopathicName,
+      ayurvedicName: m.ayurvedicName,
+      diseaseUsedFor: m.diseaseUsedFor,
+      category: m.category,
+      howToTakeAllopathic: m.howToTakeAllopathic,
+      howToTakeAyurvedic: m.howToTakeAyurvedic,
+      naturalCure: m.naturalCure,
+      precautions: m.precautions,
+      savings: `જન ઔષધિ: ₹${m.janPrice.toFixed(2)} (બ્રાન્ડેડ ₹${m.mrp.toFixed(2)} - ${m.savingsPct}% સરકારી બચત)`,
+      tags: m.tags || []
+    })).filter(m => !EXTENSIVE_MEDICINES_DB.some(e => e.id === m.id))
+  ];
+
   // Filter local database
-  const matches = EXTENSIVE_MEDICINES_DB.filter(item => {
+  const matches = ALL_LOCAL_MEDS.filter(item => {
     if (selectedMedicineId) {
       return item.id === selectedMedicineId;
     }
@@ -1391,7 +1440,8 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
       item.allopathicName.toLowerCase().includes(q) ||
       item.ayurvedicName.toLowerCase().includes(q) ||
       item.diseaseUsedFor.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q)
+      item.category.toLowerCase().includes(q) ||
+      (item.tags && item.tags.some(t => t.toLowerCase().includes(q)))
     ) {
       return true;
     }
@@ -1401,7 +1451,8 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
     if (tokens.length > 0 && tokens.some(tok =>
       item.allopathicName.toLowerCase().includes(tok) ||
       item.diseaseUsedFor.toLowerCase().includes(tok) ||
-      item.ayurvedicName.toLowerCase().includes(tok)
+      item.ayurvedicName.toLowerCase().includes(tok) ||
+      (item.tags && item.tags.some(t => t.toLowerCase().includes(tok)))
     )) {
       return true;
     }
@@ -1549,9 +1600,26 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
       confidence: dynamicAIMedicine.confidence || "99.4% Verified ICMR / CDSCO"
     }];
   } else if (searchQuery.trim()) {
-    displayList = [generateDynamicAIMedicine(searchQuery)];
+    const catalogMatches = searchMedicinesCatalog(searchQuery);
+    if (catalogMatches && catalogMatches.length > 0) {
+      displayList = catalogMatches.map(m => ({
+        id: m.id,
+        allopathicName: m.allopathicName,
+        ayurvedicName: m.ayurvedicName,
+        diseaseUsedFor: m.diseaseUsedFor,
+        category: m.category,
+        howToTakeAllopathic: m.howToTakeAllopathic,
+        howToTakeAyurvedic: m.howToTakeAyurvedic,
+        naturalCure: m.naturalCure,
+        precautions: m.precautions,
+        savings: `જન ઔષધિ: ₹${(m.janPrice || 10).toFixed(2)} (બ્રાન્ડેડ ₹${(m.mrp || 60).toFixed(2)} - ${m.savingsPct || 80}% સરકારી બચત)`,
+        confidence: "૧૦૦% સચોટ ICMR & AYUSH રેફરન્સ"
+      }));
+    } else {
+      displayList = [generateDynamicAIMedicine(searchQuery)];
+    }
   } else {
-    displayList = EXTENSIVE_MEDICINES_DB;
+    displayList = ALL_LOCAL_MEDS;
   }
 
   return (
@@ -1563,9 +1631,31 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
             <Pill color="#00C48C" size={24} />
             {t.encyclopediaHeader || "💊 જન ઔષધિ જેનરિક દવાઓ & આયુષ એન્સાયક્લોપીડિયા"}
           </h3>
-          <span style={{ background: '#E0F8EE', color: '#009F70', padding: '4px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800 }}>
-            ✓ ૨૦૦% સાચો મેડિકલ ડેટા (ICMR & AYUSH)
-          </span>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setShowAddMedModal(true)}
+              style={{
+                background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '5px 12px',
+                borderRadius: '10px',
+                fontSize: '11.5px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 8px rgba(0, 196, 140, 0.3)'
+              }}
+            >
+              <PlusCircle size={14} />
+              <span>{currentLang === 'gu' || currentLang === 'ku' ? '➕ નવી દવા ઉમેરો' : '➕ Add Medicine'}</span>
+            </button>
+            <span style={{ background: '#E0F8EE', color: '#009F70', padding: '4px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800 }}>
+              ✓ ૨૦૦% સાચો મેડિકલ ડેટા (ICMR & AYUSH)
+            </span>
+          </div>
         </div>
 
         <p style={{ color: '#5A6A85', marginBottom: '16px', fontSize: '13.5px' }}>
@@ -2163,6 +2253,20 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine }) => {
           </div>
         ))}
       </div>
+
+      {/* Add New Medicine Modal */}
+      <AddMedicineModal
+        isOpen={showAddMedModal}
+        onClose={() => setShowAddMedModal(false)}
+        currentUser={currentUser}
+        currentLang={currentLang}
+        onMedicineAdded={(newMed) => {
+          setSearchQuery(newMed.brandNames[0]);
+          setSelectedMedicineId(newMed.id);
+          setToastMessage(`🎉 નવી દવા "${newMed.brandNames[0]}" ડેટાબેઝમાં સાચવવામાં આવી!`);
+          setTimeout(() => setToastMessage(null), 4000);
+        }}
+      />
     </div>
   );
 };

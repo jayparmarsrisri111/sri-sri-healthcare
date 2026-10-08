@@ -9,15 +9,11 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
   const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'en';
 
   const quickTags = [
-    { label: t.triageTagHeadache || '🤕 માથું દુખે છે (Headache)', text: 'મને માથું બહુ દુખે છે અને શરીર ગરમ થાય છે.' },
-    { label: t.triageTagAcidity || '🔥 એસિડિટી & બળતરા (Acidity)', text: 'મને ખૂબ એસિડિટી, ખાટા ઓડકાર અને છાતીમાં બળતરા થાય છે.' },
-    { label: '🦷 દાંતનો દુખાવો (Toothache)', text: 'મને દાંતમાં સખત કળતર અને પેઢામાં સોજો છે.' },
-    { label: '🩸 ડાયાબિટીસ / સુગર (Diabetes)', text: 'મારી બ્લડ સુગર વધી ગઈ છે અને વારંવાર પેશાબ લાગે છે.' },
-    { label: '🦵 ઘૂંટણ / સાંધાનો દુખાવો (Joints)', text: 'ઘૂંટણનો દુખાવો છે અને ચાલવામાં કટકટ અવાજ આવે છે.' },
-    { label: '🤢 પેટમાં ચૂક & ઝાડા (Stomach/Dast)', text: 'મને પેટમાં સખત દુખાવો થાય છે અને પાતળા ઝાડા થઈ ગયા છે.' },
-    { label: '🫀 છાતીમાં દબાણ (Emergency)', text: 'મને છાતીમાં ભારે દબાણ અને ડાબા હાથમાં દુખાવો સાથે પરસેવો વળે છે.' },
-    { label: '👂 કાનમાં દુખાવો (Earache)', text: 'કાનમાં સખત દુખાવો થાય છે અને રસી વહે છે.' },
-    { label: '🪨 પથરીનો દુખાવો (Kidney Stone)', text: 'કમરની એક બાજુ પથરીનો અસહ્ય દુખાવો અને પેશાબમાં બળતરા છે.' }
+    { label: t.triageTagHeadache || '🤕 માથું દુખે છે (Headache)', text: t.triageTagHeadacheText || 'મને માથું બહુ દુખે છે અને શરીર ગરમ થાય છે.' },
+    { label: t.triageTagFever || '🌡️ તાવ & ઠંડી (Fever)', text: t.triageTagFeverText || 'શરીર ખૂબ ગરમ છે, તાવ અને કંપન થાય છે.' },
+    { label: t.triageTagAcidity || '🔥 એસિડિટી & બળતરા (Acidity)', text: t.triageTagAcidityText || 'મને ખૂબ એસિડિટી, ખાટા ઓડકાર અને છાતીમાં બળતરા થાય છે.' },
+    { label: t.triageTagCold || '🤧 શરદી & ખાંસી (Cold/Cough)', text: t.triageTagColdText || 'મને સતત ખાંસી અને ગળામાં બળતરા થાય છે.' },
+    { label: t.triageTagChestPain || '💔 છાતીમાં દબાણ (Emergency)', text: t.triageTagChestPainText || 'મને છાતીમાં ભારે દબાણ અને ડાબા હાથમાં દુખાવો સાથે પરસેવો વળે છે.' },
   ];
 
   const [symptoms, setSymptoms] = useState(initialPrompt || quickTags[0].text);

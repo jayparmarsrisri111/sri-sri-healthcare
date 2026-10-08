@@ -177,13 +177,17 @@ export const VitalsScannerTab = ({ currentLang = 'gu', onVitalsUpdate, currentUs
     sampleCanvas.height = 120;
     const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
 
-    const processFrame = () => {
-      const video = videoRef.current;
-      if (video && video.readyState >= 2 && video.videoWidth > 0) {
-        try {
-          sampleCtx.drawImage(video, 0, 0, 160, 120);
-          const imgData = sampleCtx.getImageData(0, 0, 160, 120);
-          const d = imgData.data;
+    let lastProcessTime = 0;
+    const processFrame = (timestamp) => {
+      // Throttle rPPG optical sampling to ~28 FPS to save CPU/GPU on mobile devices
+      if (!timestamp || (timestamp - lastProcessTime >= 35)) {
+        lastProcessTime = timestamp || performance.now();
+        const video = videoRef.current;
+        if (video && video.readyState >= 2 && video.videoWidth > 0) {
+          try {
+            sampleCtx.drawImage(video, 0, 0, 160, 120);
+            const imgData = sampleCtx.getImageData(0, 0, 160, 120);
+            const d = imgData.data;
 
           let sumR = 0, sumG = 0, sumB = 0;
           let validPixelCount = 0;
@@ -282,6 +286,7 @@ export const VitalsScannerTab = ({ currentLang = 'gu', onVitalsUpdate, currentUs
             setFaceDetected(false);
           }
         } catch (e) {}
+      }
       }
       animId = requestAnimationFrame(processFrame);
     };

@@ -60,7 +60,15 @@ export const LiveMedicineLocatorTab = ({ currentLang = 'gu', initialMedicine = '
     { label: '🩸 Telma 40 (હાઈ બીપી)', query: 'Telma 40' },
     { label: '🍬 Glycomet 500 (ડાયાબિટીસ)', query: 'Glycomet 500' },
     { label: '🦴 Shelcal 500 (કેલ્શિયમ)', query: 'Shelcal 500' },
-    { label: '🌿 Liv 52 (લીવર/કમળો)', query: 'Liv 52' }
+    { label: '🌿 Liv 52 (લીવર/કમળો)', query: 'Liv 52' },
+    { label: '💊 Combiflam (સાંધા/કમર)', query: 'Combiflam' },
+    { label: '🦠 Azithromycin (ગળાનો ચેપ)', query: 'Azithromycin' },
+    { label: '⚡ Zerodol-P (વા/સોજો)', query: 'Zerodol-P' },
+    { label: '🩸 Drotaverine (પથરી)', query: 'Drotaverine' },
+    { label: '🌸 Cetirizine (એલર્જી/છીંકો)', query: 'Cetirizine' },
+    { label: '🦋 Thyronorm (થાઇરોઇડ)', query: 'Thyronorm' },
+    { label: '🛡️ Becosules (વિટામિન/ચાંદા)', query: 'Becosules' },
+    { label: '🧃 Electral ORS (અશક્તિ)', query: 'Electral' }
   ];
 
   // Quick City Suggestions

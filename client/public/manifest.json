@@ -1,21 +1,70 @@
 {
+  "name": "Sri Sri ❤️ HealthCare - AI Medical Care",
   "short_name": "Sri Sri Health",
-  "name": "Sri Sri ❤️ HealthCare",
+  "description": "Multi-Model AI Clinical Health, Vision Diagnostics, Telemedicine & Rural Lifeline",
+  "start_url": "/",
+  "scope": "/",
+  "id": "srisri-healthcare-pwa",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#F0FAF5",
+  "theme_color": "#00C48C",
+  "categories": ["medical", "health", "lifestyle", "utilities"],
   "icons": [
     {
       "src": "/logo.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "/logo.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "background_color": "#F0FAF5",
-  "theme_color": "#00C48C",
-  "display": "standalone",
-  "orientation": "portrait"
+  "shortcuts": [
+    {
+      "name": "🚨 108 Emergency Call",
+      "short_name": "108 Call",
+      "description": "Quick access to 108 emergency services",
+      "url": "/?action=emergency",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "💬 24/7 AI Doctor",
+      "short_name": "AI Doctor",
+      "description": "Chat with clinical AI doctor",
+      "url": "/?tab=chatbot",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "🌾 Village Lifeline",
+      "short_name": "Village Care",
+      "description": "Rural anti-snake venom and emergency care",
+      "url": "/?tab=ruralCare",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "👁️ Eye Power AI",
+      "short_name": "Eye Scan",
+      "description": "Optometry and visual acuity AI test",
+      "url": "/?tab=eye",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    }
+  ]
 }

@@ -7,6 +7,7 @@ import {
 import { patientStorageService } from '../services/patientStorageService';
 import { apiService } from '../services/api';
 import { DigitalPrescriptionModal } from './DigitalPrescriptionModal';
+import { AddMedicineModal } from './AddMedicineModal';
 
 export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatient }) => {
   const [records, setRecords] = useState([]);
@@ -14,6 +15,7 @@ export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatie
   const [filterUrgency, setFilterUrgency] = useState('ALL');
   const [selectedRecordForReview, setSelectedRecordForReview] = useState(null);
   const [selectedRecordForPrint, setSelectedRecordForPrint] = useState(null);
+  const [showAddMedicineModal, setShowAddMedicineModal] = useState(false);
   const [doctorNoteInput, setDoctorNoteInput] = useState('');
   const [prescribedMedicine, setPrescribedMedicine] = useState('');
   const [saveToast, setSaveToast] = useState(null);
@@ -143,7 +145,28 @@ export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatie
         </div>
 
         {/* Doctor Action Buttons */}
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setShowAddMedicineModal(true)}
+            style={{
+              background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '10px 16px',
+              borderRadius: '12px',
+              fontWeight: 800,
+              fontSize: '12.5px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 4px 12px rgba(0, 196, 140, 0.3)'
+            }}
+          >
+            <Pill size={15} />
+            <span>➕ નવી દવા ઉમેરો</span>
+          </button>
+
           <div style={{
             background: 'rgba(255,255,255,0.1)',
             padding: '10px 16px',
@@ -545,6 +568,18 @@ export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatie
         record={selectedRecordForPrint}
         doctorInfo={currentUser}
         currentLang={currentLang}
+      />
+
+      {/* Add New Medicine Modal */}
+      <AddMedicineModal
+        isOpen={showAddMedicineModal}
+        onClose={() => setShowAddMedicineModal(false)}
+        currentUser={currentUser}
+        currentLang={currentLang}
+        onMedicineAdded={(m) => {
+          setSaveToast(`🎉 દવા "${m.brandNames[0]}" ફોર્મ્યુલરીમાં ઉમેરાઈ ગઈ!`);
+          setTimeout(() => setSaveToast(null), 3500);
+        }}
       />
     </div>
   );

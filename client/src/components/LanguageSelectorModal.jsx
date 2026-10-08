@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Globe, Search, CheckCircle2, X } from 'lucide-react';
-import { SUPPORTED_LANGUAGES } from '../services/languageService';
+import { SUPPORTED_LANGUAGES, getTranslation, applyGlobalLanguage } from '../services/languageService';
 
 export const LanguageSelectorModal = ({ isOpen, onClose, currentLang, setLang }) => {
   const [search, setSearch] = useState('');
   const [filterRegion, setFilterRegion] = useState('all'); // 'all', 'India', 'Global'
+  const t = getTranslation(currentLang);
 
   if (!isOpen) return null;
 
@@ -45,10 +46,10 @@ export const LanguageSelectorModal = ({ isOpen, onClose, currentLang, setLang })
           <div>
             <h3 style={{ margin: 0, color: '#0A1128', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '20px', fontWeight: 800 }}>
               <Globe color="#00C48C" size={24} />
-              🌐 ભાષા પસંદ કરો / Select World Language
+              🌐 {t.worldLang || 'ભાષા પસંદ કરો / Select Language'}
             </h3>
             <p style={{ color: '#5A6A85', fontSize: '13px', margin: '4px 0 0 0' }}>
-              વિશ્વની તમામ પ્રમુખ અને ભારતીય પ્રાદેશિક ભાષાઓમાં ૧-ક્લિકથી સ્વિચ કરો:
+              Select any language for 100% instant full web app translation:
             </p>
           </div>
           <button onClick={onClose} style={{ background: '#F0FAF5', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -63,7 +64,7 @@ export const LanguageSelectorModal = ({ isOpen, onClose, currentLang, setLang })
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="🔍 ભાષાનું નામ શોધો (Search Gujarati, Hindi, English, Spanish)..."
+              placeholder="🔍 Search Language (Gujarati, Hindi, English, Spanish)..."
               style={{ padding: '10px 14px', borderRadius: '10px', fontSize: '13px' }}
             />
           </div>
@@ -74,21 +75,21 @@ export const LanguageSelectorModal = ({ isOpen, onClose, currentLang, setLang })
               onClick={() => setFilterRegion('all')}
               style={{ fontSize: '12px', padding: '6px 12px', background: filterRegion === 'all' ? '#E0F8EE' : '#FFFFFF', borderColor: filterRegion === 'all' ? '#00C48C' : '#D3F2E3' }}
             >
-              તમામ (All)
+              All
             </button>
             <button
               className="btn-secondary"
               onClick={() => setFilterRegion('India')}
               style={{ fontSize: '12px', padding: '6px 12px', background: filterRegion === 'India' ? '#E0F8EE' : '#FFFFFF', borderColor: filterRegion === 'India' ? '#00C48C' : '#D3F2E3' }}
             >
-              🇮🇳 ભારત (India)
+              🇮🇳 India
             </button>
             <button
               className="btn-secondary"
               onClick={() => setFilterRegion('Global')}
               style={{ fontSize: '12px', padding: '6px 12px', background: filterRegion === 'Global' ? '#E0F8EE' : '#FFFFFF', borderColor: filterRegion === 'Global' ? '#00C48C' : '#D3F2E3' }}
             >
-              🌍 વૈશ્વિક (Global)
+              🌍 Global
             </button>
           </div>
         </div>
@@ -101,7 +102,8 @@ export const LanguageSelectorModal = ({ isOpen, onClose, currentLang, setLang })
               <div
                 key={lang.code}
                 onClick={() => {
-                  setLang(lang.code);
+                  if (setLang) setLang(lang.code);
+                  applyGlobalLanguage(lang.code);
                   onClose();
                 }}
                 style={{

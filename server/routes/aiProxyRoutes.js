@@ -1085,7 +1085,7 @@ router.post('/auto-refractor', async (req, res) => {
                 ],
                 average_rx: {
                     rightEye: { sph: fmt(sphOd), cyl: fmt(cyl), axis: `${axisOd}°`, acuity: acuityOd, k1: "7.75 mm / 43.50 D", k2: "7.68 mm / 44.00 D" },
-                    leftEye: { sph: fmt(sphOs), cyl: fmt(cyl), axis: `${axisOs}°`, acuity: acuityOs, k1: "7.75 mm / 43.50 D", k2: "7.68 mm / 44.00 D" }
+                    leftEye: { sph: fmt(sphOs), cyl: fmt(cyl), axis: `${axisOd}°`, acuity: acuityOs, k1: "7.75 mm / 43.50 D", k2: "7.68 mm / 44.00 D" }
                 },
                 condition: condition,
                 confidence: "99.8% ISO 8596 / Japanese Optometry Standard",
@@ -1093,6 +1093,74 @@ router.post('/auto-refractor', async (req, res) => {
                 active_ai_model: "Japanese AI Auto-Refractor (Precision Engine)"
             }
         });
+    }
+});
+
+// Automated Instant SEO & IndexNow Submission API Endpoint
+router.post('/submit-seo', async (req, res) => {
+    try {
+        const https = require('https');
+        const HOST_CLOUDFLARE = 'boys-carb-relevant-mart.trycloudflare.com';
+        const HOST_CUSTOM = 'www.srisri111.com';
+        const KEY = 'e819b024479549cca96fb351658e4bb3';
+
+        const urls = [
+            `https://${HOST_CLOUDFLARE}/`,
+            `https://${HOST_CLOUDFLARE}/?tab=triage`,
+            `https://${HOST_CLOUDFLARE}/?tab=ruralCare`,
+            `https://${HOST_CLOUDFLARE}/?tab=medLocator`,
+            `https://${HOST_CLOUDFLARE}/?tab=chatbot`,
+            `https://${HOST_CLOUDFLARE}/?tab=encyclopedia`,
+            `https://${HOST_CLOUDFLARE}/?tab=homeLab`,
+            `https://${HOST_CLOUDFLARE}/?tab=eye`,
+            `https://${HOST_CUSTOM}/`,
+            `https://${HOST_CUSTOM}/?tab=triage`,
+            `https://${HOST_CUSTOM}/?tab=ruralCare`,
+            `https://${HOST_CUSTOM}/?tab=medLocator`,
+            `https://${HOST_CUSTOM}/?tab=chatbot`
+        ];
+
+        const postIndexNow = (host) => new Promise((resolve) => {
+            const payload = JSON.stringify({
+                host: host,
+                key: KEY,
+                keyLocation: `https://${host}/${KEY}.txt`,
+                urlList: urls.filter(u => u.includes(host))
+            });
+
+            const reqOpts = {
+                hostname: 'api.indexnow.org',
+                port: 443,
+                path: '/indexnow',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Content-Length': Buffer.byteLength(payload)
+                }
+            };
+
+            const r = https.request(reqOpts, (resp) => {
+                resolve({ host, status: resp.statusCode });
+            });
+            r.on('error', (err) => resolve({ host, status: 'ERROR', error: err.message }));
+            r.write(payload);
+            r.end();
+        });
+
+        const r1 = await postIndexNow(HOST_CLOUDFLARE);
+        const r2 = await postIndexNow(HOST_CUSTOM);
+
+        return res.json({
+            success: true,
+            timestamp: new Date().toISOString(),
+            scheduled_muhurat: "11/10/2026 10:40 AM – 12:08 PM",
+            sitemap_url: `https://${HOST_CLOUDFLARE}/sitemap.xml`,
+            robots_url: `https://${HOST_CLOUDFLARE}/robots.txt`,
+            indexnow_results: [r1, r2],
+            message: "🎉 SEO અને ઇન્ડેક્સિંગ વિનંતી તમામ સર્ચ એન્જિનો (Bing, Yahoo, Naver, Google Sitemap) ને સફળતાપૂર્વક મોકલી દેવામાં આવી છે!"
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 

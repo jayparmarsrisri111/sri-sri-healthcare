@@ -44,6 +44,11 @@ app.use('/api/ai', require('./routes/aiProxyRoutes'));
 const clientDistPath = path.join(__dirname, '../client/dist');
 app.use(express.static(clientDistPath));
 
+// Google Search Console Verification Endpoint
+app.get('/google225ea9313318883b.html', (req, res) => {
+    res.type('html').send('google-site-verification: google225ea9313318883b.html');
+});
+
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
         res.sendFile(path.join(clientDistPath, 'index.html'));
@@ -56,3 +61,12 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`🔗 Web App: http://localhost:${PORT}`);
     console.log(`🔗 Health Check: http://localhost:${PORT}/api/health`);
 });
+
+// Also listen on standard HTTP port 80 for direct domain access (e.g. www.srisri111.com)
+try {
+    app.listen(80, '0.0.0.0', () => {
+        console.log(`🌐 Sri Sri ❤️ HealthCare also active on standard Port 80 (http://www.srisri111.com)`);
+    });
+} catch (err) {
+    console.warn('Port 80 fallback notice:', err.message);
+}

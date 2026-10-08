@@ -3,7 +3,7 @@ import {
   Mic, Camera, Activity, Hospital, Landmark, Pill, History,
   Sparkles, ShieldCheck, Trophy, Cpu, Brain, MessageSquare,
   Stethoscope, Layers, Eye, Navigation, ShieldAlert, HelpCircle, X,
-  TestTube, Shield
+  TestTube, Shield, Smartphone, Download, Users
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 
@@ -20,7 +20,8 @@ export const Sidebar = ({
   isOpen = false,
   onClose,
   onOpenGuideModal,
-  onOpenAdvantagesModal
+  onOpenAdvantagesModal,
+  onInstallClick
 }) => {
   const t = getTranslation(currentLang);
 
@@ -60,6 +61,7 @@ export const Sidebar = ({
   ];
 
   const hospitalGroup = [
+    { id: 'doctorDirectory', label: t.tabDoctorDirectory || '🌍 Global Doctor Registry', icon: Users, badge: 'World', highlight: true },
     { id: 'homeLab', label: t.tabHomeLab || '🧪 Home Blood Test', icon: TestTube, badge: '80% Off' },
     { id: 'phc', label: t.tabPhc, icon: Hospital, badge: 'Live' },
     { id: 'schemes', label: t.tabSchemes, icon: Landmark, badge: '85% Off' },
@@ -334,6 +336,35 @@ export const Sidebar = ({
         </nav>
       </div>
 
+      {/* PWA App Install Button */}
+      {onInstallClick && (
+        <button
+          onClick={onInstallClick}
+          style={{
+            width: '100%',
+            background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '10px 14px',
+            color: '#FFFFFF',
+            fontWeight: 800,
+            fontSize: '12.5px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            marginTop: '12px',
+            marginBottom: '4px',
+            boxShadow: '0 4px 14px rgba(0, 196, 140, 0.25)',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Smartphone size={16} />
+          <span>{t.installApp || '📲 એપ ઇન્સ્ટોલ કરો'}</span>
+        </button>
+      )}
+
       {/* Sidebar Footer: System Status */}
       <div style={{
         background: '#F8FCF9',
@@ -341,7 +372,7 @@ export const Sidebar = ({
         borderRadius: '14px',
         padding: '12px',
         fontSize: '11px',
-        marginTop: '16px'
+        marginTop: '12px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#009F70', fontWeight: 800, marginBottom: '2px' }}>
           <ShieldCheck size={14} />

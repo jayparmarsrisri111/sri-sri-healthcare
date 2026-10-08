@@ -10,26 +10,36 @@ export const FloatingChatWidget = ({ currentLang, activeTab }) => {
   // If already on the dedicated Chatbot tab, hide the floating trigger button
   if (activeTab === 'chatbot') return null;
 
+  // Clean the title text so there are no duplicate emojis or oversized text
+  const rawTitle = t.tabChatbot || '24/7 AI Doctor Chatbot';
+  // Strip any leading emojis and excess spaces
+  const cleanTitle = rawTitle.replace(/^[\p{Emoji}\s]+/u, '').trim() || 'AI Doctor';
+
   return (
     <>
-      {/* Floating Chat Button with Official SRI SRI Logo */}
+      {/* Compact, Ultra-Aesthetic Floating AI Doctor Pill */}
       <button
-        className="floating-chat-bubble-btn"
+        className={`floating-chat-bubble-btn ${isOpen ? 'active-open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        title="24/7 AI Doctor Chat"
+        title={cleanTitle}
+        aria-label={cleanTitle}
       >
-        <img
-          src="/logo.png"
-          alt="SRI SRI"
-          style={{
-            width: '24px',
-            height: '24px',
-            borderRadius: '50%',
-            objectFit: 'cover',
-            background: '#FFFFFF'
-          }}
-        />
-        <span>💬 {t.tabChatbot}</span>
+        <div className="chat-btn-avatar-wrap">
+          <img
+            src="/logo.png"
+            alt="SRI SRI"
+            className="chat-btn-logo"
+          />
+          <span className="chat-online-pulse" title="Online 24/7" />
+        </div>
+
+        <div className="chat-btn-content">
+          <span className="chat-btn-title">{cleanTitle}</span>
+        </div>
+
+        <span className="chat-btn-badge">
+          {isOpen ? <X size={13} strokeWidth={2.5} /> : <Sparkles size={12} />}
+        </span>
       </button>
 
       {/* Floating Chat Window with Slide-Up Animation */}

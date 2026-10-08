@@ -187,7 +187,7 @@ export const TopHeader = ({
 
             <button
               onClick={onOpenAuthModal}
-              title="એકાઉન્ટ બદલો (Switch Account)"
+              title={t.switchAccount || 'Switch Account'}
               style={{
                 background: '#FFFFFF',
                 border: '1px solid #CBD5E1',
@@ -200,12 +200,12 @@ export const TopHeader = ({
                 marginLeft: '4px'
               }}
             >
-              બદલો
+              {t.switchAccount || 'Switch'}
             </button>
 
             <button
               onClick={onLogout}
-              title="લૉગ આઉટ કરો (Sign Out)"
+              title={t.signOut || 'Sign Out'}
               style={{
                 background: '#FEE2E2',
                 border: '1px solid #FCA5A5',
@@ -240,7 +240,7 @@ export const TopHeader = ({
             }}
           >
             <LogIn size={15} />
-            <span>🔑 લૉગિન / સાઇન અપ</span>
+            <span>{t.loginSignUp || '🔑 Login / Sign Up'}</span>
           </button>
         )}
       </div>

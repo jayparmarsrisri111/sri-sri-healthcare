@@ -1,0 +1,23 @@
+{
+  "name": "sri-sri-healthcare-root",
+  "version": "3.0.0",
+  "description": "Sri Sri ❤️ HealthCare - Multi-Model AI Clinical Health, Vision Diagnostics & Rural Lifeline",
+  "private": true,
+  "scripts": {
+    "seo:submit": "node scripts/submit-seo.js",
+    "seo": "node scripts/submit-seo.js",
+    "build": "npm run build --prefix client",
+    "client": "npm run dev --prefix client",
+    "server": "node server/server.js",
+    "start": "node server/server.js"
+  },
+  "keywords": [
+    "healthcare",
+    "ai-doctor",
+    "jan-aushadhi",
+    "telemedicine",
+    "sri-sri"
+  ],
+  "author": "Sri Sri HealthCare Team",
+  "license": "ISC"
+}

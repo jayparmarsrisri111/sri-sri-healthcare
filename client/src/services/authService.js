@@ -6,7 +6,14 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/auth';
+const isBrowser = typeof window !== 'undefined';
+const isLocalhost = isBrowser && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === '0.0.0.0'
+);
+const remoteApiUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '';
+const API_BASE_URL = remoteApiUrl ? `${remoteApiUrl}/auth` : (isLocalhost ? 'http://localhost:5000/api/auth' : '/api/auth');
 const AUTH_STORAGE_KEY = 'swasthyasetu_auth_user';
 
 export const DEMO_ACCOUNTS = {
@@ -84,7 +91,7 @@ export const authService = {
   // Login via API with graceful local fallback
   login: async (email, password, role) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/login`, { email, password, role }, { timeout: 4000 });
+      const res = await axios.post(`${API_BASE_URL}/login`, { email, password, role }, { timeout: isLocalhost ? 1200 : 1800 });
       if (res.data && res.data.success) {
         const user = res.data.user;
         user.avatar = user.role === 'doctor' ? '👨‍⚕️' : user.role === 'admin' ? '🛡️' : '👨‍🦰';
@@ -125,7 +132,7 @@ export const authService = {
   // Register new user via API with offline fallback
   register: async (userData) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/register`, userData, { timeout: 4000 });
+      const res = await axios.post(`${API_BASE_URL}/register`, userData, { timeout: isLocalhost ? 1200 : 1800 });
       if (res.data && res.data.success) {
         const user = res.data.user;
         user.avatar = user.role === 'doctor' ? '👨‍⚕️' : user.role === 'admin' ? '🛡️' : '👨‍🦰';
@@ -142,11 +149,25 @@ export const authService = {
     const prefix = role === 'doctor' ? 'DOC' : role === 'admin' ? 'ADM' : 'PAT';
     const newUser = {
       ...userData,
-      userId: `USR-${prefix}-${Date.now().toString().slice(-4)}`,
+      userId: userData.userId || `USR-${prefix}-${Date.now().toString().slice(-4)}`,
       avatar: role === 'doctor' ? '👨‍⚕️' : role === 'admin' ? '🛡️' : '👨‍🦰',
       badgeLabel: role === 'doctor' ? 'તબીબ (Doctor)' : role === 'admin' ? 'મુખ્ય પ્રશાસક (Admin)' : 'દર્દી (Patient)',
-      createdAt: new Date()
+      doctorVerified: role === 'doctor' ? (userData.doctorVerified !== undefined ? userData.doctorVerified : true) : true,
+      verificationStatus: role === 'doctor' ? 'verified' : 'active',
+      certificateUploadedAt: role === 'doctor' ? new Date().toISOString() : null,
+      createdAt: new Date().toISOString()
     };
+
+    // Save to persistent all users list
+    try {
+      const storedUsersRaw = localStorage.getItem('swasthyasetu_registered_users');
+      const storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      const updatedList = [newUser, ...storedUsers.filter(u => u.email !== newUser.email)];
+      localStorage.setItem('swasthyasetu_registered_users', JSON.stringify(updatedList));
+    } catch (e) {
+      console.warn('Could not cache registered user:', e);
+    }
+
     authService.setCurrentUser(newUser);
     return { success: true, user: newUser, message: `સ્વાગત છે ${newUser.name}! એકાઉન્ટ તૈયાર છે.` };
   },
@@ -159,14 +180,59 @@ export const authService = {
 
   // Fetch all users (for Admin & Doctor directories)
   getAllUsers: async () => {
+    let baseUsers = Object.values(DEMO_ACCOUNTS);
     try {
-      const res = await axios.get(`${API_BASE_URL}/users`, { timeout: 4000 });
-      if (res.data && res.data.success) {
-        return res.data.users;
+      const storedUsersRaw = localStorage.getItem('swasthyasetu_registered_users');
+      if (storedUsersRaw) {
+        const customUsers = JSON.parse(storedUsersRaw);
+        baseUsers = [...customUsers, ...baseUsers.filter(d => !customUsers.some(c => c.email === d.email))];
+      }
+    } catch (e) {}
+
+    try {
+      const res = await axios.get(`${API_BASE_URL}/users`, { timeout: 1500 });
+      if (res.data && res.data.success && Array.isArray(res.data.users)) {
+        return [...res.data.users, ...baseUsers.filter(b => !res.data.users.some(u => u.email === b.email))];
       }
     } catch (e) {
-      console.warn('Could not fetch remote users, returning fallback list');
+      // Offline fallback
     }
-    return Object.values(DEMO_ACCOUNTS);
+    return baseUsers;
+  },
+
+  // Admin Doctor Certificate Verification
+  updateDoctorVerification: (userId, isVerified, notes = '') => {
+    try {
+      const storedUsersRaw = localStorage.getItem('swasthyasetu_registered_users');
+      let storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      let found = false;
+      storedUsers = storedUsers.map(u => {
+        if (u.userId === userId || u.email === userId) {
+          found = true;
+          return {
+            ...u,
+            doctorVerified: isVerified,
+            verificationStatus: isVerified ? 'verified' : 'rejected',
+            verificationNotes: notes,
+            verifiedAt: new Date().toISOString()
+          };
+        }
+        return u;
+      });
+
+      if (found) {
+        localStorage.setItem('swasthyasetu_registered_users', JSON.stringify(storedUsers));
+        // Also update currentUser if it's the same
+        const current = authService.getCurrentUser();
+        if (current && (current.userId === userId || current.email === userId)) {
+          authService.setCurrentUser({ ...current, doctorVerified: isVerified, verificationStatus: isVerified ? 'verified' : 'rejected' });
+        }
+        window.dispatchEvent(new CustomEvent('auth_user_changed', { detail: null }));
+        return true;
+      }
+    } catch (e) {
+      console.error('Error updating doctor verification:', e);
+    }
+    return false;
   }
 };

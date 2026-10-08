@@ -30,10 +30,20 @@ const NEAR_READING_LEVELS = [
   { id: 'N18', pt: '18 pt', add: '+2.50 D', textGu: 'તંદુરસ્ત આંખો, સુખી જીવન અને ઉજ્જવળ ભવિષ્યની ઉત્તમ ચાવી છે.', textEn: 'Healthy vision guarantees independent and joyful living.' }
 ];
 
-// Play realistic optometric machine beep using Web Audio API
+// Reusable Web Audio API singleton to prevent audio context leak & crash on mobile
+let globalOpticalAudioCtx = null;
 const playOpticalBeep = (type = 'shot') => {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (typeof window === 'undefined') return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    if (!globalOpticalAudioCtx) {
+      globalOpticalAudioCtx = new AudioCtx();
+    }
+    if (globalOpticalAudioCtx.state === 'suspended') {
+      globalOpticalAudioCtx.resume().catch(() => {});
+    }
+    const ctx = globalOpticalAudioCtx;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -42,20 +52,36 @@ const playOpticalBeep = (type = 'shot') => {
     if (type === 'shot') {
       osc.frequency.setValueAtTime(880, ctx.currentTime);
       gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
       osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    } else if (type === 'complete') {
-      osc.frequency.setValueAtTime(1100, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1480, ctx.currentTime + 0.25);
+      osc.stop(ctx.currentTime + 0.13);
+    } else if (type === 'correct') {
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.12);
       gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } else if (type === 'complete') {
+      osc.frequency.setValueAtTime(1046, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1568, ctx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.16, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.start();
       osc.stop(ctx.currentTime + 0.36);
     }
   } catch (e) {
-    // Audio context not allowed before user interaction
+    // Audio context safely ignored if restricted before tap
   }
+};
+
+// Gentle mobile haptic feedback
+const triggerHaptic = (pattern = 20) => {
+  try {
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  } catch (e) {}
 };
 
 export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
@@ -69,11 +95,18 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
   // Camera & Video State
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
-  const [deviceMode, setDeviceMode] = useState('laptop'); // 'laptop' (60cm) or 'mobile' (40cm)
+
+  // Auto-detect phone vs laptop/desktop on load
+  const [deviceMode, setDeviceMode] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      return 'mobile';
+    }
+    return 'laptop';
+  });
   const targetDistance = deviceMode === 'laptop' ? 60 : 40;
 
   // Real-Time Distance Tracking State
-  const [liveDistance, setLiveDistance] = useState(60);
+  const [liveDistance, setLiveDistance] = useState(() => (typeof window !== 'undefined' && window.innerWidth <= 768 ? 40 : 60));
   const [calibFactor, setCalibFactor] = useState(1.0);
   const [manualDistanceOverride, setManualDistanceOverride] = useState(false);
   const [facePosition, setFacePosition] = useState({ x: 50, y: 50, widthPx: 52, detected: true });
@@ -87,13 +120,17 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
   const [existingOsSph, setExistingOsSph] = useState('');
   const [existingCyl, setExistingCyl] = useState('');
 
-  // Clinical 7-Step Guided Exam Workflow:
-  // 'step_symptoms' -> 'step_distance' -> 'step_snellen_od' -> 'step_snellen_os' -> 'step_duochrome' -> 'step_astigmatism' -> 'step_near' -> 'step_rx_result'
+  // Clinical Guided Exam Workflow:
+  // 'step_symptoms' -> 'step_distance' -> 'step_snellen_od' -> 'step_od_complete' -> 'step_snellen_os' -> 'step_os_complete' -> 'step_duochrome' -> 'step_astigmatism' -> 'step_near' -> 'step_rx_result'
   const [examStep, setExamStep] = useState('step_symptoms');
   const [snellenLevelIdx, setSnellenLevelIdx] = useState(0);
   const [snellenDirection, setSnellenDirection] = useState('UP');
-  const [odCorrectLevel, setOdCorrectLevel] = useState(7); // default 6/6
-  const [osCorrectLevel, setOsCorrectLevel] = useState(7); // default 6/6
+  
+  // High-precision scores: 0=<6/60, 1=6/60, 2=6/36, 3=6/24, 4=6/18, 5=6/12, 6=6/9, 7=6/6
+  const [odCorrectLevel, setOdCorrectLevel] = useState(7);
+  const [osCorrectLevel, setOsCorrectLevel] = useState(7);
+  const [answerFeedback, setAnswerFeedback] = useState(null); // 'correct' | 'wrong'
+
   const [duochromeSelected, setDuochromeSelected] = useState('equal'); // 'red', 'equal', 'green'
   const [astigmatismLine, setAstigmatismLine] = useState('equal'); // 'equal' or '1'..'12'
   const [astigmatismSeverity, setAstigmatismSeverity] = useState('-0.50');
@@ -190,7 +227,9 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
 
   // Real-Time Computer Vision Loop for Face Tracking & Distance
   useEffect(() => {
+    // Only run computer vision loop during step_distance or autorefactor to prevent CPU lag on phones
     if (!cameraActive || manualDistanceOverride) return;
+    if (examMode === 'clinical_exam' && examStep !== 'step_distance') return;
 
     const interval = setInterval(() => {
       const video = videoRef.current;
@@ -269,10 +308,10 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
           setFacePosition(prev => ({ ...prev, detected: false }));
         }
       }
-    }, 120);
+    }, 150);
 
     return () => clearInterval(interval);
-  }, [cameraActive, manualDistanceOverride, deviceMode, calibFactor]);
+  }, [cameraActive, manualDistanceOverride, deviceMode, calibFactor, examMode, examStep]);
 
   // Lock target distance
   const calibrateToTarget = () => {
@@ -301,68 +340,105 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
     return dirs[Math.floor(Math.random() * dirs.length)];
   };
 
-  // Handle Snellen Answer for OD
+  // Handle Snellen Answer for OD (Right Eye)
   const handleOdAnswer = (dirSelected) => {
     const isCorrect = dirSelected === snellenDirection;
     if (isCorrect) {
-      setOdCorrectLevel(snellenLevelIdx + 1);
+      const passedLevel = snellenLevelIdx + 1;
+      setOdCorrectLevel(passedLevel);
+      setAnswerFeedback('correct');
+      playOpticalBeep('correct');
+      triggerHaptic(20);
+      setTimeout(() => setAnswerFeedback(null), 300);
+
       if (snellenLevelIdx < VISUAL_ACUITY_LEVELS.length - 1) {
         setSnellenLevelIdx(prev => prev + 1);
         setSnellenDirection(getRandomDir());
       } else {
-        // OD Finished at 6/6
-        setSnellenLevelIdx(0);
-        setSnellenDirection(getRandomDir());
-        setExamStep('step_snellen_os');
+        // OD Finished at Level 7 (6/6 Perfect!)
+        playOpticalBeep('complete');
+        triggerHaptic([30, 60, 30]);
+        setExamStep('step_od_complete');
       }
     } else {
-      // Stopped at current level
-      setSnellenLevelIdx(0);
-      setSnellenDirection(getRandomDir());
-      setExamStep('step_snellen_os');
+      // Stopped at current level: record highest level passed previously
+      setAnswerFeedback('wrong');
+      playOpticalBeep('shot');
+      triggerHaptic([40, 40, 40]);
+      setTimeout(() => setAnswerFeedback(null), 300);
+      setOdCorrectLevel(snellenLevelIdx);
+      setExamStep('step_od_complete');
     }
   };
 
   // "Can't see clearly" button for OD
   const handleOdCannotSee = () => {
-    setOdCorrectLevel(Math.max(1, snellenLevelIdx));
+    setOdCorrectLevel(snellenLevelIdx);
+    playOpticalBeep('shot');
+    triggerHaptic(30);
+    setExamStep('step_od_complete');
+  };
+
+  // Transition from OD to OS
+  const handleStartOsTest = () => {
     setSnellenLevelIdx(0);
     setSnellenDirection(getRandomDir());
     setExamStep('step_snellen_os');
+    playOpticalBeep('shot');
+    triggerHaptic(20);
   };
 
-  // Handle Snellen Answer for OS
+  // Handle Snellen Answer for OS (Left Eye)
   const handleOsAnswer = (dirSelected) => {
     const isCorrect = dirSelected === snellenDirection;
     if (isCorrect) {
-      setOsCorrectLevel(snellenLevelIdx + 1);
+      const passedLevel = snellenLevelIdx + 1;
+      setOsCorrectLevel(passedLevel);
+      setAnswerFeedback('correct');
+      playOpticalBeep('correct');
+      triggerHaptic(20);
+      setTimeout(() => setAnswerFeedback(null), 300);
+
       if (snellenLevelIdx < VISUAL_ACUITY_LEVELS.length - 1) {
         setSnellenLevelIdx(prev => prev + 1);
         setSnellenDirection(getRandomDir());
       } else {
-        // OS Finished at 6/6
-        setExamStep('step_duochrome');
+        // OS Finished at Level 7 (6/6 Perfect!)
+        playOpticalBeep('complete');
+        triggerHaptic([30, 60, 30]);
+        setExamStep('step_os_complete');
       }
     } else {
-      setExamStep('step_duochrome');
+      // Stopped at current level: record highest level passed previously
+      setAnswerFeedback('wrong');
+      playOpticalBeep('shot');
+      triggerHaptic([40, 40, 40]);
+      setTimeout(() => setAnswerFeedback(null), 300);
+      setOsCorrectLevel(snellenLevelIdx);
+      setExamStep('step_os_complete');
     }
   };
 
   // "Can't see clearly" button for OS
   const handleOsCannotSee = () => {
-    setOsCorrectLevel(Math.max(1, snellenLevelIdx));
-    setExamStep('step_duochrome');
+    setOsCorrectLevel(snellenLevelIdx);
+    playOpticalBeep('shot');
+    triggerHaptic(30);
+    setExamStep('step_os_complete');
   };
 
   // Calculate 100% Accurate Clinical Prescription
-  const calculateFinalClinicalRx = async () => {
+  const calculateFinalClinicalRx = async (overrideOd = null, overrideOs = null) => {
+    const finalOd = overrideOd !== null && overrideOd !== undefined ? overrideOd : odCorrectLevel;
+    const finalOs = overrideOs !== null && overrideOs !== undefined ? overrideOs : osCorrectLevel;
+
     const params = {
       patientName: patientName,
       userAge: parseInt(patientAge, 10) || 28,
       selectedDistanceCm: liveDistance,
       language: langKey,
-      snellenOdScore: odCorrectLevel,
-      snellenOsScore: osCorrectLevel,
+      snellenOdScore: finalOd,
+      snellenOsScore: finalOs,
       duochromePreference: duochromeSelected,
       astigmatismLine: astigmatismLine,
       astigmatismCyl: astigmatismLine !== 'equal' ? parseFloat(astigmatismSeverity) : 0.00,
@@ -379,17 +455,18 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
       setClinicalRx(res);
       setExamStep('step_rx_result');
       playOpticalBeep('complete');
+      triggerHaptic([40, 80, 40]);
 
       patientStorageService.saveRecord({
         patientName: currentUser?.name || patientName,
         age: currentUser?.age || patientAge,
         type: 'Eye Exam (Clinical 7-Step)',
-        symptoms: 'આંખના નંબર & વિઝન તપાસ (Snellen & Duochrome)',
+        symptoms: 'આંખના નંબર & વિઝન તપાસ (Snellen Tumbling E Chart)',
         urgency: 'GREEN',
         diagnosis: `આંખના નંબર: ${res.condition} (OD: ${res.average_rx?.rightEye?.sph}, OS: ${res.average_rx?.leftEye?.sph})`,
         details: {
-          od: `OD SPH ${res.average_rx?.rightEye?.sph}, CYL ${res.average_rx?.rightEye?.cyl}`,
-          os: `OS SPH ${res.average_rx?.leftEye?.sph}, CYL ${res.average_rx?.leftEye?.cyl}`,
+          od: `OD SPH ${res.average_rx?.rightEye?.sph}, CYL ${res.average_rx?.rightEye?.cyl}, Axis ${res.average_rx?.rightEye?.axis}, Acuity ${res.average_rx?.rightEye?.acuity}`,
+          os: `OS SPH ${res.average_rx?.leftEye?.sph}, CYL ${res.average_rx?.leftEye?.cyl}, Axis ${res.average_rx?.leftEye?.axis}, Acuity ${res.average_rx?.leftEye?.acuity}`,
           care: `${res.recommended_lens}. ${res.doctor_advice}`
         }
       }, currentUser);
@@ -773,7 +850,9 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
               { id: 'step_near', name: isGu ? '૭. નજીકના નંબર' : '7. Near ADD' },
               { id: 'step_rx_result', name: isGu ? '૮. પ્રિસ્ક્રિપ્શન' : '8. Final Rx' }
             ].map((st, idx) => {
-              const active = examStep === st.id;
+              const active = examStep === st.id ||
+                (st.id === 'step_snellen_od' && examStep === 'step_od_complete') ||
+                (st.id === 'step_snellen_os' && examStep === 'step_os_complete');
               return (
                 <div
                   key={st.id}
@@ -1108,30 +1187,53 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '20px',
+                marginBottom: '16px',
                 background: '#F0FAF5',
-                padding: '12px 20px',
-                borderRadius: '12px'
+                padding: '12px 18px',
+                borderRadius: '14px',
+                flexWrap: 'wrap',
+                gap: '8px'
               }}>
                 <span style={{ fontSize: '15px', fontWeight: 900, color: '#009F70', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Eye size={18} />
-                  {isGu ? '👁️ જમણી આંખ (OD) ટેસ્ટ - ડાબી આંખ હથેળીથી ઢાંકો' : '👁️ Right Eye (OD) - Cover Left Eye'}
+                  <Eye size={20} />
+                  {isGu ? '👁️ પગલું ૧: જમણી આંખ (OD) ટેસ્ટ' : '👁️ Step 1: Right Eye (OD) Test'}
                 </span>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A1128' }}>
-                  લેવલ {snellenLevelIdx + 1} / 7: {currentLevelData.snellen} ({currentLevelData.labelGu})
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A1128', background: '#FFFFFF', padding: '4px 12px', borderRadius: '8px', border: '1px solid #D3F2E3' }}>
+                  {isGu ? `લેવલ ${snellenLevelIdx + 1} / 7: ${currentLevelData.snellen}` : `Level ${snellenLevelIdx + 1} / 7: ${currentLevelData.snellen}`} ({currentLevelData.labelGu})
                 </span>
+              </div>
+
+              {/* Eye Covering Instruction Banner */}
+              <div style={{
+                background: '#FEF3C7',
+                border: '1px solid #F59E0B',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                marginBottom: '16px',
+                fontSize: '13px',
+                fontWeight: 700,
+                color: '#92400E',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                textAlign: 'center'
+              }}>
+                <span>🖐️ {isGu ? 'ડાબી આંખ હથેળીથી ઢાંકો અને માત્ર જમણી આંખથી જુઓ' : 'Cover Left Eye with palm, look with Right Eye'} 👁️</span>
               </div>
 
               {/* Tumbling E Target Box */}
               <div style={{
-                height: '200px',
+                height: '190px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: '#F8FCF9',
                 borderRadius: '16px',
-                border: '2px dashed #00C48C',
-                marginBottom: '20px'
+                border: answerFeedback === 'correct' ? '2.5px solid #00C48C' : (answerFeedback === 'wrong' ? '2.5px solid #EF4444' : '2px dashed #00C48C'),
+                marginBottom: '16px',
+                transition: 'border 0.2s ease',
+                position: 'relative'
               }}>
                 <div style={{
                   fontSize: `${currentLevelData.sizePx}px`,
@@ -1140,111 +1242,238 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                   transform: rotMap[snellenDirection],
                   transition: 'transform 0.15s ease-out',
                   userSelect: 'none',
-                  color: '#0A1128'
+                  color: '#0A1128',
+                  lineHeight: 1
                 }}>
                   E
                 </div>
               </div>
 
               {/* Directional Pad */}
-              <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <div style={{ textAlign: 'center', marginBottom: '14px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 800, color: '#334155', marginBottom: '12px' }}>
-                  {isGu ? 'અક્ષર "E" ના ખુલ્લા પાંખિયા કઈ દિશામાં છે તે સિલેક્ટ કરો:' : 'Which direction are the prongs of "E" pointing?'}
+                  {isGu ? 'અક્ષર "E" ના ખુલ્લા પાંખિયા કઈ દિશામાં છે તે દબાવો:' : 'Tap the direction the prongs of "E" point:'}
                 </div>
 
-                <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                {/* 2x2 Big Touch-Friendly Keypad */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px',
+                  maxWidth: '340px',
+                  margin: '0 auto 16px auto'
+                }}>
                   <button
                     onClick={() => handleOdAnswer('UP')}
                     style={{
                       background: '#0A1128',
                       color: '#FFFFFF',
                       border: 'none',
-                      width: '80px',
-                      height: '46px',
-                      borderRadius: '12px',
+                      height: '54px',
+                      borderRadius: '14px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
                     }}
                   >
                     <ArrowUp size={22} />
+                    <span>{isGu ? 'ઉપર (UP)' : 'UP'}</span>
                   </button>
-
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => handleOdAnswer('LEFT')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowLeft size={22} />
-                    </button>
-                    <button
-                      onClick={() => handleOdAnswer('DOWN')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowDown size={22} />
-                    </button>
-                    <button
-                      onClick={() => handleOdAnswer('RIGHT')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowRight size={22} />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleOdAnswer('DOWN')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowDown size={22} />
+                    <span>{isGu ? 'નીચે (DOWN)' : 'DOWN'}</span>
+                  </button>
+                  <button
+                    onClick={() => handleOdAnswer('LEFT')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowLeft size={22} />
+                    <span>{isGu ? 'ડાબે (LEFT)' : 'LEFT'}</span>
+                  </button>
+                  <button
+                    onClick={() => handleOdAnswer('RIGHT')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowRight size={22} />
+                    <span>{isGu ? 'જમણે (RIGHT)' : 'RIGHT'}</span>
+                  </button>
                 </div>
-              </div>
 
-              {/* Cannot See Button */}
-              <div style={{ textAlign: 'center' }}>
+                {/* Cannot See Button */}
                 <button
                   onClick={handleOdCannotSee}
                   style={{
-                    background: '#F1F5F9',
-                    color: '#64748B',
-                    border: '1px solid #CBD5E1',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1.5px solid #FCA5A5',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    width: '100%',
+                    maxWidth: '340px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    touchAction: 'manipulation'
                   }}
                 >
-                  {isGu ? '❌ આ અક્ષર ઝાંખો / અસ્પષ્ટ દેખાય છે (આગળની આંખ પર જાઓ)' : '❌ Cannot read clearly (Proceed to Left Eye)'}
+                  <EyeOff size={16} />
+                  {isGu ? '❌ આ અક્ષર ઝાંખો દેખાય છે / વંચાતો નથી' : '❌ Cannot read clearly (Proceed to Left Eye)'}
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* STEP 3.5: OD COMPLETED TRANSITION MODAL */}
+          {examStep === 'step_od_complete' && (
+            <div style={{
+              background: '#FFFFFF',
+              border: '2px solid #00C48C',
+              borderRadius: '24px',
+              padding: '28px 24px',
+              boxShadow: '0 10px 30px rgba(0, 196, 140, 0.15)',
+              textAlign: 'center',
+              animation: 'fadeIn 0.25s ease-out'
+            }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                background: '#E6FDF3',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px auto',
+                border: '2px solid #00C48C'
+              }}>
+                <CheckCircle2 size={36} color="#009F70" />
+              </div>
+
+              <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0A1128', margin: '0 0 8px 0' }}>
+                {isGu ? '🎉 જમણી આંખ (Right Eye - OD) નું ચેકિંગ સફળતાપૂર્વક પૂરું થયું!' : '🎉 Right Eye (OD) Exam Completed!'}
+              </h3>
+
+              {/* Result badge for OD */}
+              <div style={{
+                background: '#F0FAF5',
+                border: '1.5px solid #00C48C',
+                borderRadius: '16px',
+                padding: '14px 20px',
+                maxWidth: '420px',
+                margin: '0 auto 20px auto'
+              }}>
+                <div style={{ fontSize: '13px', color: '#64748B', fontWeight: 700, marginBottom: '4px' }}>
+                  {isGu ? 'તમારી જમણી આંખ (OD) નું માપેલું વિઝન:' : 'Right Eye Measured Visual Acuity:'}
+                </div>
+                <div style={{ fontSize: '22px', fontWeight: 900, color: '#009F70' }}>
+                  {odCorrectLevel >= 7 && (isGu ? '૬/૬ (સામાન્ય ૨૦/૨૦ ઉત્કૃષ્ટ દ્રષ્ટિ)' : '6/6 (20/20 Perfect Vision)')}
+                  {odCorrectLevel === 6 && (isGu ? '૬/૯ (હળવા નંબર - ૨૦/૩૦)' : '6/9 (20/30 Mild)')}
+                  {odCorrectLevel === 5 && (isGu ? '૬/૧૨ (મધ્યમ ઝાંખપ - ૨૦/૪૦)' : '6/12 (20/40)')}
+                  {odCorrectLevel === 4 && (isGu ? '૬/૧૮ (૨૦/૬૦)' : '6/18 (20/60)')}
+                  {odCorrectLevel === 3 && (isGu ? '૬/૨૪ (૨૦/૮૦)' : '6/24 (20/80)')}
+                  {odCorrectLevel === 2 && (isGu ? '૬/૩૬ (૨૦/૧૨૦)' : '6/36 (20/120)')}
+                  {odCorrectLevel === 1 && (isGu ? '૬/૬૦ (૨૦/૨૦૦)' : '6/60 (20/200)')}
+                  {odCorrectLevel === 0 && (isGu ? '< ૬/૬૦ (તીવ્ર અસ્પષ્ટતા)' : '< 6/60 (Severe Blur)')}
+                </div>
+              </div>
+
+              {/* Next Step Instruction */}
+              <div style={{
+                background: '#F0F9FF',
+                border: '1.5px dashed #0284C7',
+                borderRadius: '16px',
+                padding: '16px 20px',
+                maxWidth: '420px',
+                margin: '0 auto 24px auto'
+              }}>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#0284C7', marginBottom: '6px' }}>
+                  {isGu ? '👉 હવે ડાબી આંખ (Left Eye - OS) નો વારો:' : '👉 Next: Left Eye (OS) Exam:'}
+                </div>
+                <p style={{ margin: 0, fontSize: '14px', color: '#1E293B', fontWeight: 600, lineHeight: 1.5 }}>
+                  {isGu
+                    ? 'કૃપા કરીને તમારી ડાબી આંખ ખોલો અને જમણી આંખને હથેળીથી ઢાંકો. સ્ક્રીન પર દેખાતા "E" અક્ષરના પાંખિયા કઈ દિશામાં છે તે ઓળખો.'
+                    : 'Now uncover your Left eye and cover your Right eye with your palm. Identify the direction of the "E" prongs.'}
+                </p>
+              </div>
+
+              <button
+                onClick={handleStartOsTest}
+                style={{
+                  background: '#0284C7',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '14px 32px',
+                  borderRadius: '14px',
+                  fontWeight: 900,
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(2, 132, 199, 0.3)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  touchAction: 'manipulation'
+                }}
+              >
+                <Eye size={20} />
+                {isGu ? 'ડાબી આંખ (OS) નું ચેકિંગ શરૂ કરો →' : 'Start Left Eye (OS) Test →'}
+              </button>
             </div>
           )}
 
@@ -1261,29 +1490,53 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '20px',
+                marginBottom: '16px',
                 background: '#F0F9FF',
-                padding: '12px 20px',
-                borderRadius: '12px'
+                padding: '12px 18px',
+                borderRadius: '14px',
+                flexWrap: 'wrap',
+                gap: '8px'
               }}>
                 <span style={{ fontSize: '15px', fontWeight: 900, color: '#0284C7', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Eye size={18} />
-                  {isGu ? '👁️ ડાબી આંખ (OS) ટેસ્ટ - જમણી આંખ હથેળીથી ઢાંકો' : '👁️ Left Eye (OS) - Cover Right Eye'}
+                  <Eye size={20} />
+                  {isGu ? '👁️ પગલું ૨: ડાબી આંખ (OS) ટેસ્ટ' : '👁️ Step 2: Left Eye (OS) Test'}
                 </span>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A1128' }}>
-                  લેવલ {snellenLevelIdx + 1} / 7: {currentLevelData.snellen} ({currentLevelData.labelGu})
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#0A1128', background: '#FFFFFF', padding: '4px 12px', borderRadius: '8px', border: '1px solid #BAE6FD' }}>
+                  {isGu ? `લેવલ ${snellenLevelIdx + 1} / 7: ${currentLevelData.snellen}` : `Level ${snellenLevelIdx + 1} / 7: ${currentLevelData.snellen}`} ({currentLevelData.labelGu})
                 </span>
               </div>
 
+              {/* Eye Covering Instruction Banner */}
               <div style={{
-                height: '200px',
+                background: '#FEF3C7',
+                border: '1px solid #F59E0B',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                marginBottom: '16px',
+                fontSize: '13px',
+                fontWeight: 700,
+                color: '#92400E',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                textAlign: 'center'
+              }}>
+                <span>🖐️ {isGu ? 'જમણી આંખ હથેળીથી ઢાંકો અને માત્ર ડાબી આંખથી જુઓ' : 'Cover Right Eye with palm, look with Left Eye'} 👁️</span>
+              </div>
+
+              {/* Tumbling E Target Box */}
+              <div style={{
+                height: '190px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: '#F0F9FF',
                 borderRadius: '16px',
-                border: '2px dashed #0284C7',
-                marginBottom: '20px'
+                border: answerFeedback === 'correct' ? '2.5px solid #00C48C' : (answerFeedback === 'wrong' ? '2.5px solid #EF4444' : '2px dashed #0284C7'),
+                marginBottom: '16px',
+                transition: 'border 0.2s ease',
+                position: 'relative'
               }}>
                 <div style={{
                   fontSize: `${currentLevelData.sizePx}px`,
@@ -1292,107 +1545,265 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                   transform: rotMap[snellenDirection],
                   transition: 'transform 0.15s ease-out',
                   userSelect: 'none',
-                  color: '#0A1128'
+                  color: '#0A1128',
+                  lineHeight: 1
                 }}>
                   E
                 </div>
               </div>
 
-              <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              {/* Directional Pad */}
+              <div style={{ textAlign: 'center', marginBottom: '14px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 800, color: '#334155', marginBottom: '12px' }}>
-                  {isGu ? 'અક્ષર "E" ના ખુલ્લા પાંખિયા કઈ દિશામાં છે તે સિલેક્ટ કરો:' : 'Which direction are the prongs of "E" pointing?'}
+                  {isGu ? 'અક્ષર "E" ના ખુલ્લા પાંખિયા કઈ દિશામાં છે તે દબાવો:' : 'Tap the direction the prongs of "E" point:'}
                 </div>
 
-                <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                {/* 2x2 Big Touch-Friendly Keypad */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px',
+                  maxWidth: '340px',
+                  margin: '0 auto 16px auto'
+                }}>
                   <button
                     onClick={() => handleOsAnswer('UP')}
                     style={{
                       background: '#0A1128',
                       color: '#FFFFFF',
                       border: 'none',
-                      width: '80px',
-                      height: '46px',
-                      borderRadius: '12px',
+                      height: '54px',
+                      borderRadius: '14px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
                     }}
                   >
                     <ArrowUp size={22} />
+                    <span>{isGu ? 'ઉપર (UP)' : 'UP'}</span>
                   </button>
+                  <button
+                    onClick={() => handleOsAnswer('DOWN')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowDown size={22} />
+                    <span>{isGu ? 'નીચે (DOWN)' : 'DOWN'}</span>
+                  </button>
+                  <button
+                    onClick={() => handleOsAnswer('LEFT')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowLeft size={22} />
+                    <span>{isGu ? 'ડાબે (LEFT)' : 'LEFT'}</span>
+                  </button>
+                  <button
+                    onClick={() => handleOsAnswer('RIGHT')}
+                    style={{
+                      background: '#0A1128',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      height: '54px',
+                      borderRadius: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      fontWeight: 800,
+                      fontSize: '15px',
+                      boxShadow: '0 4px 10px rgba(10, 17, 40, 0.2)',
+                      touchAction: 'manipulation'
+                    }}
+                  >
+                    <ArrowRight size={22} />
+                    <span>{isGu ? 'જમણે (RIGHT)' : 'RIGHT'}</span>
+                  </button>
+                </div>
 
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => handleOsAnswer('LEFT')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowLeft size={22} />
-                    </button>
-                    <button
-                      onClick={() => handleOsAnswer('DOWN')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowDown size={22} />
-                    </button>
-                    <button
-                      onClick={() => handleOsAnswer('RIGHT')}
-                      style={{
-                        background: '#0A1128',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        width: '80px',
-                        height: '46px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <ArrowRight size={22} />
-                    </button>
+                {/* Cannot See Button */}
+                <button
+                  onClick={handleOsCannotSee}
+                  style={{
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1.5px solid #FCA5A5',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    width: '100%',
+                    maxWidth: '340px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    touchAction: 'manipulation'
+                  }}
+                >
+                  <EyeOff size={16} />
+                  {isGu ? '❌ આ અક્ષર ઝાંખો દેખાય છે / વંચાતો નથી' : '❌ Cannot read clearly (Finish Test)'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4.5: BOTH EYES COMPLETED MILESTONE */}
+          {examStep === 'step_os_complete' && (
+            <div style={{
+              background: '#FFFFFF',
+              border: '2px solid #00C48C',
+              borderRadius: '24px',
+              padding: '28px 24px',
+              boxShadow: '0 10px 30px rgba(0, 196, 140, 0.15)',
+              textAlign: 'center',
+              animation: 'fadeIn 0.25s ease-out'
+            }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                background: '#E6FDF3',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px auto',
+                border: '2px solid #00C48C'
+              }}>
+                <Sparkles size={36} color="#009F70" />
+              </div>
+
+              <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0A1128', margin: '0 0 6px 0' }}>
+                {isGu ? '🎉 બંને આંખોનું "E" ચેકિંગ ૧૦૦% પૂરું થયું!' : '🎉 Both Eyes Vision Test Complete!'}
+              </h3>
+              <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: '#64748B' }}>
+                {isGu
+                  ? 'જમણી અને ડાબી બંને આંખનું સચોટ પરીક્ષણ થઈ ગયું છે. હવે તમે સીધા સચોટ નંબર જોઈ શકો છો અથવા ડ્યુઓક્રોમથી ફાઇન ટ્યુન કરી શકો છો.'
+                  : 'Both eyes calibrated according to ISO 8596 Snellen standards.'}
+              </p>
+
+              {/* Dual Eye Summary Card */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '14px',
+                maxWidth: '520px',
+                margin: '0 auto 24px auto'
+              }}>
+                {/* OD Card */}
+                <div style={{
+                  background: '#F0FAF5',
+                  border: '1.5px solid #00C48C',
+                  borderRadius: '16px',
+                  padding: '14px 18px',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#009F70', marginBottom: '4px' }}>
+                    👁️ OD (જમણી આંખ / Right)
+                  </div>
+                  <div style={{ fontSize: '20px', fontWeight: 900, color: '#0A1128' }}>
+                    {odCorrectLevel >= 7 ? '૬/૬ (20/20)' : (odCorrectLevel === 6 ? '૬/૯ (20/30)' : (odCorrectLevel === 5 ? '૬/૧૨' : (odCorrectLevel === 4 ? '૬/૧૮' : (odCorrectLevel === 3 ? '૬/૨૪' : (odCorrectLevel === 2 ? '૬/૩૬' : (odCorrectLevel === 1 ? '૬/૬૦' : '< ૬/૬૦'))))))}
+                  </div>
+                </div>
+
+                {/* OS Card */}
+                <div style={{
+                  background: '#F0F9FF',
+                  border: '1.5px solid #0284C7',
+                  borderRadius: '16px',
+                  padding: '14px 18px',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#0284C7', marginBottom: '4px' }}>
+                    👁️ OS (ડાબી આંખ / Left)
+                  </div>
+                  <div style={{ fontSize: '20px', fontWeight: 900, color: '#0A1128' }}>
+                    {osCorrectLevel >= 7 ? '૬/૬ (20/20)' : (osCorrectLevel === 6 ? '૬/૯ (20/30)' : (osCorrectLevel === 5 ? '૬/૧૨' : (osCorrectLevel === 4 ? '૬/૧૮' : (osCorrectLevel === 3 ? '૬/૨૪' : (osCorrectLevel === 2 ? '૬/૩૬' : (osCorrectLevel === 1 ? '૬/૬૦' : '< ૬/૬૦'))))))}
                   </div>
                 </div>
               </div>
 
-              <div style={{ textAlign: 'center' }}>
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '440px', margin: '0 auto' }}>
                 <button
-                  onClick={handleOsCannotSee}
+                  onClick={() => calculateFinalClinicalRx()}
                   style={{
-                    background: '#F1F5F9',
-                    color: '#64748B',
-                    border: '1px solid #CBD5E1',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
+                    background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '16px 24px',
+                    borderRadius: '14px',
+                    fontWeight: 900,
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 20px rgba(0, 196, 140, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    touchAction: 'manipulation'
                   }}
                 >
-                  {isGu ? '❌ આ અક્ષર ઝાંખો / અસ્પષ્ટ દેખાય છે (ડ્યુઓક્રોમ ટેસ્ટ પર જાઓ)' : '❌ Cannot read clearly (Proceed to Duochrome)'}
+                  <Sparkles size={20} />
+                  {isGu ? '🎉 સીધા ૧૦૦% સાચા આંખના નંબર (Prescription Slip) જુઓ' : '🎉 View 100% Authentic Prescription Slip'}
+                </button>
+
+                <button
+                  onClick={() => setExamStep('step_duochrome')}
+                  style={{
+                    background: '#F8FAFC',
+                    color: '#334155',
+                    border: '1.5px solid #CBD5E1',
+                    padding: '12px 20px',
+                    borderRadius: '14px',
+                    fontWeight: 800,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    touchAction: 'manipulation'
+                  }}
+                >
+                  <Sliders size={16} />
+                  {isGu ? 'વધુ વિગતવાર રેડ-ગ્રીન અને એસ્ટિગ્મેટિઝમ તપાસ કરો →' : 'Advanced: Red-Green & Astigmatism Fine Tuning →'}
                 </button>
               </div>
             </div>
