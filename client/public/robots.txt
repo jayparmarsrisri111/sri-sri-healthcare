@@ -1,5 +1,7 @@
 # ====================================================================
-# Robots.txt for Sri Sri ❤️ HealthCare (https://srisrihealthcare.netlify.app & https://www.srisri111.com)
+# Robots.txt for Sri Sri ❤️ HealthCare
+# Domains: https://srisrihealthcare.netlify.app & https://www.srisri111.com
+# Launch Date: 11-10-2026 (Shubh Muhurat)
 # ====================================================================
 
 User-agent: *
@@ -16,6 +18,10 @@ Allow: /
 User-agent: Googlebot-Mobile
 Allow: /
 
+User-agent: Googlebot-Image
+Allow: /logo.png
+Allow: /assets/
+
 User-agent: Bingbot
 Allow: /
 
@@ -31,6 +37,18 @@ Allow: /
 User-agent: YandexBot
 Allow: /
 
-# Sitemap Index
+User-agent: Applebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Sitemap Index Files
 Sitemap: https://srisrihealthcare.netlify.app/sitemap.xml
 Sitemap: https://www.srisri111.com/sitemap.xml

@@ -32,11 +32,17 @@ import { PWAInstallModal } from './components/PWAInstallModal';
 
 import { getTranslation, applyGlobalLanguage } from './services/languageService';
 import { authService } from './services/authService';
+import { updateSEOMeta } from './services/seoService';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser());
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) return tabParam;
+    }
     const user = authService.getCurrentUser();
     if (user?.role === 'doctor') return 'doctorPortal';
     if (user?.role === 'admin') return 'adminHub';
@@ -44,6 +50,11 @@ export default function App() {
   });
 
   const [currentLang, setLangState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get('lang');
+      if (langParam) return langParam;
+    }
     return localStorage.getItem('preferred_language') || 'gu';
   });
 
@@ -51,6 +62,10 @@ export default function App() {
     setLangState(lang);
     applyGlobalLanguage(lang);
   };
+
+  useEffect(() => {
+    updateSEOMeta(activeTab, currentLang);
+  }, [activeTab, currentLang]);
 
   const [selectedModel, setSelectedModel] = useState('auto');
   const [liveBpm, setLiveBpm] = useState(74);
