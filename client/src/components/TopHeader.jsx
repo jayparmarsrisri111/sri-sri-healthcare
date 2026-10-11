@@ -1,6 +1,41 @@
 import React from 'react';
-import { PhoneCall, Globe, Cpu, Smartphone, LogOut, LogIn, Menu } from 'lucide-react';
+import { PhoneCall, Globe, Cpu, Smartphone, LogOut, LogIn, Menu, RefreshCw } from 'lucide-react';
 import { SUPPORTED_LANGUAGES, getTranslation } from '../services/languageService';
+
+// Format user name cleanly without awkward parenthetical cutoffs (e.g. "રામજીભાઈ પટેલ (Ramjib...")
+const formatUserName = (fullName, lang) => {
+  if (!fullName) return '';
+  const match = fullName.match(/^(.*?)\s*\((.*?)\)$/);
+  if (match) {
+    const gujPart = match[1].trim();
+    const engPart = match[2].trim();
+    return lang === 'en' ? engPart : gujPart;
+  }
+  return fullName;
+};
+
+// Format location / designation subtitle cleanly
+const formatUserLocation = (villageOrSpec, role, lang) => {
+  if (role === 'doctor') {
+    return lang === 'gu' ? 'તબીબ (ડૉક્ટર)' : 'Medical Specialist';
+  }
+  if (role === 'admin') {
+    return lang === 'gu' ? 'મુખ્ય પ્રશાસક' : 'Chief Health Admin';
+  }
+  if (!villageOrSpec) return lang === 'gu' ? 'દર્દી' : 'Patient';
+  const match = villageOrSpec.match(/^(.*?)\s*\((.*?)\)$/);
+  if (match) {
+    return lang === 'en' ? match[2].trim() : match[1].trim();
+  }
+  return villageOrSpec;
+};
+
+// Localized role badge label with white-space nowrap guarantee
+const getRoleBadgeLabel = (role, lang) => {
+  if (role === 'doctor') return lang === 'gu' ? 'તબીબ' : 'DOCTOR';
+  if (role === 'admin') return lang === 'gu' ? 'એડમિન' : 'ADMIN';
+  return lang === 'gu' ? 'દર્દી' : 'PATIENT';
+};
 
 export const TopHeader = ({
   currentLang,
@@ -18,6 +53,7 @@ export const TopHeader = ({
 }) => {
   const currentLangObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang) || SUPPORTED_LANGUAGES[0];
   const t = getTranslation(currentLang);
+
 
   return (
     <header className="top-header">
@@ -149,73 +185,55 @@ export const TopHeader = ({
           <span className="header-btn-label">({t.worldLang})</span>
         </button>
 
-        {/* User Account & Role Badge Pill */}
+        {/* User Account & Role Badge Pill (100% Responsive on All Screen Sizes) */}
         {currentUser ? (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: currentUser.role === 'doctor' ? '#F0F9FF' : currentUser.role === 'admin' ? '#FAF5FF' : '#F0FDF4',
-            border: `1.5px solid ${currentUser.role === 'doctor' ? '#7DD3FC' : currentUser.role === 'admin' ? '#D8B4FE' : '#86EFAC'}`,
-            padding: '6px 12px',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            flexShrink: 0
-          }}>
-            <span style={{ fontSize: '18px' }}>{currentUser.avatar || (currentUser.role === 'doctor' ? '👨‍⚕️' : currentUser.role === 'admin' ? '🛡️' : '👨‍🦰')}</span>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {currentUser.name}
+          <div
+            className="header-user-pill"
+            style={{
+              background: currentUser.role === 'doctor' ? '#F0F9FF' : currentUser.role === 'admin' ? '#FAF5FF' : '#F0FDF4',
+              border: `1.5px solid ${currentUser.role === 'doctor' ? '#7DD3FC' : currentUser.role === 'admin' ? '#D8B4FE' : '#86EFAC'}`,
+            }}
+          >
+            <span className="header-user-avatar">
+              {currentUser.avatar || (currentUser.role === 'doctor' ? '👨‍⚕️' : currentUser.role === 'admin' ? '🛡️' : '👨‍🦰')}
+            </span>
+
+            <div
+              className="header-user-info"
+              onClick={onOpenAuthModal}
+              title={`${currentUser.name} - ${currentUser.village || currentUser.specialization || ''} (${t.switchAccount || 'Switch Profile'})`}
+            >
+              <div className="header-user-row">
+                <span className="header-user-name" title={currentUser.name}>
+                  {formatUserName(currentUser.name, currentLang)}
                 </span>
-                <span style={{
-                  fontSize: '9px',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  padding: '1px 6px',
-                  borderRadius: '6px',
-                  background: currentUser.role === 'doctor' ? '#0284C7' : currentUser.role === 'admin' ? '#7C3AED' : '#00C48C',
-                  color: '#FFFFFF'
-                }}>
-                  {currentUser.role}
+                <span
+                  className="header-user-role-badge"
+                  style={{
+                    background: currentUser.role === 'doctor' ? '#0284C7' : currentUser.role === 'admin' ? '#7C3AED' : '#00C48C'
+                  }}
+                >
+                  {getRoleBadgeLabel(currentUser.role, currentLang)}
                 </span>
               </div>
-              <span style={{ fontSize: '10px', color: '#64748B' }}>
-                {currentUser.role === 'doctor' ? (currentUser.specialization ? currentUser.specialization.slice(0, 18) + '...' : 'Doctor') : currentUser.role === 'admin' ? 'Master Admin' : (currentUser.village || 'Patient')}
+              <span className="header-user-subtext" title={currentUser.village || currentUser.specialization || ''}>
+                {formatUserLocation(currentUser.village || currentUser.specialization, currentUser.role, currentLang)}
               </span>
             </div>
 
             <button
               onClick={onOpenAuthModal}
               title={t.switchAccount || 'Switch Account'}
-              style={{
-                background: '#FFFFFF',
-                border: '1px solid #CBD5E1',
-                borderRadius: '8px',
-                padding: '4px 8px',
-                fontSize: '11px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                color: '#334155',
-                marginLeft: '4px'
-              }}
+              className="header-user-switch-btn"
             >
-              {t.switchAccount || 'Switch'}
+              <RefreshCw size={12} />
+              <span className="header-btn-label-desktop">{t.switchAccount || 'Switch'}</span>
             </button>
 
             <button
               onClick={onLogout}
               title={t.signOut || 'Sign Out'}
-              style={{
-                background: '#FEE2E2',
-                border: '1px solid #FCA5A5',
-                borderRadius: '8px',
-                padding: '4px 6px',
-                cursor: 'pointer',
-                color: '#DC2626',
-                display: 'flex',
-                alignItems: 'center'
-              }}
+              className="header-user-logout-btn"
             >
               <LogOut size={13} />
             </button>

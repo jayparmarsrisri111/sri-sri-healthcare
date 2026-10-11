@@ -284,10 +284,11 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .header-tool-btn {
@@ -311,6 +312,122 @@ body {
 .header-btn-label {
   display: inline;
 }
+
+/* User Account & Role Badge Pill (100% Adaptive & Responsive) */
+.header-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.header-user-avatar {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.header-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.header-user-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.header-user-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  line-height: 1.2;
+}
+
+.header-user-role-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 1.5px 6px;
+  border-radius: 6px;
+  color: #FFFFFF;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.header-user-subtext {
+  font-size: 10px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.header-user-switch-btn {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+  margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.header-user-switch-btn:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.header-user-logout-btn {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  border-radius: 8px;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: #DC2626;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.header-user-logout-btn:hover {
+  background: #FECACA;
+}
+
+.header-btn-label-desktop {
+  display: inline;
+}
+
 
 .content-body {
   padding: 24px 32px;
@@ -955,6 +1072,15 @@ textarea:focus, select:focus, input[type="text"]:focus {
   .header-tool-btn .header-btn-label {
     display: none;
   }
+  .header-btn-label-desktop {
+    display: none;
+  }
+  .header-user-name {
+    max-width: 140px;
+  }
+  .header-user-subtext {
+    max-width: 130px;
+  }
   .header-tool-btn {
     padding: 8px 10px;
   }
@@ -1146,6 +1272,25 @@ textarea:focus, select:focus, input[type="text"]:focus {
     display: none;
   }
 
+  /* Responsive Header User Profile Pill on Mobile */
+  .header-user-pill {
+    padding: 4px 7px;
+    gap: 6px;
+  }
+  .header-user-name {
+    max-width: 105px;
+    font-size: 11.5px;
+  }
+  .header-user-subtext {
+    display: none; /* Hide subtitle on mobile so name & badge fit 100% cleanly without clipping */
+  }
+  .header-user-switch-btn {
+    padding: 4px 6px;
+  }
+  .header-user-logout-btn {
+    padding: 4px 6px;
+  }
+
   .medical-card {
     padding: 16px 12px;
     border-radius: 18px;
@@ -1210,6 +1355,26 @@ textarea:focus, select:focus, input[type="text"]:focus {
     padding: 6px 10px !important;
     font-size: 11px !important;
     gap: 4px !important;
+  }
+
+  .header-user-pill {
+    padding: 3px 5px !important;
+    gap: 4px !important;
+  }
+  .header-user-avatar {
+    font-size: 15px !important;
+  }
+  .header-user-name {
+    max-width: 80px !important;
+    font-size: 10.5px !important;
+  }
+  .header-user-role-badge {
+    font-size: 8px !important;
+    padding: 1px 3.5px !important;
+  }
+  .header-user-switch-btn,
+  .header-user-logout-btn {
+    padding: 3px 4px !important;
   }
 
   .content-body {
