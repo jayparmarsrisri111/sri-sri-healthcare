@@ -96,7 +96,7 @@ export const TopHeader = ({
 
         <button
           onClick={onSOSClick}
-          className="header-hide-mobile"
+          className="header-hide-tablet"
           style={{
             backgroundColor: '#FFFFFF',
             color: '#EF4444',
@@ -116,7 +116,6 @@ export const TopHeader = ({
 
       {/* Right: AI Router, PWA Install, Language Selector & User Profile */}
       <div className="header-right">
-        {/* Multi-Model AI Router Dropdown */}
         {/* Multi-Model AI Router Dropdown (Structured, Responsive & Clean) */}
         <div className="header-ai-router header-hide-mobile">
           <Cpu size={15} color="#00C48C" style={{ flexShrink: 0 }} />
@@ -139,7 +138,7 @@ export const TopHeader = ({
         {/* PWA Install Button */}
         <button
           onClick={onInstallClick}
-          className="header-tool-btn header-hide-mobile"
+          className="header-tool-btn header-hide-tablet"
           style={{
             background: '#E0F8EE',
             color: '#009F70',

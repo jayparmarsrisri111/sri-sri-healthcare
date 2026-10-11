@@ -287,8 +287,8 @@ body {
   gap: 8px;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  flex-shrink: 1;
-  min-width: 0;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Multi-Model AI Router Dropdown */
@@ -1136,6 +1136,13 @@ textarea:focus, select:focus, input[type="text"]:focus {
   .quick-ribbon-btn {
     flex: 0 0 auto;
     min-width: 155px;
+  }
+}
+
+/* Screen width <= 1150px (Tablets, Split-screen & Smaller Laptops) */
+@media (max-width: 1150px) {
+  .header-hide-tablet {
+    display: none !important;
   }
 }
 
