@@ -1,13 +1,13 @@
 /**
  * Sri Sri ❤️ HealthCare - Automated SEO & Instant Indexing Submitter
  * Submits URLs to Google, Bing, Yahoo, Yandex via IndexNow API + Sitemaps
- * Configured for Live Domain: https://srisrihealthcare.netlify.app & https://www.srisri111.com
+ * Configured for Live Domain: https://srisrihealthcare111.netlify.app & https://www.srisri111.com
  * Official Launch Date: 11-10-2026 (Shubh Muhurat)
  */
 
 const https = require('https');
 
-const HOST_NETLIFY = 'srisrihealthcare.netlify.app';
+const HOST_NETLIFY = 'srisrihealthcare111.netlify.app';
 const HOST_CUSTOM = 'www.srisri111.com';
 const KEY = 'e819b024479549cca96fb351658e4bb3';
 

@@ -76,7 +76,7 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
   if (typeof document === 'undefined') return;
 
   const seo = TAB_SEO_DATA[tab] || TAB_SEO_DATA.triage;
-  const canonicalBase = 'https://srisrihealthcare.netlify.app';
+  const canonicalBase = 'https://srisrihealthcare111.netlify.app';
   const targetUrl = tab && tab !== 'triage' ? `${canonicalBase}/?tab=${tab}` : `${canonicalBase}/`;
 
   // Update Document Title
@@ -91,7 +91,7 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
   // Update Meta Keywords
   let metaKeywords = document.querySelector('meta[name="keywords"]');
   if (metaKeywords && seo.keywords) {
-    metaKeywords.setAttribute('content', `sri sri healthcare, srisrihealthcare.netlify.app, ${seo.keywords}`);
+    metaKeywords.setAttribute('content', `sri sri healthcare, srisrihealthcare111.netlify.app, srisrihealthcare.netlify.app, ${seo.keywords}`);
   }
 
   // Update Canonical Link

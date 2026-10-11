@@ -6,94 +6,94 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
   <!-- ====================================================================
-       NETLIFY LIVE CLOUD DOMAIN (https://srisrihealthcare.netlify.app)
+       NETLIFY LIVE CLOUD DOMAIN (https://srisrihealthcare111.netlify.app)
        Official Shubh Muhurat Date: 11/10/2026
        ==================================================================== -->
   <url>
-    <loc>https://srisrihealthcare.netlify.app/</loc>
+    <loc>https://srisrihealthcare111.netlify.app/</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
     <image:image>
-      <image:loc>https://srisrihealthcare.netlify.app/logo.png</image:loc>
+      <image:loc>https://srisrihealthcare111.netlify.app/logo.png</image:loc>
       <image:title>Sri Sri HealthCare AI Clinical Platform Logo</image:title>
       <image:caption>૨૪ કલાક AI મેડિકલ ડૉક્ટર, જન ઔષધિ સસ્તી દવા &amp; ઇમરજન્સી સેતુ</image:caption>
     </image:image>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=triage</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=triage</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.98</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=ruralCare</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=ruralCare</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.96</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=medLocator</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=medLocator</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=chatbot</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=chatbot</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.92</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=encyclopedia</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=encyclopedia</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.88</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=eye</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=eye</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.86</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=vision</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=vision</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=vitals</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=vitals</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.84</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=phc</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=phc</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.82</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=schemes</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=schemes</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.82</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=homeLab</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=homeLab</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=doctorDirectory</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=doctorDirectory</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?tab=emotion</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?tab=emotion</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -101,19 +101,19 @@
 
   <!-- Multilingual Indexing -->
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?lang=gu</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?lang=gu</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?lang=hi</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?lang=hi</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://srisrihealthcare.netlify.app/?lang=en</loc>
+    <loc>https://srisrihealthcare111.netlify.app/?lang=en</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.90</priority>
