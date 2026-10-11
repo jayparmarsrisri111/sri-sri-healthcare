@@ -291,6 +291,46 @@ body {
   min-width: 0;
 }
 
+/* Multi-Model AI Router Dropdown */
+.header-ai-router {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #FFFFFF;
+  border: 1.5px solid #00C48C;
+  padding: 6px 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 196, 140, 0.05);
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.header-ai-router:hover {
+  border-color: #009F70;
+  box-shadow: 0 4px 12px rgba(0, 196, 140, 0.12);
+}
+
+.header-ai-router-select {
+  background: transparent;
+  border: none;
+  color: #0A1128;
+  font-weight: 700;
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+  padding: 0 18px 0 0;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.header-ai-router-select::-ms-expand {
+  display: none;
+}
+
 .header-tool-btn {
   display: inline-flex;
   align-items: center;

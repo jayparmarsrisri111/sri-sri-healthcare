@@ -1,5 +1,5 @@
 import React from 'react';
-import { PhoneCall, Globe, Cpu, Smartphone, LogOut, LogIn, Menu, RefreshCw } from 'lucide-react';
+import { PhoneCall, Globe, Cpu, Smartphone, LogOut, LogIn, Menu, RefreshCw, ChevronDown } from 'lucide-react';
 import { SUPPORTED_LANGUAGES, getTranslation } from '../services/languageService';
 
 // Format user name cleanly without awkward parenthetical cutoffs (e.g. "રામજીભાઈ પટેલ (Ramjib...")
@@ -117,38 +117,23 @@ export const TopHeader = ({
       {/* Right: AI Router, PWA Install, Language Selector & User Profile */}
       <div className="header-right">
         {/* Multi-Model AI Router Dropdown */}
-        <div className="header-hide-mobile" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          background: '#FFFFFF',
-          border: '1.5px solid #D3F2E3',
-          padding: '7px 12px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0, 196, 140, 0.05)',
-          flexShrink: 0
-        }}>
-          <Cpu size={15} color="#00C48C" />
-          <select
-            value={selectedModel || 'auto'}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#0A1128',
-              fontWeight: 700,
-              outline: 'none',
-              cursor: 'pointer',
-              fontSize: '12.5px',
-              padding: 0,
-              maxWidth: '180px'
-            }}
-          >
-            <option value="auto">🤖 Auto-AI Router</option>
-            <option value="gemini">🩻 Gemini 1.5 Vision</option>
-            <option value="perplexity">🔍 Perplexity Research</option>
-            <option value="gpt4o">🧠 Claude 3.5 & GPT-4o</option>
-          </select>
+        {/* Multi-Model AI Router Dropdown (Structured, Responsive & Clean) */}
+        <div className="header-ai-router header-hide-mobile">
+          <Cpu size={15} color="#00C48C" style={{ flexShrink: 0 }} />
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <select
+              value={selectedModel || 'auto'}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="header-ai-router-select"
+              aria-label="Multi-Model AI Router"
+            >
+              <option value="auto">Auto-AI Router</option>
+              <option value="gemini">Gemini 1.5 Vision</option>
+              <option value="perplexity">Perplexity Research</option>
+              <option value="gpt4o">Claude 3.5 &amp; GPT-4o</option>
+            </select>
+            <ChevronDown size={14} color="#0A1128" style={{ position: 'absolute', right: '0px', pointerEvents: 'none', flexShrink: 0 }} />
+          </div>
         </div>
 
         {/* PWA Install Button */}
