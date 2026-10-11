@@ -76,6 +76,8 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
   if (typeof document === 'undefined') return;
 
   const seo = TAB_SEO_DATA[tab] || TAB_SEO_DATA.triage;
+  const canonicalBase = 'https://srisrihealthcare.netlify.app';
+  const targetUrl = tab && tab !== 'triage' ? `${canonicalBase}/?tab=${tab}` : `${canonicalBase}/`;
 
   // Update Document Title
   document.title = seo.title;
@@ -86,6 +88,18 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
     metaDesc.setAttribute('content', seo.description);
   }
 
+  // Update Meta Keywords
+  let metaKeywords = document.querySelector('meta[name="keywords"]');
+  if (metaKeywords && seo.keywords) {
+    metaKeywords.setAttribute('content', `sri sri healthcare, srisrihealthcare.netlify.app, ${seo.keywords}`);
+  }
+
+  // Update Canonical Link
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (canonicalLink) {
+    canonicalLink.setAttribute('href', targetUrl);
+  }
+
   // Update Open Graph Tags
   let ogTitle = document.querySelector('meta[property="og:title"]');
   if (ogTitle) ogTitle.setAttribute('content', seo.title);
@@ -93,11 +107,18 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
   let ogDesc = document.querySelector('meta[property="og:description"]');
   if (ogDesc) ogDesc.setAttribute('content', seo.description);
 
+  let ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute('content', targetUrl);
+
+  // Update Twitter Cards
   let twitterTitle = document.querySelector('meta[name="twitter:title"]');
   if (twitterTitle) twitterTitle.setAttribute('content', seo.title);
 
   let twitterDesc = document.querySelector('meta[name="twitter:description"]');
   if (twitterDesc) twitterDesc.setAttribute('content', seo.description);
+
+  let twitterUrl = document.querySelector('meta[name="twitter:url"]');
+  if (twitterUrl) twitterUrl.setAttribute('content', targetUrl);
 
   // Sync URL query params without reloading
   if (typeof window !== 'undefined' && window.history) {
@@ -115,3 +136,4 @@ export const updateSEOMeta = (tab, lang = 'gu') => {
     window.history.replaceState({}, '', currentUrl.toString());
   }
 };
+
