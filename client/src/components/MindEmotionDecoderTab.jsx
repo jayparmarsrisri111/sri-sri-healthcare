@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Brain, Smile, Frown, Sparkles, AlertCircle, Sun, Leaf, Heart, Eye, Activity, Play, Pause, RotateCcw, Volume2, MessageSquare, Send, CheckCircle2, ShieldCheck, Zap, Camera, Upload, RefreshCw, Video } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
@@ -234,9 +234,41 @@ export const MindEmotionDecoderTab = ({ currentLang }) => {
   const [isAnswering, setIsAnswering] = useState(false);
 
   const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const canvasOverlayRef = useRef(null);
   const sampleCanvasRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Reliable video stream attachment helper
+  const attachStreamToVideo = useCallback((el) => {
+    if (el && streamRef.current) {
+      if (el.srcObject !== streamRef.current) {
+        el.srcObject = streamRef.current;
+        el.play().catch(() => {});
+      }
+    }
+  }, []);
+
+  const setVideoRef = useCallback((el) => {
+    videoRef.current = el;
+    attachStreamToVideo(el);
+  }, [attachStreamToVideo]);
+
+  useEffect(() => {
+    if (useWebcam && videoRef.current && streamRef.current) {
+      attachStreamToVideo(videoRef.current);
+    }
+  }, [useWebcam, attachStreamToVideo]);
+
+  // Clean up media stream on unmount
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+    };
+  }, []);
 
   // 1. Start / Stop Real Webcam Stream
   const toggleWebcam = async () => {
@@ -246,22 +278,26 @@ export const MindEmotionDecoderTab = ({ currentLang }) => {
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
-        }
+        streamRef.current = stream;
         setUseWebcam(true);
         setActiveMode('live_camera');
         setCapturedDataUrl(null);
+        if (videoRef.current) {
+          attachStreamToVideo(videoRef.current);
+        }
       } catch (err) {
+        console.warn("Webcam access error:", err);
         alert(langKey === 'gu'
           ? "કેમેરા એક્સેસ મંજૂરી નકારાઈ છે અથવા કેમેરા ઉપલબ્ધ નથી."
           : "Webcam access denied or unavailable.");
         setUseWebcam(false);
       }
     } else {
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
       setUseWebcam(false);
@@ -741,7 +777,7 @@ export const MindEmotionDecoderTab = ({ currentLang }) => {
               {useWebcam ? (
                 <>
                   <video
-                    ref={videoRef}
+                    ref={setVideoRef}
                     autoPlay
                     playsInline
                     muted

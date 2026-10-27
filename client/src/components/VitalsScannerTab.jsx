@@ -401,7 +401,7 @@ export const VitalsScannerTab = ({ currentLang = 'gu', onVitalsUpdate, currentUs
         imageBase64: snapshotB64,
         scanMode: scanMode,
         userState: patientState,
-        manualBpmCalibration: tapBpm || (manualCalibInput ? parseFloat(manualCalibInput) : null),
+        manualBpmCalibration: tapBpm || (useWebcam && liveBpmInstant ? liveBpmInstant : null) || (manualCalibInput ? parseFloat(manualCalibInput) : null),
         language: langKey
       };
 
@@ -818,10 +818,29 @@ export const VitalsScannerTab = ({ currentLang = 'gu', onVitalsUpdate, currentUs
                     fontFamily: 'monospace',
                     background: 'rgba(0,0,0,0.7)',
                     padding: '1px 6px',
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    whiteSpace: 'nowrap'
                   }}>
-                    [FOREHEAD ROI]
+                    [FOREHEAD & CAPILLARY ROI]
                   </span>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-28px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    whiteSpace: 'nowrap',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    color: faceDetected ? '#00FF88' : '#EF4444',
+                    background: 'rgba(10, 17, 40, 0.85)',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    border: `1px solid ${faceDetected ? '#00FF88' : '#EF4444'}`
+                  }}>
+                    {faceDetected
+                      ? (isGu ? '🟢 ચહેરો લૉક થયો • સ્થિર રહો' : '🟢 Face Locked • Hold Still')
+                      : (isGu ? '🔴 ચહેરો વર્તુળમાં લાવો' : '🔴 Align Face Here')}
+                  </div>
                 </div>
               ) : (
                 <div style={{
