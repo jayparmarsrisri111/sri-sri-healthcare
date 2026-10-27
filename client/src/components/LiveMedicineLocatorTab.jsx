@@ -48,8 +48,8 @@ export const LiveMedicineLocatorTab = ({ currentLang = 'gu', initialMedicine = '
   const fileInputRef = useRef(null);
   const prescriptionUploadRef = useRef(null);
 
-  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'gu';
-  const isGu = langKey === 'gu' || langKey === 'ku';
+  const isGu = currentLang === 'gu' || currentLang === 'ku';
+  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'en';
 
   // Quick Medicine Tags
   const POPULAR_MEDICINES = [

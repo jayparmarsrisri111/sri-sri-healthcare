@@ -11,8 +11,8 @@ import { patientStorageService } from '../services/patientStorageService';
 
 export const VitalsScannerTab = ({ currentLang = 'gu', onVitalsUpdate, currentUser }) => {
   const t = getTranslation(currentLang);
-  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'gu';
-  const isGu = langKey === 'gu';
+  const isGu = currentLang === 'gu' || currentLang === 'ku';
+  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'en';
 
   // Master Mode: 'face' (Contactless Face rPPG), 'finger' (Lens Transillumination), 'tap' (Manual Pulse Tap)
   const [scanMode, setScanMode] = useState('face');

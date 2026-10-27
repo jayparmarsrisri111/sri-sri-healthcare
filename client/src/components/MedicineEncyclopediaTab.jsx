@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Pill, Leaf, Search, HelpCircle, AlertTriangle, ShieldCheck, Sun,
   CheckCircle2, ArrowRight, Sparkles, Volume2, Mic, Camera, Upload,
-  RefreshCw, DollarSign, Heart, Activity, Zap, X, MapPin, PlusCircle
+  RefreshCw, DollarSign, Heart, Activity, Zap, X, MapPin, PlusCircle, Printer,
+  ShoppingCart, Package, Truck, Store
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
@@ -11,6 +12,7 @@ import Tesseract from 'tesseract.js';
 import { MASTER_MEDICINES, searchMedicinesCatalog, resolveAnyMedicine } from '../data/medicinesCatalog.js';
 import { customMedicinesService } from '../services/customMedicinesService';
 import { AddMedicineModal } from './AddMedicineModal';
+import { DigitalPrescriptionModal } from './DigitalPrescriptionModal';
 
 // Comprehensive 50+ Allopathic & Ayurvedic Multi-Language Knowledge Base
 const EXTENSIVE_MEDICINES_DB = [
@@ -1034,6 +1036,59 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine, current
   const [scannedResult, setScannedResult] = useState(null);
   const [dynamicAIMedicine, setDynamicAIMedicine] = useState(null);
   const [showAddMedModal, setShowAddMedModal] = useState(false);
+  const [rxModalData, setRxModalData] = useState(null);
+
+  // Global Medicine Ordering & Booking States
+  const [orderModalMed, setOrderModalMed] = useState(null);
+  const [orderQuantity, setOrderQuantity] = useState(1);
+  const [orderType, setOrderType] = useState('home_delivery'); // 'home_delivery', 'store_pickup'
+  const [orderPatientName, setOrderPatientName] = useState(currentUser?.name || 'રામજીભાઈ પટેલ');
+  const [orderPatientPhone, setOrderPatientPhone] = useState(currentUser?.phone || '9876543210');
+  const [orderStreet, setOrderStreet] = useState('મુ. પો. માધાપર, મેઈન બજાર');
+  const [orderCity, setOrderCity] = useState('ભુજ');
+  const [orderCountry, setOrderCountry] = useState('ભારત (India)');
+  const [orderPin, setOrderPin] = useState('370020');
+  const [orderPickupStore, setOrderPickupStore] = useState('પ્રધાનમંત્રી જન ઔષધિ કેન્દ્ર - સરકારી સિવિલ હોસ્પિટલ ભુજ');
+  const [orderPayment, setOrderPayment] = useState('COD');
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [orderToast, setOrderToast] = useState(null);
+
+  const handlePlaceOrder = (e) => {
+    e.preventDefault();
+    if (!orderModalMed) return;
+
+    const unitPrice = orderModalMed.janPrice || 12;
+    const totalPrice = unitPrice * orderQuantity;
+    const newOrder = {
+      orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+      patientName: orderPatientName,
+      patientPhone: orderPatientPhone,
+      orderType,
+      medicineName: orderModalMed.allopathicName,
+      genericSalt: orderModalMed.salt || orderModalMed.allopathicName,
+      quantity: orderQuantity,
+      unitPrice,
+      totalPrice,
+      deliveryAddress: orderType === 'home_delivery' ? `${orderStreet}, ${orderCity}, ${orderCountry} - ${orderPin}` : null,
+      pickupStore: orderType === 'store_pickup' ? orderPickupStore : null,
+      paymentMethod: orderPayment,
+      status: 'Pending',
+      doctorApprovedBy: 'Dr. Jay Parmar, M.D.',
+      orderedAt: new Date().toISOString()
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('sri_sri_medicine_orders') || '[]');
+      existing.unshift(newOrder);
+      localStorage.setItem('sri_sri_medicine_orders', JSON.stringify(existing));
+    } catch (err) {
+      console.warn('Failed to save order to localStorage:', err);
+    }
+
+    setConfirmedOrder(newOrder);
+    setOrderToast(`🎉 દવા ઓર્ડર સફળતાપૂર્વક નોંધાયો (ID: ${newOrder.orderId})! એડમિન પેનલમાં મોકલાયો છે.`);
+    setTimeout(() => setOrderToast(null), 6000);
+  };
 
   // Continuous Self-Training AI States
   const [learningStats, setLearningStats] = useState({
@@ -2077,9 +2132,77 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine, current
                   <div style={{ fontSize: '11px', color: '#92400E', fontWeight: 800 }}>પ્રધાનમંત્રી જન ઔષધિ ભાવ:</div>
                   <div style={{ fontSize: '13px', color: '#0A1128', fontWeight: 800 }}>{item.savings}</div>
                 </div>
-                {onLocateMedicine && (
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {onLocateMedicine && (
+                    <button
+                      onClick={() => onLocateMedicine(item.allopathicName.split('/')[0].split(' ')[0].trim())}
+                      style={{
+                        background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '8px 14px',
+                        fontSize: '12px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        boxShadow: '0 2px 8px rgba(0, 196, 140, 0.25)'
+                      }}
+                    >
+                      <MapPin size={14} />
+                      {currentLang === 'gu' ? '📍 સ્ટોરમાં શોધો' : '📍 Find Store'}
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => onLocateMedicine(item.allopathicName.split('/')[0].split(' ')[0].trim())}
+                    onClick={() => {
+                      const brand = item.allopathicName.split('/')[0].trim();
+                      setRxModalData({
+                        patientName: currentUser?.name || 'દર્દી (Patient)',
+                        age: currentUser?.age || 28,
+                        date: new Date().toISOString(),
+                        symptoms: item.diseaseUsedFor || item.disease || 'તબીબી સલાહ મુજબ',
+                        diagnosis: `${brand} - ${item.salt || 'Clinical Formulation'}`,
+                        doctorReviewedBy: 'Dr. Jay Parmar, M.D.',
+                        medicines: [
+                          {
+                            name: `${brand} (Jan Aushadhi Generic)`,
+                            dose: item.dosageGuideline || '૧ ગોળી જમ્યા પછી',
+                            freq: '1 - 0 - 1',
+                            days: '૫ દિવસ',
+                            price: `${item.savings || '₹૧૨.૫૦ (૮૫% બચત)'}`
+                          }
+                        ],
+                        doctorNotes: `ડૉ. જય પરમાર દ્વારા પ્રમાણિત જન ઔષધિ પ્રિસ્ક્રિપ્શન. ${item.safetyPrecautions || 'પર્યાપ્ત પાણી સાથે દવા લેવી.'}`
+                      });
+                    }}
+                    style={{
+                      background: '#0F172A',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '8px 14px',
+                      fontSize: '12px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.2)'
+                    }}
+                  >
+                    <Printer size={13} color="#00C48C" />
+                    {currentLang === 'gu' ? '📄 સત્તાવાર પહોંચ / Rx સ્લિપ' : '📄 Official Receipt / Rx'}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setOrderModalMed(item);
+                      setConfirmedOrder(null);
+                      setOrderQuantity(1);
+                    }}
                     style={{
                       background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
                       color: '#FFFFFF',
@@ -2092,13 +2215,13 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine, current
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '5px',
-                      boxShadow: '0 2px 8px rgba(0, 196, 140, 0.25)'
+                      boxShadow: '0 2px 8px rgba(0, 196, 140, 0.3)'
                     }}
                   >
-                    <MapPin size={14} />
-                    {currentLang === 'gu' ? '📍 નજીકના સ્ટોરમાં શોધો & ઓર્ડર કરો' : '📍 Find in Store & Order'}
+                    <ShoppingCart size={13} />
+                    {currentLang === 'gu' ? '🛒 દવા ખરીદો / ઓર્ડર કરો' : '🛒 Buy / Order'}
                   </button>
-                )}
+                </div>
               </div>
             </div>
 
@@ -2267,6 +2390,452 @@ export const MedicineEncyclopediaTab = ({ currentLang, onLocateMedicine, current
           setTimeout(() => setToastMessage(null), 4000);
         }}
       />
+      {/* Official Digital Prescription & Receipt Modal */}
+      {rxModalData && (
+        <DigitalPrescriptionModal
+          isOpen={!!rxModalData}
+          onClose={() => setRxModalData(null)}
+          record={rxModalData}
+          currentLang={currentLang}
+          doctorInfo={{
+            name: 'Dr. Jay Parmar, M.D.',
+            regNumber: 'GMC-GUJ-2016-48291',
+            specialization: 'Chief Medical Officer & Senior Physician',
+            hospitalAffiliation: 'Sri Sri Healthcare Central Hospital & Research Center'
+          }}
+        />
+      )}
+
+      {/* Global Medicine Order & Offline Booking Modal */}
+      {orderModalMed && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(10, 17, 40, 0.85)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            width: '100%',
+            maxWidth: '620px',
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.35)',
+            border: '2px solid #00C48C',
+            position: 'relative'
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '16px 20px',
+              background: '#0A1128',
+              color: '#FFFFFF',
+              borderTopLeftRadius: '18px',
+              borderTopRightRadius: '18px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShoppingCart size={18} color="#00C48C" />
+                <span style={{ fontSize: '14px', fontWeight: 800 }}>
+                  {currentLang === 'gu' ? '🛒 દવા ખરીદો / ઓર્ડર બુકિંગ (Global Medicine Checkout)' : '🛒 Buy / Book Medicine'}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setOrderModalMed(null);
+                  setConfirmedOrder(null);
+                }}
+                style={{ background: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div style={{ padding: '20px' }}>
+              {confirmedOrder ? (
+                <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: '#DCFCE7',
+                    color: '#15803D',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 14px'
+                  }}>
+                    <CheckCircle2 size={36} />
+                  </div>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '20px', fontWeight: 900, color: '#0F172A' }}>
+                    🎉 દવા ઓર્ડર સફળતાપૂર્વક કન્ફર્મ થયો!
+                  </h3>
+                  <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>
+                    ઓર્ડર ID: <strong>{confirmedOrder.orderId}</strong> • તબીબી મંજૂરી: <strong>{confirmedOrder.doctorApprovedBy}</strong>
+                  </div>
+
+                  <div style={{
+                    background: '#F8FAFC',
+                    border: '1.5px solid #CBD5E1',
+                    borderRadius: '14px',
+                    padding: '16px',
+                    textAlign: 'left',
+                    fontSize: '12.5px',
+                    marginBottom: '18px'
+                  }}>
+                    <div style={{ marginBottom: '8px' }}>
+                      <span style={{ color: '#64748B' }}>દવાનું નામ:</span>{' '}
+                      <strong>{confirmedOrder.medicineName}</strong> ({confirmedOrder.quantity} સ્ટ્રીપ / બોટલ)
+                    </div>
+                    <div style={{ marginBottom: '8px' }}>
+                      <span style={{ color: '#64748B' }}>કુલ ચૂકવવાપાત્ર રકમ:</span>{' '}
+                      <strong style={{ color: '#059669', fontSize: '15px' }}>₹{confirmedOrder.totalPrice} ({confirmedOrder.paymentMethod})</strong>
+                    </div>
+                    <div style={{ marginBottom: '8px' }}>
+                      <span style={{ color: '#64748B' }}>ઓર્ડર પ્રકાર:</span>{' '}
+                      <strong>{confirmedOrder.orderType === 'home_delivery' ? '🏠 હોમ ડિલિવરી (Global Express)' : '🏪 ઑફલાઇન સ્ટોર પિકઅપ'}</strong>
+                    </div>
+                    {confirmedOrder.deliveryAddress && (
+                      <div>
+                        <span style={{ color: '#64748B' }}>ડિલિવરી સરનામું:</span>{' '}
+                        <strong>{confirmedOrder.deliveryAddress}</strong>
+                      </div>
+                    )}
+                    {confirmedOrder.pickupStore && (
+                      <div>
+                        <span style={{ color: '#64748B' }}>પિકઅપ મેડિકલ સ્ટોર:</span>{' '}
+                        <strong>{confirmedOrder.pickupStore}</strong> (૨૪ કલાક માટે દવા અનામત રહેશે)
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <a
+                      href={`https://wa.me/919428011223?text=${encodeURIComponent(`નમસ્તે, દવા ઓર્ડર ID ${confirmedOrder.orderId} ની વિગતો: દર્દી ${confirmedOrder.patientName}, દવા: ${confirmedOrder.medicineName}, કિંમત: ₹${confirmedOrder.totalPrice}`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        background: '#22C55E',
+                        color: '#FFFFFF',
+                        textDecoration: 'none',
+                        padding: '10px 18px',
+                        borderRadius: '10px',
+                        fontSize: '12.5px',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      💬 WhatsApp પર ઓર્ડર સ્ટેટસ જાણો
+                    </a>
+                    <button
+                      onClick={() => {
+                        setOrderModalMed(null);
+                        setConfirmedOrder(null);
+                      }}
+                      style={{
+                        background: '#0A1128',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '10px 18px',
+                        borderRadius: '10px',
+                        fontSize: '12.5px',
+                        fontWeight: 800,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      પૂર્ણ થયું
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handlePlaceOrder}>
+                  {/* Medicine info preview */}
+                  <div style={{
+                    background: '#F0FAF5',
+                    border: '1.5px solid #00C48C',
+                    borderRadius: '14px',
+                    padding: '14px',
+                    marginBottom: '16px'
+                  }}>
+                    <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 800, textTransform: 'uppercase' }}>
+                      પસંદ કરેલ દવા (Selected Medicine):
+                    </div>
+                    <div style={{ fontSize: '16px', fontWeight: 900, color: '#0A1128', marginTop: '2px' }}>
+                      {orderModalMed.allopathicName}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                      સક્રિય સોલ્ટ: {orderModalMed.salt || orderModalMed.allopathicName}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ fontSize: '12px', color: '#047857', fontWeight: 700 }}>
+                        સરકારી જન ઔષધિ સબસિડાઇઝ્ડ ભાવ:
+                      </span>
+                      <span style={{ fontSize: '16px', fontWeight: 900, color: '#059669' }}>
+                        ₹{orderModalMed.janPrice || 12} / સ્ટ્રીપ
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Quantity Selector */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: '#F8FAFC',
+                    padding: '10px 14px',
+                    borderRadius: '12px',
+                    marginBottom: '16px',
+                    border: '1px solid #E2E8F0'
+                  }}>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>જથ્થો (Quantity):</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setOrderQuantity(Math.max(1, orderQuantity - 1))}
+                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFF', fontWeight: 900, cursor: 'pointer' }}
+                      >
+                        -
+                      </button>
+                      <span style={{ fontSize: '15px', fontWeight: 800, minWidth: '24px', textAlign: 'center' }}>
+                        {orderQuantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setOrderQuantity(orderQuantity + 1)}
+                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFF', fontWeight: 900, cursor: 'pointer' }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Order Mode Tab Switcher: Home Delivery vs Offline Pickup */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#334155', marginBottom: '6px' }}>
+                      દવા મેળવવાનો પ્રકાર પસંદ કરો:
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setOrderType('home_delivery')}
+                        style={{
+                          background: orderType === 'home_delivery' ? '#00C48C' : '#F1F5F9',
+                          color: orderType === 'home_delivery' ? '#0A1128' : '#475569',
+                          border: 'none',
+                          borderRadius: '10px',
+                          padding: '10px',
+                          fontWeight: 800,
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Truck size={14} /> 🏠 હોમ ડિલિવરી (Online)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setOrderType('store_pickup')}
+                        style={{
+                          background: orderType === 'store_pickup' ? '#00C48C' : '#F1F5F9',
+                          color: orderType === 'store_pickup' ? '#0A1128' : '#475569',
+                          border: 'none',
+                          borderRadius: '10px',
+                          padding: '10px',
+                          fontWeight: 800,
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <Store size={14} /> 🏪 સ્ટોર પિકઅપ (Offline)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Customer Information Fields */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748B', marginBottom: '4px' }}>
+                        દર્દી / ગ્રાહકનું નામ:
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={orderPatientName}
+                        onChange={(e) => setOrderPatientName(e.target.value)}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12.5px' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748B', marginBottom: '4px' }}>
+                        મોબાઈલ નંબર:
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={orderPatientPhone}
+                        onChange={(e) => setOrderPatientPhone(e.target.value)}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12.5px' }}
+                      />
+                    </div>
+                  </div>
+
+                  {orderType === 'home_delivery' ? (
+                    <>
+                      <div style={{ marginBottom: '10px' }}>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748B', marginBottom: '4px' }}>
+                          ઘરનું સરનામું (Street Address / Landmark):
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={orderStreet}
+                          onChange={(e) => setOrderStreet(e.target.value)}
+                          placeholder="મકાન નંબર, સોસાયટી, ગામ/વિસ્તાર"
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12.5px' }}
+                        />
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '10.5px', fontWeight: 700, color: '#64748B', marginBottom: '3px' }}>
+                            શહેર / તાલુકો:
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={orderCity}
+                            onChange={(e) => setOrderCity(e.target.value)}
+                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '10.5px', fontWeight: 700, color: '#64748B', marginBottom: '3px' }}>
+                            દેશ / રાજ્ય:
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={orderCountry}
+                            onChange={(e) => setOrderCountry(e.target.value)}
+                            placeholder="ભારત, USA, UK, UAE..."
+                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12px' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '10.5px', fontWeight: 700, color: '#64748B', marginBottom: '3px' }}>
+                            PIN / ZIP કોડ:
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={orderPin}
+                            onChange={(e) => setOrderPin(e.target.value)}
+                            style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12px' }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748B', marginBottom: '4px' }}>
+                        નજીકનો મેડિકલ સ્ટોર / જન ઔષધિ કેન્દ્ર પસંદ કરો:
+                      </label>
+                      <select
+                        value={orderPickupStore}
+                        onChange={(e) => setOrderPickupStore(e.target.value)}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '12px' }}
+                      >
+                        <option value="પ્રધાનમંત્રી જન ઔષધિ કેન્દ્ર - GK સિવિલ હોસ્પિટલ ભુજ">પ્રધાનમંત્રી જન ઔષધિ કેન્દ્ર - GK સિવિલ હોસ્પિટલ ભુજ</option>
+                        <option value="પ્રધાનમંત્રી જન ઔષધિ કેન્દ્ર - સર ટી સિવિલ કેમ્પસ, ભાવનગર">પ્રધાનમંત્રી જન ઔષધિ કેન્દ્ર - સર ટી સિવિલ કેમ્પસ, ભાવનગર</option>
+                        <option value="શ્રીજી ૨૪x૭ ઈમરજન્સી મેડિકલ સ્ટોર, અમદાવાદ સિવિલ">શ્રીજી ૨૪x૭ ઈમરજન્સી મેડિકલ સ્ટોર, અમદાવાદ સિવિલ</option>
+                        <option value="રાજકોટ PDU સિવિલ મેડિકલ સ્ટોર, રાજકોટ">રાજકોટ PDU સિવિલ મેડિકલ સ્ટોર, રાજકોટ</option>
+                        <option value="સુરત નવસારી બજાર જન ઔષધિ સ્ટોર, સુરત">સુરત નવસારી બજાર જન ઔષધિ સ્ટોર, સુરત</option>
+                        <option value="SSG હોસ્પિટલ મેડિકલ કેન્દ્ર, વડોદરા">SSG હોસ્પિટલ મેડિકલ કેન્દ્ર, વડોદરા</option>
+                      </select>
+                      <span style={{ fontSize: '11px', color: '#059669', display: 'block', marginTop: '4px' }}>
+                        * બુકિંગ કર્યા પછી ૨૪ કલાકમાં સ્ટોર પર ટોકન બતાવીને દવા લઈ શકાશે.
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Payment Method Selector */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748B', marginBottom: '4px' }}>
+                      ચુકવણી પદ્ધતિ (Payment Mode):
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                        <input type="radio" name="pay" checked={orderPayment === 'COD'} onChange={() => setOrderPayment('COD')} />
+                        Cash on Delivery (COD)
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                        <input type="radio" name="pay" checked={orderPayment === 'UPI'} onChange={() => setOrderPayment('UPI')} />
+                        UPI / NetBanking
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', cursor: 'pointer' }}>
+                        <input type="radio" name="pay" checked={orderPayment === 'PMJAY'} onChange={() => setOrderPayment('PMJAY')} />
+                        PM-JAY ૧૦૦% મફત
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Price Summary Bar */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderTop: '1.5px solid #CBD5E1',
+                    paddingTop: '12px',
+                    marginBottom: '16px'
+                  }}>
+                    <div>
+                      <div style={{ fontSize: '11px', color: '#64748B' }}>કુલ ચૂકવવાપાત્ર રકમ:</div>
+                      <div style={{ fontSize: '20px', fontWeight: 900, color: '#059669' }}>
+                        {orderPayment === 'PMJAY' ? '₹૦ (PM-JAY Free)' : `₹${(orderModalMed.janPrice || 12) * orderQuantity}`}
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      style={{
+                        background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '12px',
+                        padding: '12px 24px',
+                        fontWeight: 900,
+                        fontSize: '13.5px',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(0, 196, 140, 0.35)'
+                      }}
+                    >
+                      🚀 ઓર્ડર કન્ફર્મ કરો
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

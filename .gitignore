@@ -19,8 +19,15 @@ build/
 
 # Environment Variables & Keys
 .env
-.env.local
+.env.*
+!.env.example
+*.env
 server/.env
+server/.env.*
+!server/.env.example
+*.pem
+*.key
+*.crt
 
 # OS & Logs
 .DS_Store

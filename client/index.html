@@ -289,10 +289,10 @@
     }
     </script>
 
-    <!-- Clean Medical Typography: Plus Jakarta Sans & Noto Sans Gujarati -->
+    <!-- Clean Medical Typography: Universal Multilingual Support for 16 Indian & World Languages -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root">
@@ -407,9 +407,10 @@
       </div>
     </noscript>
 
-    <!-- Hidden Google Translate Element with Bulletproof React Virtual DOM Protection -->
+    <!-- Hidden Google Translate Element with Bulletproof React Virtual DOM Protection & Zero Layout Shift -->
     <div id="google_translate_element" style="display:none !important; visibility:hidden; position:absolute; left:-9999px;"></div>
     <script>
+      // Bulletproof DOM Mutation Guard for React & Google Translate
       if (typeof Node === 'function' && Node.prototype) {
         const origRemoveChild = Node.prototype.removeChild;
         Node.prototype.removeChild = function(child) {
@@ -421,7 +422,33 @@
           if (referenceNode && referenceNode.parentNode !== this) return newNode;
           return origInsertBefore.apply(this, arguments);
         };
+        const origReplaceChild = Node.prototype.replaceChild;
+        Node.prototype.replaceChild = function(newChild, oldChild) {
+          if (oldChild && oldChild.parentNode !== this) return newChild;
+          return origReplaceChild.apply(this, arguments);
+        };
       }
+
+      // Permanent Zero-Layout Shift Lock: Prevents Google Translate from pushing body down by 40px
+      function lockBodyZeroShift() {
+        if (document.body) {
+          if (document.body.style.top && document.body.style.top !== '0px') {
+            document.body.style.top = '0px';
+          }
+          if (document.body.style.position && document.body.style.position !== 'static') {
+            document.body.style.position = 'static';
+          }
+        }
+      }
+      if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', function() {
+          lockBodyZeroShift();
+          if (window.MutationObserver && document.body) {
+            new MutationObserver(lockBodyZeroShift).observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] });
+          }
+        });
+      }
+
       function googleTranslateElementInit() {
         if (window.google && window.google.translate) {
           new window.google.translate.TranslateElement({

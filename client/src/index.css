@@ -42,7 +42,7 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-main);
-  font-family: 'Plus Jakarta Sans', 'Noto Sans Gujarati', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Gujarati', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gurmukhi', 'Noto Sans Arabic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -269,16 +269,18 @@ body {
   top: 0;
   z-index: 90;
   box-shadow: 0 4px 24px rgba(0, 196, 140, 0.05);
-  gap: 16px;
+  gap: 12px;
   flex-wrap: nowrap;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .header-right {
@@ -289,6 +291,48 @@ body {
   justify-content: flex-end;
   flex-shrink: 0;
   margin-left: auto;
+  min-width: 0;
+}
+
+/* Header SOS Alert Button */
+.btn-sos-header {
+  background-color: #FFFFFF;
+  color: #EF4444;
+  border: 1.5px solid #EF4444;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+}
+
+.btn-sos-header:hover {
+  background-color: #FEF2F2;
+  border-color: #DC2626;
+  color: #DC2626;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.sos-label-short {
+  display: none;
+}
+.sos-label-full {
+  display: inline;
+}
+
+.emergency-label-short {
+  display: none;
+}
+.emergency-label-full {
+  display: inline;
 }
 
 /* Multi-Model AI Router Dropdown */
@@ -596,7 +640,7 @@ body {
   animation: pulseGlow6D 2s infinite ease-in-out;
 }
 
-/* Compact, Luxury 24/7 AI Doctor Floating Pill */
+/* Compact Initial Circle FAB, Smoothly Expands on Hover/Click */
 .floating-chat-bubble-btn {
   position: fixed;
   bottom: 24px;
@@ -604,21 +648,28 @@ body {
   z-index: 9999;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
   color: #FFFFFF;
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
-  padding: 6px 14px 6px 7px;
-  font-weight: 750;
-  font-size: 12.5px;
-  box-shadow: 0 4px 18px rgba(0, 196, 140, 0.35), 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 48px;
+  height: 48px;
+  padding: 0;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(0, 196, 140, 0.38), 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(8px);
 }
 
-.floating-chat-bubble-btn:hover {
+.floating-chat-bubble-btn:hover,
+.floating-chat-bubble-btn.hover-expanded,
+.floating-chat-bubble-btn.active-open {
+  width: auto;
+  padding: 6px 14px 6px 8px;
+  gap: 8px;
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 24px rgba(0, 196, 140, 0.5);
   background: linear-gradient(135deg, #05D699 0%, #00B07C 100%);
@@ -672,6 +723,19 @@ body {
   display: flex;
   align-items: center;
   line-height: 1;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0;
+}
+
+.floating-chat-bubble-btn:hover .chat-btn-content,
+.floating-chat-bubble-btn.hover-expanded .chat-btn-content,
+.floating-chat-bubble-btn.active-open .chat-btn-content {
+  max-width: 220px;
+  opacity: 1;
+  margin: 0 4px;
 }
 
 .chat-btn-title {
@@ -683,6 +747,7 @@ body {
 }
 
 .chat-btn-badge {
+  display: none;
   background: rgba(255, 255, 255, 0.22);
   border-radius: 50%;
   width: 20px;
@@ -695,6 +760,12 @@ body {
   transition: transform 0.2s ease;
 }
 
+
+.floating-chat-bubble-btn:hover .chat-btn-badge,
+.floating-chat-bubble-btn.hover-expanded .chat-btn-badge,
+.floating-chat-bubble-btn.active-open .chat-btn-badge {
+  display: flex;
+}
 .floating-chat-bubble-btn:hover .chat-btn-badge {
   transform: rotate(15deg);
 }
@@ -1107,6 +1178,68 @@ textarea:focus, select:focus, input[type="text"]:focus {
    10. UNIVERSAL ALL-DEVICE RESPONSIVE SYSTEM
    ==================================================================== */
 
+/* Screen width <= 1440px (Standard Laptops e.g. 1366x768 & High-DPI Scaled Displays) */
+@media (max-width: 1440px) {
+  .top-header {
+    padding: max(8px, env(safe-area-inset-top, 8px)) max(14px, env(safe-area-inset-right, 14px)) 8px max(14px, env(safe-area-inset-left, 14px));
+    gap: 8px;
+  }
+  .header-left {
+    gap: 8px;
+  }
+  .header-right {
+    gap: 6px;
+  }
+  .header-tool-btn .header-btn-label {
+    display: none;
+  }
+  .header-btn-label-desktop {
+    display: none;
+  }
+  .header-hide-laptop {
+    display: none !important;
+  }
+  .sos-label-full {
+    display: none;
+  }
+  .sos-label-short {
+    display: inline;
+  }
+  .emergency-label-full {
+    display: none;
+  }
+  .emergency-label-short {
+    display: inline;
+  }
+  .header-user-subtext {
+    display: none;
+  }
+  .header-user-name {
+    max-width: 110px;
+  }
+  .header-ai-router {
+    padding: 5px 8px;
+    gap: 5px;
+  }
+  .header-ai-router-select {
+    font-size: 11.5px;
+    padding-right: 14px;
+  }
+  .header-tool-btn {
+    padding: 7px 10px;
+    font-size: 11.5px;
+  }
+  .btn-emergency {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    gap: 5px !important;
+  }
+  .btn-sos-header {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+  }
+}
+
 /* Screen width <= 1250px (Laptops & Compact Desktops) */
 @media (max-width: 1250px) {
   .header-tool-btn .header-btn-label {
@@ -1315,27 +1448,46 @@ textarea:focus, select:focus, input[type="text"]:focus {
     display: none !important;
   }
 
+  /* Compact World Languages label on mobile to prevent header overflow */
+  .header-btn-label {
+    display: none !important;
+  }
+
+  .header-tool-btn {
+    padding: 6px 9px !important;
+    font-size: 11.5px !important;
+    gap: 4px !important;
+  }
+
   .brand-logo-text {
     display: none;
   }
 
   /* Responsive Header User Profile Pill on Mobile */
   .header-user-pill {
-    padding: 4px 7px;
-    gap: 6px;
+    padding: 3px 6px !important;
+    gap: 5px !important;
+    max-width: calc(100vw - 190px) !important;
+    min-width: 0 !important;
   }
   .header-user-name {
-    max-width: 105px;
-    font-size: 11.5px;
+    max-width: 85px !important;
+    font-size: 11px !important;
   }
   .header-user-subtext {
-    display: none; /* Hide subtitle on mobile so name & badge fit 100% cleanly without clipping */
+    display: none !important; /* Hide subtitle on mobile so name & badge fit 100% cleanly without clipping */
   }
   .header-user-switch-btn {
-    padding: 4px 6px;
+    display: none !important; /* Tap user pill directly to switch account */
   }
   .header-user-logout-btn {
-    padding: 4px 6px;
+    padding: 3px 5px !important;
+  }
+
+  .header-login-btn {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+    gap: 4px !important;
   }
 
   .medical-card {
@@ -1385,9 +1537,16 @@ textarea:focus, select:focus, input[type="text"]:focus {
   }
 
   .auth-demo-grid {
-    grid-template-columns: 1fr !important;
-    gap: 6px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
   }
+}
+
+.auth-demo-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 10px !important;
+  width: 100% !important;
 }
 
 /* Screen width <= 400px (Compact Phones e.g. iPhone SE, Galaxy Z Flip/Fold) */
@@ -1536,60 +1695,135 @@ textarea:focus, select:focus, input[type="text"]:focus {
 }
 
 /* ====================================================================
-   10. PRINT MEDIA STYLES FOR OFFICIAL NMC PRESCRIPTION
+   10. PRINT MEDIA STYLES FOR OFFICIAL EYE & MEDICAL PRESCRIPTIONS
    ==================================================================== */
 @media print {
+  @page {
+    margin: 8mm;
+    size: auto;
+  }
+
+  /* Reset all overflow, height, background clipping for print */
+  html, body {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   body * {
     visibility: hidden;
   }
 
-  #prescription-paper, #prescription-paper * {
-    visibility: visible;
+  #prescription-paper,
+  #prescription-paper *,
+  #eye-prescription-paper,
+  #eye-prescription-paper *,
+  #lab-bill-paper,
+  #lab-bill-paper *,
+  .printable-certificate,
+  .printable-certificate * {
+    visibility: visible !important;
   }
 
-  #prescription-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
+  #prescription-paper,
+  #eye-prescription-paper,
+  #lab-bill-paper,
+  .printable-certificate {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: 20px !important;
+    padding: 18px !important;
     margin: 0 !important;
     background: #FFFFFF !important;
     box-shadow: none !important;
-    border: none !important;
+    border: 1.5px solid #00C48C !important;
+    border-radius: 14px !important;
+    page-break-inside: avoid !important;
+    display: block !important;
+    z-index: 999999 !important;
   }
 
-  .no-print, .app-sidebar, .top-header, .mobile-bottom-nav, .quick-category-ribbon {
+  .no-print,
+  .app-sidebar,
+  .top-header,
+  .mobile-bottom-nav,
+  .quick-category-ribbon,
+  .floating-chat-widget,
+  .vitals-hud {
     display: none !important;
   }
 }
 
 /* ====================================================================
-   11. GOOGLE TRANSLATE SEAMLESS CLEAN INTEGRATION (NO LAYOUT SHIFT)
+   11. UNIVERSAL MULTILINGUAL & ZERO LAYOUT SHIFT INTEGRATION
+   Ensures 100% stable design and CSS across all 16 Indian & Global languages
    ==================================================================== */
-.goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-iframe.goog-te-banner-frame {
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-xl07Ob-OEVmcd,
+#goog-gt-tt,
+.goog-te-balloon-frame {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
 }
 
-body {
+html, body {
   top: 0px !important;
+  margin-top: 0px !important;
   position: static !important;
 }
 
-.skiptranslate {
-  display: none !important;
-}
-
-#goog-gt-tt, .goog-te-balloon-frame {
+body > .skiptranslate {
   display: none !important;
 }
 
 .goog-text-highlight {
   background: none !important;
   box-shadow: none !important;
+}
+
+/* Prevent Google Translate font tag baseline distortion inside buttons and badges */
+font[style*="vertical-align: inherit"] {
+  vertical-align: inherit !important;
+  display: inline !important;
+}
+
+/* Universal Text Overflow & Language Expansion Guard */
+.nav-item,
+.quick-ribbon-btn,
+.hud-card,
+.btn-emergency,
+.btn-primary,
+.btn-secondary {
+  min-width: 0;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* RTL Typography Support (Arabic & RTL scripts) without inverting framework grid */
+[data-lang-rtl="true"] input,
+[data-lang-rtl="true"] textarea,
+[data-lang-rtl="true"] .triage-result-card,
+[data-lang-rtl="true"] .chat-msg-bubble {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
 }

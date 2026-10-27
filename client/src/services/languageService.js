@@ -2065,12 +2065,33 @@ export const getTranslation = (langCode) => {
 
 /**
  * Universal global language switch helper
- * Updates localStorage, dispatches window events, and syncs Google Translate
+ * Updates localStorage, dispatches window events, sets HTML lang & RTL attributes,
+ * and syncs Google Translate with zero layout shift guarantee
  */
 export const applyGlobalLanguage = (langCode) => {
   if (!langCode) return;
   try {
     localStorage.setItem('preferred_language', langCode);
+  } catch (e) {}
+
+  // Update HTML tag language and RTL direction indicator
+  try {
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.lang = langCode;
+      if (langCode === 'ar') {
+        document.documentElement.setAttribute('data-lang-rtl', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-lang-rtl');
+      }
+    }
+  } catch (e) {}
+
+  // Permanent Zero-Shift Enforcer on language switch
+  try {
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.style.top = '0px';
+      document.body.style.position = 'static';
+    }
   } catch (e) {}
 
   // Sync Google Translate cookie for full web-app translation

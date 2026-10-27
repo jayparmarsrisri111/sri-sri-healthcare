@@ -234,5 +234,56 @@ export const authService = {
       console.error('Error updating doctor verification:', e);
     }
     return false;
+  },
+
+  // Admin Dynamic Role Update
+  updateUserRole: (userId, newRole) => {
+    try {
+      const storedUsersRaw = localStorage.getItem('swasthyasetu_registered_users');
+      let storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      let found = false;
+      storedUsers = storedUsers.map(u => {
+        if (u.userId === userId || u.email === userId) {
+          found = true;
+          return { ...u, role: newRole };
+        }
+        return u;
+      });
+
+      if (!found) {
+        // If it was a demo user not yet in storage, add modified clone
+        const all = Object.values(DEMO_ACCOUNTS);
+        const match = all.find(u => u.userId === userId || u.email === userId);
+        if (match) {
+          storedUsers.push({ ...match, role: newRole });
+          found = true;
+        }
+      }
+
+      localStorage.setItem('swasthyasetu_registered_users', JSON.stringify(storedUsers));
+      const current = authService.getCurrentUser();
+      if (current && (current.userId === userId || current.email === userId)) {
+        authService.setCurrentUser({ ...current, role: newRole });
+      }
+      window.dispatchEvent(new CustomEvent('auth_user_changed', { detail: null }));
+      return true;
+    } catch (e) {
+      console.error('Error updating user role:', e);
+      return false;
+    }
+  },
+
+  // Admin Dynamic User Deletion
+  deleteUser: (userId) => {
+    try {
+      const storedUsersRaw = localStorage.getItem('swasthyasetu_registered_users');
+      let storedUsers = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+      storedUsers = storedUsers.filter(u => u.userId !== userId && u.email !== userId);
+      localStorage.setItem('swasthyasetu_registered_users', JSON.stringify(storedUsers));
+      return true;
+    } catch (e) {
+      console.error('Error deleting user:', e);
+      return false;
+    }
   }
 };

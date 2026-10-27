@@ -75,6 +75,32 @@ const getOfflineClinicalTriage = (symptoms, language = 'gu') => {
     };
   }
 
+  // 2.5 Headache, Migraine & Head Heaviness (GREEN / YELLOW)
+  if (s.includes('માથું') || s.includes('માથુ') || s.includes('માથાનો') || s.includes('ભાર') || s.includes('headache') || s.includes('migraine') || s.includes('mathu') || s.includes('sar dard') || s.includes('tension')) {
+    const isSevere = s.includes('ઉલટી') || s.includes('ચક્કર') || s.includes('ખૂબ') || s.includes('અસહ્ય');
+    return {
+      urgency: isSevere ? 'YELLOW' : 'GREEN',
+      urgency_label: isSevere ? '⚠️ મધ્યમ થી તીવ્ર માથાદુખાવો - તાત્કાલિક રાહત અને તબીબી તપાસ' : '🟢 સામાન્ય માથાનો દુખાવો - આયુર્વેદિક ઉપચાર & આરામ',
+      disease_name: isSevere ? 'તીવ્ર આધાશીશી / માઇગ્રેન (Severe Migraine & Tension Headache)' : 'ટેન્શન માથાદુખાવો અને માથામાં ભારેપણું (Tension Headache & Mental Fatigue)',
+      disease_name_en: isSevere ? 'Migraine / Cluster Headache' : 'Tension Type Headache & Head Heaviness',
+      symptoms_analysis: 'માથાના આગળના કે પાછળના ભાગમાં સતત દબાણ, ભારેપણું, થાક, ઊંઘનો અભાવ અથવા માનસિક તણાવથી થતો દુખાવો.',
+      natural_cure_without_medicine: {
+        cold_compress: 'કપાળ પર ઠંડા પાણીનું પોતું (Cold Compress) અથવા આઇસ પેક ૧૦ મિનિટ મૂકવું.',
+        acupressure: 'હાથના અંગૂઠા અને પહેલી આંગળી વચ્ચેનો LI-4 (હેગુ) એક્યુપ્રેશર પોઈન્ટ ૨ મિનિટ હળવેથી દબાવો.',
+        rest_dark_room: 'શાંત, અંધારાવાળા ઓરડામાં ૧૫-૨૦ મિનિટ આંખો બંધ કરીને આરામ કરો. મોબાઈલ અને સ્ક્રીન તરત બંધ કરો.'
+      },
+      ayurvedic_care: {
+        primary_herbs: 'બ્રાહ્મી વટી (૧ ગોળી) + શંખપુષ્પી સિરપ (૨ ચમચી) + કપાળ પર શુદ્ધ બદામ તેલ અથવા ચંદનનો લેપ.',
+        diet_rules: 'હૂંફાળું આદુ-તુલસીનું પાણી અથવા ગરમ દૂધ લો. ખાટો, તળેલો કે વાસી ખોરાક ટાળવો.'
+      },
+      allopathic_care: {
+        standard_drugs: 'Paracetamol 650mg (Dolo 650) અથવા Naproxen 250mg ભોજન પછી.',
+        warnings: 'ખાલી પેટે ક્યારેય પેઇન કિલર ન લેવી. જો એકાએક આંખે અંધારા કે બોલવામાં તકલીફ થાય તો તાત્કાલિક ડૉક્ટરનો સંપર્ક કરવો.'
+      },
+      action_plan: '૧. મોબાઈલ સ્ક્રીન બંધ કરી અંધારામાં સૂઈ જાવ. ૨. કપાળ પર બદામ તેલની માલિશ કરો. ૩. હૂંફાળું પાણી પીવો અને પેરાસિટામોલ લો.'
+    };
+  }
+
   // 3. Toothache (GREEN)
   if (s.includes('દાંત') || s.includes('દાઢ') || s.includes('પેઢા') || s.includes('tooth') || s.includes('dant') || s.includes('dadh')) {
     return {
@@ -1106,7 +1132,8 @@ export const apiService = {
     symptoms = [],
     hasExistingGlasses = false,
     existingOdSph = null,
-    existingOsSph = null
+    existingOsSph = null,
+    measuredPd = null
   }) => {
     try {
       const response = await apiClient.post('/ai/auto-refractor', {
@@ -1130,7 +1157,8 @@ export const apiService = {
         symptoms: symptoms,
         has_existing_glasses: hasExistingGlasses,
         existing_od_sph: existingOdSph,
-        existing_os_sph: existingOsSph
+        existing_os_sph: existingOsSph,
+        measured_pd: measuredPd
       });
       return response.data.data;
     } catch (err) {
@@ -1146,6 +1174,26 @@ export const apiService = {
         cyl = parseFloat(customCyl) || 0.00;
         axisOd = parseInt(customAxis) || 180;
         axisOs = axisOd;
+      } else if (hasExistingGlasses && existingOdSph !== null && existingOdSph !== undefined) {
+        const baseOd = parseFloat(existingOdSph) || 0.00;
+        const baseOs = (existingOsSph !== null && existingOsSph !== undefined) ? parseFloat(existingOsSph) : baseOd;
+        if (symptoms.includes('distance_blur') || symptoms.includes('severe_blur') || symptoms.includes('headache_strain')) {
+          sphOd = Math.round((baseOd - 0.25) * 100) / 100;
+          sphOs = Math.round((baseOs - 0.25) * 100) / 100;
+        } else {
+          sphOd = baseOd;
+          sphOs = baseOs;
+        }
+        const scToAcuity = (s) => {
+          if (s <= -3.00) return "6/60 (20/200)";
+          if (s <= -2.00) return "6/36 (20/120)";
+          if (s <= -1.50) return "6/24 (20/80)";
+          if (s <= -1.00) return "6/18 (20/60)";
+          if (s <= -0.50) return "6/9 (20/30)";
+          return "6/6 (20/20 Perfect)";
+        };
+        acuityOd = scToAcuity(sphOd);
+        acuityOs = scToAcuity(sphOs);
       } else if (snellenOdScore !== null && snellenOdScore !== undefined) {
         const scToSph = (s) => {
           if (s >= 7) return [0.00, "6/6 (20/20 Perfect)"];
@@ -1251,7 +1299,7 @@ export const apiService = {
         patient_name: patientName || (isGu ? "દર્દી" : "Patient"),
         patient_age: age,
         selected_distance_cm: selectedDistanceCm,
-        pd_mm: 63.0,
+        pd_mm: measuredPd ? parseFloat(measuredPd) : 63.0,
         vd_mm: 12.0,
         near_add: nearAdd,
         recommended_lens: lensRec,

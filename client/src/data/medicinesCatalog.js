@@ -290,7 +290,7 @@ export const MASTER_MEDICINES = [
   },
 
   // ==========================================
-  // 4. DIABETES (મધુમેહ)
+  // 4. DIABETES CARE
   // ==========================================
   {
     id: "metformin_glycomet",
@@ -734,6 +734,50 @@ export function resolveAnyMedicine(query = '') {
     precautions = "બીપીની દવા ક્યારેય અચાનક બંધ ન કરવી, લકવો થઈ શકે છે.";
     mrp = 110.0;
     janPrice = 14.0;
+  } else if (q.includes('ozempic') || q.includes('sema') || q.includes('wegovy') || q.includes('weight') || q.includes('obesity') || q.includes('ચરબી')) {
+    category = "વેઇટ લોસ & GLP-1 ગ્લુકોઝ રેગ્યુલેટર (GLP-1 Receptor Agonist)";
+    genericSalt = "Semaglutide / Liraglutide Bio-Equivalent Peptide";
+    diseases = "વજન ઘટાડવું, સ્થૂળતા (Obesity), ઇન્સ્યુલિન સેન્સિટિવિટી અને કાર્બ ક્રેવિંગ નિયંત્રણ";
+    allopathicHow = "તબીબી નિગરાની હેઠળ નિર્ધારિત સાપ્તાહિક ડોઝ.";
+    ayurName = "મેદોહર ગુગ્ગુળ + ત્રિફળા રસાયણ + ગરમ પાણીમાં લીંબુ-મધ";
+    ayurHow = "મેદોહર ગુગ્ગુળ ૨-૨ ગોળી ભોજન બાદ ગરમ પાણી સાથે.";
+    natural = "ઇન્ટરમિટન્ટ ફાસ્ટિંગ (૧૬:૮), દરરોજ ૬૦ મિનિટ કસરત, ખાંડ-મેંદો-જંકફૂડ સંપૂર્ણ બંધ.";
+    precautions = "થાઇરોઇડ કે પેનક્રિયાસની બિમારી હોય તેમણે ડૉક્ટરને પૂછ્યા વગર ન વાપરવું.";
+    mrp = 2800.0;
+    janPrice = 320.0;
+  } else if (q.includes('thyro') || q.includes('levo') || q.includes('eltroxin') || q.includes('થાઇરોઇડ')) {
+    category = "થાઇરોઇડ હોર્મોન થેરાપી (Thyroid Hormone Supplement)";
+    genericSalt = "Levothyroxine Sodium IP";
+    diseases = "હાયપોથાઇરોઇડિઝમ (Hypothyroidism), સુસ્તી, વજન વધવું અને હોર્મોનલ અસંતુલન";
+    allopathicHow = "રોજ સવારે ઉઠીને ખાલી પેટે ૧ ગોળી પાણી સાથે (ચા-નાસ્તો કરવાના ૪૫ મિનિટ પહેલાં).";
+    ayurName = "કાંચનાર ગુગ્ગુળ + વરુણાદિ ક્વાથ + જળનેતિ";
+    ayurHow = "કાંચનાર ગુગ્ગુળ ૨-૨ ગોળી સવાર-સાંજ.";
+    natural = "ઉજ્જયી પ્રાણાયામ, ધાણા પલાળેલું પાણી પીવું, આયોડિનયુક્ત આહાર લેવો.";
+    precautions = "દર ૩ મહિને TSH ટેસ્ટ કરાવો. ડોઝમાં પોતાની જાતે ફેરફાર ન કરવો.";
+    mrp = 160.0;
+    janPrice = 22.0;
+  } else if (q.includes('vitamin') || q.includes('calcium') || q.includes('d3') || q.includes('b12') || q.includes('iron') || q.includes('ઝિંક') || q.includes('કેલ્શિયમ')) {
+    category = "પોષક તત્ત્વો & વિટામિન સપ્લીમેન્ટ્સ (Nutritional Therapeutics)";
+    genericSalt = `${cleanQ} Essential Bio-Available Nutrient Complex`;
+    diseases = "શરીરમાં નબળાઈ, એનિમિયા (લોહીની ઉણપ), હાડકાંનો દુખાવો, થાક અને રોગપ્રતિકારક શક્તિ વધારવા";
+    allopathicHow = "દિવસમાં ૧ વાર બપોરે જમ્યા પછી દૂધ અથવા પાણી સાથે.";
+    ayurName = "ધાત્રી રસાયણ (આમળાં) + અશ્વગંધા ચૂર્ણ + શતાવરી";
+    ayurHow = "૧ ચમચી અશ્વગંધા રાત્રે સૂતી વખતે ગરમ દૂધ સાથે.";
+    natural = "સવારે ૧૫ મિનિટ સૂર્યપ્રકાશમાં બેસવું (વિટામિન D3), ખજૂર, ગોળ, પાલક અને ફળો ખાઓ.";
+    precautions = "વિટામિન્સનો વધુ પડતો ઓવરડોઝ ન લેવો. પૂરતું પાણી પીવું.";
+    mrp = 120.0;
+    janPrice = 18.0;
+  } else if (q.includes('derma') || q.includes('skin') || q.includes('cream') || q.includes('fungal') || q.includes('ખંજવાળ') || q.includes('દાદર')) {
+    category = "ચર્મરોગ & એન્ટિફંગલ સારવાર (Dermatological Care)";
+    genericSalt = "Clotrimazole / Terbinafine / Mupirocin Topical Formulation";
+    diseases = "ચામડીની ખંજવાળ, દાદર (Ringworm), શીળસ, ખરજવું (Eczema) અને ફંગલ ઇન્ફેક્શન";
+    allopathicHow = "દિવસમાં ૨ વાર અસરગ્રસ્ત જગ્યા સાબુ-પાણીથી સાફ કરી સૂકવીને હળવેથી લગાવવી.";
+    ayurName = "લીમડાનું તેલ + ખદીરારિષ્ટ + ગંધક રસાયણ";
+    ayurHow = "ખદીરારિષ્ટ ૪ ચમચી સરખા પાણી સાથે ભોજન બાદ પીવો.";
+    natural = "સુતરાઉ ઢીલાં કપડાં પહેરો, કપડાંને ગરમ પાણીમાં ધોઈ તડકામાં સૂકવો, સાબુ બદલો.";
+    precautions = "ખંજવાળિયા ભાગ પર નખ ન મારવા, ચેપ ફેલાઈ શકે છે. આંખથી દૂર રાખવી.";
+    mrp = 95.0;
+    janPrice = 15.0;
   }
 
   const savingsPct = Math.round(((mrp - janPrice) / mrp) * 100);

@@ -4,8 +4,29 @@ import { apiService } from '../services/api';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
 
+// BCP-47 Speech Recognition & Synthesis Locales for all 16 supported languages
+const BCP47_SPEECH_MAP = {
+  gu: 'gu-IN',
+  hi: 'hi-IN',
+  en: 'en-US',
+  ku: 'gu-IN',
+  mr: 'mr-IN',
+  bn: 'bn-IN',
+  ta: 'ta-IN',
+  te: 'te-IN',
+  pa: 'pa-IN',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  ar: 'ar-SA',
+  ru: 'ru-RU',
+  zh: 'zh-CN',
+  ja: 'ja-JP'
+};
+
 export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, currentUser }) => {
   const t = getTranslation(currentLang);
+  const isGu = currentLang === 'gu' || currentLang === 'ku';
   const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'en';
 
   const quickTags = [
@@ -91,8 +112,8 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = true;
-        // gu-IN provides high accuracy for both Gujarati and Kutchi
-        recognition.lang = langKey === 'hi' ? 'hi-IN' : langKey === 'en' ? 'en-US' : 'gu-IN';
+        // Multi-Language Speech Recognition Engine
+        recognition.lang = BCP47_SPEECH_MAP[currentLang] || (langKey === 'hi' ? 'hi-IN' : langKey === 'en' ? 'en-US' : 'gu-IN');
 
         recognition.onstart = () => {
           setIsRecording(true);
@@ -237,7 +258,7 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = langKey === 'hi' ? 'hi-IN' : langKey === 'en' ? 'en-US' : 'gu-IN';
+      utterance.lang = BCP47_SPEECH_MAP[currentLang] || (langKey === 'hi' ? 'hi-IN' : langKey === 'en' ? 'en-US' : 'gu-IN');
       utterance.rate = 0.95;
       window.speechSynthesis.speak(utterance);
     }
@@ -284,7 +305,7 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
       <div className="medical-card">
         <h3 style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 800, color: '#0A1128' }}>
           <Mic color="#00C48C" size={24} />
-          {t.triageHeader || '🎙️ RAG લક્ષણ તપાસ & ૩-સ્તરીય ક્લિનિકલ સારવાર પ્રોટોકોલ'}
+          {t.triageHeader ? t.triageHeader.replace('🎙️', '').trim() : 'RAG લક્ષણ તપાસ & ૩-સ્તરીય ક્લિનિકલ સારવાર પ્રોટોકોલ'}
         </h3>
         <p style={{ color: '#4A5568', marginBottom: '14px', fontSize: '13.5px' }}>
           {langKey === 'gu'
@@ -444,7 +465,7 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
                 style={{ flex: 1, padding: '12px', fontWeight: 800, fontSize: '14px' }}
               >
                 <Search size={18} />
-                {loading ? (t.triageAnalyzing || 'તપાસ ચાલુ છે...') : (t.triageAnalyzeBtn || '🔍 ૨૦૦% સાચી તપાસ કરો')}
+                {loading ? (t.triageAnalyzing || 'તપાસ ચાલુ છે...') : (t.triageAnalyzeBtn ? t.triageAnalyzeBtn.replace(/🔍/g, '').trim() : '૨૦૦% સાચી તપાસ કરો')}
               </button>
               <button
                 className="btn-secondary"
@@ -462,7 +483,7 @@ export const VoiceTriageTab = ({ currentLang, initialPrompt, selectedModel, curr
                 }}
               >
                 {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
-                {isRecording ? (langKey === 'gu' ? 'બંધ કરો' : 'Stop') : (langKey === 'gu' ? '🎙️ બોલો' : 'Speak')}
+                {isRecording ? (langKey === 'gu' ? 'બંધ કરો' : 'Stop') : (langKey === 'gu' ? 'બોલો' : 'Speak')}
               </button>
             </div>
           </div>

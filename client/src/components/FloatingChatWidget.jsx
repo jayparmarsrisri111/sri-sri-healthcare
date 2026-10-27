@@ -5,6 +5,7 @@ import { getTranslation } from '../services/languageService';
 
 export const FloatingChatWidget = ({ currentLang, activeTab }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const t = getTranslation(currentLang);
 
   // If already on the dedicated Chatbot tab, hide the floating trigger button
@@ -17,10 +18,12 @@ export const FloatingChatWidget = ({ currentLang, activeTab }) => {
 
   return (
     <>
-      {/* Compact, Ultra-Aesthetic Floating AI Doctor Pill */}
+      {/* Compact Initial Circle FAB, Expands smoothly on Hover/Click */}
       <button
-        className={`floating-chat-bubble-btn ${isOpen ? 'active-open' : ''}`}
+        className={`floating-chat-bubble-btn ${isOpen ? 'active-open' : ''} ${isHovered ? 'hover-expanded' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         title={cleanTitle}
         aria-label={cleanTitle}
       >

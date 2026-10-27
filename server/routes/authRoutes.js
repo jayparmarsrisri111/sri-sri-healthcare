@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const { authRateLimiter, passwordSecurity } = require('../middleware/security');
 
 // Default initial demo users
 const INITIAL_DEMO_USERS = [
@@ -55,7 +56,7 @@ function sanitizeUser(u) {
 }
 
 // POST /api/auth/register - Register new user (Patient, Doctor, or Admin)
-router.post('/register', async (req, res) => {
+router.post('/register', authRateLimiter, async (req, res) => {
     try {
         const {
             name, email, password, role,
@@ -66,6 +67,10 @@ router.post('/register', async (req, res) => {
 
         if (!name || !email || !password) {
             return res.status(400).json({ success: false, message: 'Name, email, and password are required.' });
+        }
+
+        if (typeof password !== 'string' || password.length < 6 || password.length > 128) {
+            return res.status(400).json({ success: false, message: 'Password must be between 6 and 128 characters.' });
         }
 
         const normalizedEmail = email.toLowerCase().trim();
@@ -94,7 +99,7 @@ router.post('/register', async (req, res) => {
             userId: newUserId,
             name: name.trim(),
             email: normalizedEmail,
-            password: password, // For demonstration & offline local prototype
+            password: passwordSecurity.hashPassword(password), // Cryptographically hashed with scrypt + salt
             role: validRole,
             phone: phone || '',
             age: Number(age) || 35,
@@ -141,7 +146,7 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/auth/login - Login user with role check
-router.post('/login', async (req, res) => {
+router.post('/login', authRateLimiter, async (req, res) => {
     try {
         const { email, password, role } = req.body;
 
@@ -152,9 +157,11 @@ router.post('/login', async (req, res) => {
         const normalizedEmail = email.toLowerCase().trim();
 
         let foundUser = null;
+        let isDbUser = false;
         if (mongoose.connection.readyState === 1) {
             try {
                 foundUser = await User.findOne({ email: normalizedEmail });
+                if (foundUser) isDbUser = true;
             } catch (dbErr) {
                 foundUser = inMemoryUsers.find(u => u.email.toLowerCase() === normalizedEmail);
             }
@@ -170,11 +177,22 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        if (foundUser.password !== password) {
+        const isPasswordValid = passwordSecurity.verifyPassword(password, foundUser.password);
+        if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
                 message: 'પાસવર્ડ ખોટો છે. કૃપા કરીને ફરી પ્રયાસ કરો.'
             });
+        }
+
+        // Seamless transparent security upgrade: rehash legacy plain-text passwords
+        if (isDbUser && passwordSecurity.needsRehash(foundUser.password)) {
+            try {
+                foundUser.password = passwordSecurity.hashPassword(password);
+                await foundUser.save();
+            } catch (rehashErr) {
+                console.warn('Non-blocking password rehash notice:', rehashErr.message);
+            }
         }
 
         // Check role match if requested

@@ -142,10 +142,9 @@ export default function App() {
   };
 
   const handleEmergency = () => {
-    setModalMessage({
-      title: t.emergencyCallTitle,
-      body: t.emergencyCallBody
-    });
+    if (typeof window !== 'undefined') {
+      window.location.href = 'tel:108';
+    }
   };
 
   const handleSOS = () => {

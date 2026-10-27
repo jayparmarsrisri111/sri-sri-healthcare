@@ -16,8 +16,8 @@ export const FacilityNavigatorTab = ({ currentLang = 'en' }) => {
   const [isLocating, setIsLocating] = useState(false);
   const [alertStatus, setAlertStatus] = useState(null);
 
-  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'gu';
-  const isGu = langKey === 'gu' || langKey === 'ku';
+  const isGu = currentLang === 'gu' || currentLang === 'ku';
+  const langKey = ['en', 'gu', 'hi', 'ku'].includes(currentLang) ? currentLang : 'en';
 
   // Quick suggestion towns/villages
   const QUICK_SUGGESTIONS = [

@@ -8,10 +8,10 @@ export const DigitalPrescriptionModal = ({ isOpen, onClose, record, doctorInfo, 
   const t = getTranslation(currentLang);
   const isEn = currentLang === 'en';
 
-  const doctorName = doctorInfo?.name || record?.doctorReviewedBy || (isEn ? 'Dr. Rajesh Mehta, MD' : 'Dr. રાજેશ મહેતા, MD');
-  const doctorReg = doctorInfo?.regNumber || 'GMC-GUJ-2014-9842';
-  const doctorSpecialization = doctorInfo?.specialization || (isEn ? 'General Physician & Cardiologist' : 'મુખ્ય જનરલ ફિઝિશિયન & કાર્ડિયોલોજિસ્ટ');
-  const hospital = doctorInfo?.hospitalAffiliation || (isEn ? 'Civil Hospital & Community Health Center' : 'GK જનરલ સિવિલ હોસ્પિટલ & સામુહિક આરોગ્ય કેન્દ્ર');
+  const doctorName = doctorInfo?.name || record?.doctorReviewedBy || 'Dr. Jay Parmar, M.D.';
+  const doctorReg = doctorInfo?.regNumber || 'GMC-GUJ-2016-48291';
+  const doctorSpecialization = doctorInfo?.specialization || (isEn ? 'Chief Medical Officer & Senior Physician' : 'મુખ્ય તબીબી અધિકારી & સીનિયર ફિઝિશિયન');
+  const hospital = doctorInfo?.hospitalAffiliation || (isEn ? 'Sri Sri Healthcare Central Hospital & Research Center' : 'શ્રી શ્રી હેલ્થકેર સેન્ટ્રલ હોસ્પિટલ & રિસર્ચ સેન્ટર');
 
   const defaultMedicines = [
     { name: 'Paracetamol 650mg (Jan Aushadhi)', dose: '૧ ગોળી જમ્યા પછી', freq: '1 - 0 - 1', days: '૩ દિવસ', price: '₹૫.૫૦ (૮૫% બચત)' },
@@ -299,27 +299,39 @@ export const DigitalPrescriptionModal = ({ isOpen, onClose, record, doctorInfo, 
               </div>
             </div>
 
-            {/* Official Seal & Stamp */}
-            <div style={{ textAlign: 'center', minWidth: '180px' }}>
+            {/* Official Doctor Signature & Stamp of Dr. Jay Parmar */}
+            <div style={{ textAlign: 'right', minWidth: '220px' }}>
               <div style={{
-                border: '2px solid #0284C7',
+                fontFamily: "'Brush Script MT', 'Dancing Script', cursive",
+                fontSize: '32px',
+                color: '#0284C7',
+                fontWeight: 700,
+                transform: 'rotate(-3deg)',
+                lineHeight: 1,
+                marginBottom: '4px',
+                textDecoration: 'underline'
+              }}>
+                {doctorName.includes('Jay Parmar') || doctorName.includes('જય પરમાર') ? 'Dr. Jay Parmar' : doctorName}
+              </div>
+              <div style={{ fontSize: '13px', fontWeight: 900, color: '#0F172A' }}>
+                {doctorName}
+              </div>
+              <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 800 }}>
+                NMC / GMC REG: {doctorReg}
+              </div>
+              <div style={{
+                border: '1.5px solid #0284C7',
                 borderRadius: '50px',
-                padding: '6px 16px',
+                padding: '3px 12px',
                 background: '#F0F9FF',
                 display: 'inline-block',
-                marginBottom: '4px'
+                marginTop: '4px'
               }}>
-                <div style={{ fontSize: '10px', fontWeight: 900, color: '#0284C7', textTransform: 'uppercase' }}>
-                  ★ સત્તાવાર ડિજિટલ મહોર ★
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#0369A1' }}>
-                  {doctorName}
-                </div>
-                <div style={{ fontSize: '9px', color: '#0284C7' }}>
-                  GMC REG: {doctorReg}
-                </div>
+                <span style={{ fontSize: '9px', fontWeight: 900, color: '#0284C7', textTransform: 'uppercase' }}>
+                  ★ સત્તાવાર ડિજિટલ મહોર & સાચી સહી ★
+                </span>
               </div>
-              <div style={{ fontSize: '9px', color: '#64748B' }}>
+              <div style={{ fontSize: '9px', color: '#64748B', marginTop: '2px' }}>
                 ડિજિટલી પ્રમાણિત • NMC Telemedicine Guidelines 2020 Compliant
               </div>
             </div>

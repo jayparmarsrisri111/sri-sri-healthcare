@@ -952,7 +952,8 @@ router.post('/auto-refractor', async (req, res) => {
             vision_status = 'normal', custom_od_sph, custom_os_sph, custom_cyl, custom_axis,
             duochrome_preference, snellen_od_score, snellen_os_score,
             astigmatism_line, astigmatism_cyl, astigmatism_axis,
-            near_reading_level, symptoms
+            near_reading_level, symptoms,
+            has_existing_glasses, existing_od_sph, existing_os_sph, measured_pd
         } = req.body;
         const isGu = language === 'gu';
 
@@ -965,6 +966,26 @@ router.post('/auto-refractor', async (req, res) => {
             cyl = parseFloat(custom_cyl) || 0.00;
             axisOd = parseInt(custom_axis) || 180;
             axisOs = axisOd;
+        } else if (has_existing_glasses && existing_od_sph !== undefined && existing_od_sph !== null) {
+            const baseOd = parseFloat(existing_od_sph) || 0.00;
+            const baseOs = (existing_os_sph !== undefined && existing_os_sph !== null) ? parseFloat(existing_os_sph) : baseOd;
+            if (symptoms && (symptoms.includes('distance_blur') || symptoms.includes('severe_blur') || symptoms.includes('headache_strain'))) {
+                sphOd = Math.round((baseOd - 0.25) * 100) / 100;
+                sphOs = Math.round((baseOs - 0.25) * 100) / 100;
+            } else {
+                sphOd = baseOd;
+                sphOs = baseOs;
+            }
+            const scToAcuity = (s) => {
+                if (s <= -3.00) return "6/60 (20/200)";
+                if (s <= -2.00) return "6/36 (20/120)";
+                if (s <= -1.50) return "6/24 (20/80)";
+                if (s <= -1.00) return "6/18 (20/60)";
+                if (s <= -0.50) return "6/9 (20/30)";
+                return "6/6 (20/20 Perfect)";
+            };
+            acuityOd = scToAcuity(sphOd);
+            acuityOs = scToAcuity(sphOs);
         } else if (snellen_od_score !== undefined && snellen_od_score !== null) {
             const scToSph = (s) => {
                 if (s >= 7) return [0.00, "6/6 (20/20 Perfect)"];
@@ -1074,7 +1095,7 @@ router.post('/auto-refractor', async (req, res) => {
                 patient_name: patient_name || "દર્દી",
                 patient_age: user_age || 30,
                 selected_distance_cm: selected_distance_cm || 60,
-                pd_mm: 63.0,
+                pd_mm: measured_pd ? parseFloat(measured_pd) : 63.0,
                 vd_mm: 12.0,
                 near_add: addPowerStr,
                 recommended_lenses: recLens,

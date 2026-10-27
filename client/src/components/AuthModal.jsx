@@ -264,7 +264,12 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
                 ⚡ ૧-ક્લિક ડેમો લૉગિન (Instant Test Logins)
               </span>
             </div>
-            <div className="auth-demo-grid">
+            <div className="auth-demo-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '10px',
+              width: '100%'
+            }}>
               <button
                 type="button"
                 onClick={() => handleQuickDemo('patient')}
@@ -273,16 +278,21 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
                   background: '#FFFFFF',
                   border: '1.5px solid #A7F3D0',
                   borderRadius: '12px',
-                  padding: '8px 6px',
+                  padding: '10px 8px',
                   cursor: 'pointer',
                   textAlign: 'center',
                   transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px'
                 }}
               >
-                <div style={{ fontSize: '20px' }}>👨‍🦰</div>
-                <div style={{ fontSize: '11px', fontWeight: 800, color: '#065F46' }}>દર્દી (Patient)</div>
-                <div style={{ fontSize: '9px', color: '#64748B' }}>રામજીભાઈ</div>
+                <div style={{ fontSize: '24px', lineHeight: 1 }}>👨‍🦰</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#065F46' }}>દર્દી (Patient)</div>
+                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>રામજીભાઈ</div>
               </button>
 
               <button
@@ -293,16 +303,21 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
                   background: '#FFFFFF',
                   border: '1.5px solid #BAE6FD',
                   borderRadius: '12px',
-                  padding: '8px 6px',
+                  padding: '10px 8px',
                   cursor: 'pointer',
                   textAlign: 'center',
                   transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px'
                 }}
               >
-                <div style={{ fontSize: '20px' }}>👨‍⚕️</div>
-                <div style={{ fontSize: '11px', fontWeight: 800, color: '#0369A1' }}>ડોક્ટર (Doctor)</div>
-                <div style={{ fontSize: '9px', color: '#64748B' }}>Dr. રાજેશ મહેતા</div>
+                <div style={{ fontSize: '24px', lineHeight: 1 }}>👨‍⚕️</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#0369A1' }}>ડોક્ટર (Doctor)</div>
+                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>Dr. રાજેશ મહેતા</div>
               </button>
 
               <button
@@ -313,16 +328,21 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
                   background: '#FFFFFF',
                   border: '1.5px solid #DDD6FE',
                   borderRadius: '12px',
-                  padding: '8px 6px',
+                  padding: '10px 8px',
                   cursor: 'pointer',
                   textAlign: 'center',
                   transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px'
                 }}
               >
-                <div style={{ fontSize: '20px' }}>🛡️</div>
-                <div style={{ fontSize: '11px', fontWeight: 800, color: '#6D28D9' }}>એડમિન (Admin)</div>
-                <div style={{ fontSize: '9px', color: '#64748B' }}>Chief Officer</div>
+                <div style={{ fontSize: '24px', lineHeight: 1 }}>🛡️</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#6D28D9' }}>એડમિન (Admin)</div>
+                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>Chief Officer</div>
               </button>
             </div>
           </div>

@@ -7,6 +7,12 @@ import {
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 
+// Remove leading emojis/color icons from label text so only the single Lucide outline icon appears cleanly
+const cleanLabel = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/^[\p{Extended_Pictographic}\p{Emoji_Presentation}\u200d\uFE0F\uFE0E\s]+/u, '').trim();
+};
+
 export const Sidebar = ({
   activeTab,
   setActiveTab,
@@ -29,7 +35,7 @@ export const Sidebar = ({
   if (currentUser?.role === 'doctor') {
     roleSpecificGroup.push({
       id: 'doctorPortal',
-      label: t.tabDoctorPortal || '🩺 Doctor Portal',
+      label: cleanLabel(t.tabDoctorPortal || 'Doctor Portal'),
       icon: Stethoscope,
       badge: 'Doctor Hub',
       highlight: true
@@ -37,7 +43,7 @@ export const Sidebar = ({
   } else if (currentUser?.role === 'admin') {
     roleSpecificGroup.push({
       id: 'adminHub',
-      label: t.tabAdminHub || '🛡️ Admin Hub',
+      label: cleanLabel(t.tabAdminHub || 'Admin Hub'),
       icon: ShieldCheck,
       badge: 'Admin Hub',
       highlight: true
@@ -46,26 +52,26 @@ export const Sidebar = ({
 
   const primaryCareGroup = [
     ...roleSpecificGroup,
-    { id: 'ruralCare', label: t.tabRuralCare || '🌾 Rural Lifeline', icon: ShieldAlert, badge: 'Lifeline', highlight: true },
-    { id: 'triage', label: t.tabTriage, icon: Mic, badge: 'RAG' },
-    { id: 'chatbot', label: t.tabChatbot, icon: MessageSquare, badge: '100% AI' },
-    { id: 'encyclopedia', label: t.tabEncyclopedia, icon: Pill, badge: 'New' },
-    { id: 'medLocator', label: t.tabMedLocator || '📍 Live Medicine Radar', icon: Navigation, badge: 'GPS Live' },
+    { id: 'ruralCare', label: cleanLabel(t.tabRuralCare || 'Rural Lifeline & Snakebite'), icon: ShieldAlert, badge: 'ઈમરજન્સી', highlight: true },
+    { id: 'triage', label: cleanLabel(t.tabTriage || 'Symptom Triage & Care'), icon: Mic },
+    { id: 'chatbot', label: cleanLabel(t.tabChatbot || '24/7 AI Doctor Chatbot'), icon: MessageSquare, badge: '૨૪/૭ સેવા' },
+    { id: 'encyclopedia', label: cleanLabel(t.tabEncyclopedia || 'Medicine Encyclopedia'), icon: Pill, badge: 'ઓર્ડર' },
+    { id: 'medLocator', label: cleanLabel(t.tabMedLocator || 'Live Medicine & GPS Radar'), icon: Navigation, badge: 'GPS' },
   ];
 
   const advancedAIGroup = [
-    { id: 'eye', label: t.tabEyePower || '👁️ Eye Power AI', icon: Eye, badge: 'Optometry' },
-    { id: 'emotion', label: t.tabEmotion, icon: Brain, badge: 'FACS' },
-    { id: 'vision', label: t.tabVision, icon: Camera, badge: 'Gemini' },
-    { id: 'vitals', label: t.tabVitals, icon: Activity, badge: 'rPPG' },
+    { id: 'eye', label: cleanLabel(t.tabEyePower || 'Eye Power & Vision AI'), icon: Eye, badge: 'ચશ્મા નંબર' },
+    { id: 'emotion', label: cleanLabel(t.tabEmotion || 'Mind & Emotion AI'), icon: Brain },
+    { id: 'vision', label: cleanLabel(t.tabVision || 'X-Ray & Lab OCR'), icon: Camera, badge: 'X-Ray લેબ' },
+    { id: 'vitals', label: cleanLabel(t.tabVitals || 'Camera Pulse & Vitals'), icon: Activity, badge: 'પલ્સ / BP' },
   ];
 
   const hospitalGroup = [
-    { id: 'doctorDirectory', label: t.tabDoctorDirectory || '🌍 Global Doctor Registry', icon: Users, badge: 'World', highlight: true },
-    { id: 'homeLab', label: t.tabHomeLab || '🧪 Home Blood Test', icon: TestTube, badge: '80% Off' },
-    { id: 'phc', label: t.tabPhc, icon: Hospital, badge: 'Live' },
-    { id: 'schemes', label: t.tabSchemes, icon: Landmark, badge: '85% Off' },
-    { id: 'history', label: currentUser?.role === 'patient' ? (t.tabMyHealthPassport || '📋 My Health Passport') : t.tabHistory, icon: History, badge: currentUser?.role === 'patient' ? 'My EHR' : 'DB' }
+    { id: 'doctorDirectory', label: cleanLabel(t.tabDoctorDirectory || 'Global Doctor Registry'), icon: Users, badge: 'સ્પેશિયાલિસ્ટ', highlight: true },
+    { id: 'homeLab', label: cleanLabel(t.tabHomeLab || 'Home Blood Test'), icon: TestTube, badge: 'બ્લડ ટેસ્ટ' },
+    { id: 'phc', label: cleanLabel(t.tabPhc || 'PHC & 108 Navigation'), icon: Hospital, badge: '૧૦૮ સેવા' },
+    { id: 'schemes', label: cleanLabel(t.tabSchemes || 'Government Schemes & Subsidy'), icon: Landmark, badge: 'PM-JAY' },
+    { id: 'history', label: cleanLabel(currentUser?.role === 'patient' ? (t.tabMyHealthPassport || 'My Health Passport') : (t.tabHistory || 'Patient History')), icon: History, badge: currentUser?.role === 'patient' ? 'EHR' : 'રેકોર્ડ્સ' }
   ];
 
   const handleNavClick = (id) => {
@@ -137,8 +143,8 @@ export const Sidebar = ({
               boxShadow: '0 4px 12px rgba(0, 196, 140, 0.15)'
             }}
           >
-            <Trophy size={14} color="#00C48C" />
-            {t.pitchBtn}
+            <Trophy size={14} color="#00C48C" style={{ flexShrink: 0 }} />
+            <span>{cleanLabel(t.pitchBtn)}</span>
           </button>
 
           <button
@@ -159,8 +165,8 @@ export const Sidebar = ({
               gap: '6px'
             }}
           >
-            <Cpu size={14} color="#00C48C" />
-            {t.ensembleBtn}
+            <Cpu size={14} color="#00C48C" style={{ flexShrink: 0 }} />
+            <span>{cleanLabel(t.ensembleBtn)}</span>
           </button>
 
           <button
@@ -182,8 +188,8 @@ export const Sidebar = ({
               boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
             }}
           >
-            <Brain size={14} color="#FFFFFF" />
-            {t.btnContinuousTraining || '🧠 AI Self-Training'}
+            <Brain size={14} color="#FFFFFF" style={{ flexShrink: 0 }} />
+            <span>{cleanLabel(t.btnContinuousTraining || 'AI Self-Training')}</span>
           </button>
 
           {onOpenAdvantagesModal && (
@@ -206,8 +212,8 @@ export const Sidebar = ({
                 boxShadow: '0 4px 12px rgba(16, 185, 129, 0.15)'
               }}
             >
-              <ShieldCheck size={14} color="#34D399" />
-              {t.btnAdvantages || '🛡️ 5 Advantages'}
+              <ShieldCheck size={14} color="#34D399" style={{ flexShrink: 0 }} />
+              <span>{cleanLabel(t.btnAdvantages || '5 Advantages')}</span>
             </button>
           )}
         </div>
@@ -234,8 +240,8 @@ export const Sidebar = ({
               boxShadow: '0 2px 8px rgba(96, 165, 250, 0.2)'
             }}
           >
-            <HelpCircle size={15} color="#2563EB" />
-            {t.btnAppGuide || '📖 App Guide'}
+            <HelpCircle size={15} color="#2563EB" style={{ flexShrink: 0 }} />
+            <span>{cleanLabel(t.btnAppGuide || 'App Guide')}</span>
           </button>
         )}
 
@@ -254,15 +260,16 @@ export const Sidebar = ({
                 className={`nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.id)}
               >
-                <Icon size={17} />
-                <span style={{ flex: 1 }}>{item.label}</span>
+                <Icon size={17} style={{ flexShrink: 0 }} />
+                <span style={{ flex: 1, lineHeight: 1.25 }}>{cleanLabel(item.label)}</span>
                 <span style={{
                   fontSize: '9.5px',
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: '10px',
                   background: isActive ? 'rgba(255,255,255,0.25)' : '#E0F8EE',
-                  color: isActive ? '#FFFFFF' : '#009F70'
+                  color: isActive ? '#FFFFFF' : '#009F70',
+                  flexShrink: 0
                 }}>
                   {item.badge}
                 </span>
@@ -286,15 +293,16 @@ export const Sidebar = ({
                 className={`nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.id)}
               >
-                <Icon size={17} />
-                <span style={{ flex: 1 }}>{item.label}</span>
+                <Icon size={17} style={{ flexShrink: 0 }} />
+                <span style={{ flex: 1, lineHeight: 1.25 }}>{cleanLabel(item.label)}</span>
                 <span style={{
                   fontSize: '9.5px',
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: '10px',
                   background: isActive ? 'rgba(255,255,255,0.25)' : '#E0F8EE',
-                  color: isActive ? '#FFFFFF' : '#009F70'
+                  color: isActive ? '#FFFFFF' : '#009F70',
+                  flexShrink: 0
                 }}>
                   {item.badge}
                 </span>
@@ -318,15 +326,16 @@ export const Sidebar = ({
                 className={`nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.id)}
               >
-                <Icon size={17} />
-                <span style={{ flex: 1 }}>{item.label}</span>
+                <Icon size={17} style={{ flexShrink: 0 }} />
+                <span style={{ flex: 1, lineHeight: 1.25 }}>{cleanLabel(item.label)}</span>
                 <span style={{
                   fontSize: '9.5px',
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: '10px',
                   background: isActive ? 'rgba(255,255,255,0.25)' : '#E0F8EE',
-                  color: isActive ? '#FFFFFF' : '#009F70'
+                  color: isActive ? '#FFFFFF' : '#009F70',
+                  flexShrink: 0
                 }}>
                   {item.badge}
                 </span>
@@ -360,8 +369,8 @@ export const Sidebar = ({
             transition: 'all 0.2s'
           }}
         >
-          <Smartphone size={16} />
-          <span>{t.installApp || '📲 એપ ઇન્સ્ટોલ કરો'}</span>
+          <Smartphone size={16} style={{ flexShrink: 0 }} />
+          <span>{cleanLabel(t.installApp || 'એપ ઇન્સ્ટોલ કરો')}</span>
         </button>
       )}
 

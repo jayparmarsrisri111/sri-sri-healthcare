@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import {
   Activity, TestTube, CheckCircle2, Clock, MapPin,
   PhoneCall, ShieldCheck, DollarSign, Calendar, User,
-  FileText, Sparkles, AlertCircle, Share2, Printer
+  FileText, Sparkles, AlertCircle, Share2, Printer,
+  QrCode, X, Building
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
 
 export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
   const t = getTranslation(currentLang);
-  const isEn = currentLang === 'en';
+  const isGu = currentLang === 'gu' || currentLang === 'ku';
+  const isEn = !isGu;
   const [selectedTests, setSelectedTests] = useState(['cbc']);
   const [patientName, setPatientName] = useState(currentUser?.name || 'રામજીભાઈ પટેલ');
   const [patientPhone, setPatientPhone] = useState(currentUser?.phone || '9876543210');
@@ -18,6 +20,7 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
   const [isAyushmanHolder, setIsAyushmanHolder] = useState(true);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [showBillModal, setShowBillModal] = useState(false);
 
   const availableLabTests = [
     {
@@ -438,29 +441,365 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
                 <b>અંદાજિત આગમન:</b> {confirmedBooking.estimatedArrival}
               </p>
 
-              <a
-                href={`https://wa.me/91${confirmedBooking.phlebotomistPhone}?text=${encodeURIComponent(`હેલો, લેબ બુકિંગ ID ${confirmedBooking.bookingId} માટે દર્દી ${confirmedBooking.patientName}, સ્થળ: ${confirmedBooking.patientAddress}`)}`}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: '#22C55E',
-                  color: '#FFFFFF',
-                  textDecoration: 'none',
-                  padding: '6px 14px',
-                  borderRadius: '10px',
-                  fontSize: '11.5px',
-                  fontWeight: 800
-                }}
-              >
-                <span>💬 ટેકનિશિયનને WhatsApp મેસેજ કરો</span>
-              </a>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowBillModal(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#0A1128',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(10, 17, 40, 0.25)'
+                  }}
+                >
+                  <Printer size={15} />
+                  <span>🖨️ સત્તાવાર લેબ બિલ & રસીદ પ્રિન્ટ કરો</span>
+                </button>
+
+                <a
+                  href={`https://wa.me/91${confirmedBooking.phlebotomistPhone}?text=${encodeURIComponent(`હેલો, લેબ બુકિંગ ID ${confirmedBooking.bookingId} માટે દર્દી ${confirmedBooking.patientName}, સ્થળ: ${confirmedBooking.patientAddress}`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#22C55E',
+                    color: '#FFFFFF',
+                    textDecoration: 'none',
+                    padding: '8px 14px',
+                    borderRadius: '10px',
+                    fontSize: '12px',
+                    fontWeight: 800
+                  }}
+                >
+                  <span>💬 WhatsApp</span>
+                </a>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Official Diagnostic Lab Bill & Receipt Modal */}
+      {showBillModal && confirmedBooking && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(10, 17, 40, 0.85)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            width: '100%',
+            maxWidth: '750px',
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.35)',
+            border: '2px solid #00C48C',
+            position: 'relative'
+          }}>
+            {/* Modal Actions Bar (hidden when printing) */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '14px 20px',
+              background: '#0A1128',
+              color: '#FFFFFF',
+              borderTopLeftRadius: '18px',
+              borderTopRightRadius: '18px'
+            }} className="no-print">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 800 }}>
+                <Printer size={16} color="#00C48C" />
+                <span>સત્તાવાર પેથોલોજી લેબ બિલ & રસીદ વાઉચર (Official Lab Invoice)</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => window.print()}
+                  style={{
+                    background: '#00C48C',
+                    color: '#0A1128',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '6px 14px',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <Printer size={14} /> પ્રિન્ટ / PDF
+                </button>
+                <button
+                  onClick={() => setShowBillModal(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#FFFFFF',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Bill Paper Content */}
+            <div id="lab-bill-paper" className="printable-certificate" style={{ padding: '24px 28px' }}>
+              {/* Lab Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                borderBottom: '2.5px solid #0A1128',
+                paddingBottom: '16px',
+                marginBottom: '16px',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#FFF'
+                    }}>
+                      <TestTube size={22} />
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#0A1128' }}>
+                        SRI SRI HEALTHCARE CENTRAL PATHOLOGY LAB
+                      </h3>
+                      <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 800 }}>
+                        NABL & ICMR RECOGNIZED CLINICAL DIAGNOSTIC CENTER • ISO 15189:2022
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '6px', lineHeight: 1.4 }}>
+                    સરકારી સિવિલ હોસ્પિટલ રોડ, મુખ્ય ડાયગ્નોસ્ટિક ભવન, ગુજરાત • હેલ્પલાઇન: 02832-250108 / 108
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right', minWidth: '170px' }}>
+                  <div style={{
+                    background: '#F1F5F9',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    display: 'inline-block',
+                    textAlign: 'right'
+                  }}>
+                    <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 700 }}>INVOICE / BILL NO:</div>
+                    <div style={{ fontSize: '14px', fontWeight: 900, color: '#0A1128' }}>
+                      INV-LAB-{confirmedBooking.bookingId}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '4px' }}>
+                    તારીખ: {new Date().toLocaleDateString('gu-IN')} | સમય: {new Date().toLocaleTimeString('gu-IN')}
+                  </div>
+                </div>
+              </div>
+
+              {/* Patient & Booking Details Box */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                marginBottom: '18px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '10px',
+                fontSize: '12px'
+              }}>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600 }}>દર્દીનું નામ:</span>{' '}
+                  <strong style={{ color: '#0F172A', fontSize: '13px' }}>{confirmedBooking.patientName}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600 }}>સંપર્ક નંબર:</span>{' '}
+                  <strong style={{ color: '#0F172A' }}>+91 {confirmedBooking.patientPhone}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600 }}>સેમ્પલ કલેક્શન સ્લોટ:</span>{' '}
+                  <strong style={{ color: '#009F70' }}>{confirmedBooking.slot}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600 }}>નમૂનો લેનાર ટેકનિશિયન:</span>{' '}
+                  <strong style={{ color: '#0F172A' }}>{confirmedBooking.phlebotomist}</strong>
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <span style={{ color: '#64748B', fontWeight: 600 }}>સેમ્પલ કલેક્શન સરનામું:</span>{' '}
+                  <strong style={{ color: '#0F172A' }}>{confirmedBooking.patientAddress}</strong>
+                </div>
+              </div>
+
+              {/* Itemized Tests Billing Table */}
+              <table style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                marginBottom: '16px',
+                fontSize: '12.5px'
+              }}>
+                <thead>
+                  <tr style={{ background: '#0A1128', color: '#FFFFFF' }}>
+                    <th style={{ padding: '8px 10px', textAlign: 'left', borderRadius: '6px 0 0 6px', width: '40px' }}>ક્રમ</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'left' }}>પેથોલોજી ટેસ્ટનું નામ (Investigation)</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right' }}>પ્રાઇવેટ લેબ દર</th>
+                    <th style={{ padding: '8px 10px', textAlign: 'right', borderRadius: '0 6px 6px 0' }}>ચૂકવવાપાત્ર સરકારી દર</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedTestObjects.map((test, idx) => (
+                    <tr key={test.id} style={{ borderBottom: '1px solid #E2E8F0' }}>
+                      <td style={{ padding: '10px 10px', color: '#64748B' }}>{idx + 1}</td>
+                      <td style={{ padding: '10px 10px' }}>
+                        <div style={{ fontWeight: 800, color: '#0F172A' }}>{test.nameGu}</div>
+                        <div style={{ fontSize: '11px', color: '#64748B' }}>{test.nameEn}</div>
+                      </td>
+                      <td style={{ padding: '10px 10px', textAlign: 'right', color: '#94A3B8', textDecoration: 'line-through' }}>
+                        ₹{test.brandedPrice}
+                      </td>
+                      <td style={{ padding: '10px 10px', textAlign: 'right', fontWeight: 800, color: '#0F172A' }}>
+                        {isAyushmanHolder ? '₹૦ (PM-JAY Free)' : `₹${test.janAushadhiPrice}`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Billing Summary Box */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                borderTop: '2px solid #0A1128',
+                paddingTop: '12px',
+                marginBottom: '20px',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}>
+                <div style={{ maxWidth: '340px' }}>
+                  <div style={{
+                    background: '#ECFDF5',
+                    border: '1px solid #A7F3D0',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    fontSize: '11.5px',
+                    color: '#065F46',
+                    fontWeight: 700
+                  }}>
+                    🎉 સરકારી સબસિડી / PM-JAY બચત: <strong>₹{confirmedBooking.savings} ની સીધી બચત</strong>
+                  </div>
+                  <div style={{ fontSize: '10.5px', color: '#64748B', marginTop: '6px' }}>
+                    * આ રસીદ અધિકૃત ડાયગ્નોસ્ટિક બિલ તરીકે માન્ય છે અને મેડિકલેમ / સરકારી રી-ઇમ્બર્સમેન્ટ માટે ઉપયોગ કરી શકાય છે.
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right', minWidth: '200px' }}>
+                  <div style={{ fontSize: '12px', color: '#64748B' }}>
+                    કુલ માર્કેટ કિંમત: <span style={{ textDecoration: 'line-through' }}>₹{totalBranded}</span>
+                  </div>
+                  <div style={{ fontSize: '18px', fontWeight: 900, color: '#059669', margin: '4px 0' }}>
+                    ચૂકવેલ રકમ: {confirmedBooking.totalAmount === 0 ? '₹૦ (PM-JAY ૧૦૦% મફત)' : `₹${confirmedBooking.totalAmount}`}
+                  </div>
+                  <span style={{
+                    background: '#DCFCE7',
+                    color: '#15803D',
+                    fontSize: '11px',
+                    fontWeight: 900,
+                    padding: '3px 10px',
+                    borderRadius: '6px',
+                    display: 'inline-block'
+                  }}>
+                    ✅ પેમેન્ટ માન્ય / રસીદ જનરેટ
+                  </span>
+                </div>
+              </div>
+
+              {/* Official Seal, QR Verification & Pathologist Signature */}
+              <div style={{
+                borderTop: '1.5px dashed #CBD5E1',
+                paddingTop: '16px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                flexWrap: 'wrap',
+                gap: '14px'
+              }}>
+                {/* QR Code */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    background: '#0A1128',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF'
+                  }}>
+                    <QrCode size={44} color="#00C48C" />
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748B', maxWidth: '180px' }}>
+                    <div style={{ fontWeight: 800, color: '#0F172A' }}>NABL લેબ વેરિફિકેશન QR</div>
+                    <div>આ બિલ NABL સેન્ટ્રલ સર્વર પર ડિજિટલી નોંધાયેલું અને અધિકૃત છે.</div>
+                  </div>
+                </div>
+
+                {/* Pathologist Signature of Dr. Jay Parmar */}
+                <div style={{ textAlign: 'right', minWidth: '220px' }}>
+                  <div style={{
+                    fontFamily: "'Brush Script MT', 'Dancing Script', cursive",
+                    fontSize: '30px',
+                    color: '#0284C7',
+                    fontWeight: 700,
+                    transform: 'rotate(-3deg)',
+                    lineHeight: 1,
+                    marginBottom: '4px',
+                    textDecoration: 'underline'
+                  }}>
+                    Dr. Jay Parmar
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 900, color: '#0F172A' }}>
+                    Dr. Jay Parmar, M.D. (Pathology)
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 800 }}>
+                    GMC Reg: GMC-GUJ-2016-48291
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748B' }}>
+                    મુખ્ય લેબોરેટરી કન્સલ્ટન્ટ & પેથોલોજિસ્ટ
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

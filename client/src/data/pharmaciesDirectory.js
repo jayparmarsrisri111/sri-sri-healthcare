@@ -5,7 +5,7 @@
 
 export const CURATED_PHARMACIES = [
   // ==========================================
-  // BHAVNAGAR (ભાવનગર)
+  // BHAVNAGAR REGION
   // ==========================================
   {
     id: "ja_bhavnagar_sir_t",
@@ -105,7 +105,7 @@ export const CURATED_PHARMACIES = [
   },
 
   // ==========================================
-  // AHMEDABAD (અમદાવાદ)
+  // AHMEDABAD REGION
   // ==========================================
   {
     id: "ja_ahmedabad_civil_asarwa",
@@ -181,7 +181,7 @@ export const CURATED_PHARMACIES = [
   },
 
   // ==========================================
-  // RAJKOT (રાજકોટ)
+  // RAJKOT REGION
   // ==========================================
   {
     id: "ja_rajkot_pdu_civil",
@@ -233,7 +233,7 @@ export const CURATED_PHARMACIES = [
   },
 
   // ==========================================
-  // SURAT (સુરત)
+  // SURAT REGION
   // ==========================================
   {
     id: "ja_surat_civil_majura",
@@ -261,7 +261,7 @@ export const CURATED_PHARMACIES = [
   },
 
   // ==========================================
-  // VADODARA (વડોદરા)
+  // VADODARA REGION
   // ==========================================
   {
     id: "ja_vadodara_ssg_hospital",
@@ -289,7 +289,7 @@ export const CURATED_PHARMACIES = [
   },
 
   // ==========================================
-  // KUTCH: BHUJ, ANJAR & KHEDOI (કચ્છ)
+  // KUTCH REGION: BHUJ, ANJAR & KHEDOI
   // ==========================================
   {
     id: "ja_kutch_bhuj_gk_general",

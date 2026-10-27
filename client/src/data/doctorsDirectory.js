@@ -1,5 +1,5 @@
 /**
- * Comprehensive National & Global Medical Specialists Directory (વિશ્વ & ભારત ડૉક્ટર ડિરેક્ટરી)
+ * Comprehensive National & Global Medical Specialists Directory (India & Global Doctor Registry)
  * Contains verified clinical doctors, surgeons, pediatricians, cardiologists, and Ayurvedic Vaidyas
  * across Gujarat, India, and premier international institutions (Mayo Clinic, Johns Hopkins, NHS, etc.)
  */
