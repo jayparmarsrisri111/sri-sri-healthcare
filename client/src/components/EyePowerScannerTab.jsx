@@ -8,6 +8,7 @@ import {
 import { api } from '../services/api';
 import { patientStorageService } from '../services/patientStorageService';
 import { getTranslation } from '../services/languageService';
+import { OfficialMedicalStamp, generateOfficialStampSvgString } from './OfficialMedicalStamp';
 
 // Optometric Acuity Scale (7-tier ISO 8596 & Metric Snellen)
 const VISUAL_ACUITY_LEVELS = [
@@ -601,11 +602,14 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
       <strong>તબીબી નિદાન (${cond}):</strong> ${advice}
     </div>
 
-    <div class="rx-footer">
+    <div class="rx-footer" style="display:flex;justify-content:space-between;align-items:center;">
       <div>
         <div style="font-weight: 800; font-size: 13px; color: #0A1128;">SRI SRI HEALTHCARE OPHTHALMOLOGY &amp; OPTOMETRY LAB</div>
         <div style="font-size: 11px; color: #64748B;">Official Medical Refractive Examination Report</div>
         <div class="clinic-badge">✓ Certified Computerized Lens Maker Prescription</div>
+      </div>
+      <div>
+        ${generateOfficialStampSvgString({ regNumber: 'G-48291', council: 'GUJARAT MEDICAL COUNCIL', size: 105 })}
       </div>
       <div style="text-align: right;">
         <div class="sig-name">Dr. Jay Parmar</div>
@@ -2565,7 +2569,7 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                 paddingTop: '16px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '12px'
               }}>
@@ -2577,6 +2581,16 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                     તારીખ: {new Date().toLocaleDateString('gu-IN')} | સમય: {new Date().toLocaleTimeString()}
                   </div>
                 </div>
+
+                {/* Real Official Medical Seal (સત્તાવાર સરકારી સિક્કો) */}
+                <OfficialMedicalStamp
+                  size={105}
+                  regNumber="G-48291"
+                  doctorName="Dr. Jay Parmar"
+                  council="GUJARAT MEDICAL COUNCIL"
+                  color="#1D4ED8"
+                  rotation={-8}
+                />
 
                 <div style={{ textAlign: 'right' }}>
                   <div style={{
@@ -2608,7 +2622,7 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                     marginTop: '3px',
                     border: '1px solid #86EFAC'
                   }}>
-                    ✓ Verified Digital Medical Signature
+                    ✓ Verified Digital Medical Signature & Seal
                   </div>
                 </div>
               </div>
@@ -2956,7 +2970,7 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                 paddingTop: '16px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '12px'
               }}>
@@ -2965,6 +2979,16 @@ export const EyePowerScannerTab = ({ currentLang = 'gu', currentUser }) => {
                   <div style={{ fontSize: '13px', fontWeight: 900, color: '#0A1128' }}>SRI SRI HEALTHCARE OPHTHALMOLOGY LAB</div>
                   <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 700 }}>ISO 8596 Clinically Calibrated • Gujarat</div>
                 </div>
+
+                {/* Real Official Medical Seal (સત્તાવાર સરકારી સિક્કો) */}
+                <OfficialMedicalStamp
+                  size={95}
+                  regNumber="G-48291"
+                  doctorName="Dr. Jay Parmar"
+                  council="GUJARAT MEDICAL COUNCIL"
+                  color="#1D4ED8"
+                  rotation={-8}
+                />
 
                 <div style={{ textAlign: 'right' }}>
                   <div style={{

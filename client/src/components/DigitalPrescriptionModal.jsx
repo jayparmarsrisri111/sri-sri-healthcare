@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Printer, ShieldCheck, QrCode, CheckCircle2, Download, AlertTriangle, Building, Phone } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
+import { OfficialMedicalStamp } from './OfficialMedicalStamp';
 
 export const DigitalPrescriptionModal = ({ isOpen, onClose, record, doctorInfo, currentLang = 'gu' }) => {
   if (!isOpen || !record) return null;
@@ -299,7 +300,20 @@ export const DigitalPrescriptionModal = ({ isOpen, onClose, record, doctorInfo, 
               </div>
             </div>
 
-            {/* Official Doctor Signature & Stamp of Dr. Jay Parmar */}
+            {/* Official Circular Medical Seal (સત્તાવાર સરકારી સિક્કો) */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <OfficialMedicalStamp
+                size={110}
+                regNumber={doctorReg}
+                doctorName={doctorName}
+                council="NATIONAL MEDICAL COMMISSION • NMC"
+                department="GOVT. OF GUJARAT RECOGNISED CLINIC"
+                color="#1D4ED8"
+                rotation={-8}
+              />
+            </div>
+
+            {/* Official Doctor Signature & Stamp of Doctor */}
             <div style={{ textAlign: 'right', minWidth: '220px' }}>
               <div style={{
                 fontFamily: "'Brush Script MT', 'Dancing Script', cursive",
@@ -319,20 +333,8 @@ export const DigitalPrescriptionModal = ({ isOpen, onClose, record, doctorInfo, 
               <div style={{ fontSize: '11px', color: '#009F70', fontWeight: 800 }}>
                 NMC / GMC REG: {doctorReg}
               </div>
-              <div style={{
-                border: '1.5px solid #0284C7',
-                borderRadius: '50px',
-                padding: '3px 12px',
-                background: '#F0F9FF',
-                display: 'inline-block',
-                marginTop: '4px'
-              }}>
-                <span style={{ fontSize: '9px', fontWeight: 900, color: '#0284C7', textTransform: 'uppercase' }}>
-                  ★ સત્તાવાર ડિજિટલ મહોર & સાચી સહી ★
-                </span>
-              </div>
               <div style={{ fontSize: '9px', color: '#64748B', marginTop: '2px' }}>
-                ડિજિટલી પ્રમાણિત • NMC Telemedicine Guidelines 2020 Compliant
+                ડિજિટલી પ્રમાણિત સહી & સત્તાવાર મહોર • NMC Telemedicine Guidelines 2020 Compliant
               </div>
             </div>
           </div>

@@ -108,7 +108,7 @@ export const GlobalDoctorDirectoryTab = ({
         {/* Doctor Registration CTA */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button
-            onClick={() => onOpenAuthModal && onOpenAuthModal('doctor')}
+            onClick={() => onOpenAuthModal && onOpenAuthModal('doctor', 'signup')}
             style={{
               background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
               color: '#FFFFFF',

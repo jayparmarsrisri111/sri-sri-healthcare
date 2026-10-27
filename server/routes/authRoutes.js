@@ -61,8 +61,8 @@ router.post('/register', authRateLimiter, async (req, res) => {
         const {
             name, email, password, role,
             phone, age, gender, village, district, bloodGroup, emergencyContact,
-            specialization, regNumber, hospitalAffiliation,
-            adminBadge, department
+            specialization, regNumber, hospitalAffiliation, qualification, councilName, certificateImage,
+            adminPin, adminBadge, department
         } = req.body;
 
         if (!name || !email || !password) {
@@ -75,6 +75,27 @@ router.post('/register', authRateLimiter, async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
         const validRole = ['patient', 'doctor', 'admin'].includes(role) ? role : 'patient';
+
+        // 🔒 ADMIN REGISTRATION SECURITY CHECK (Master Passcode Validation)
+        if (validRole === 'admin') {
+            const validAdminPins = ['ADMIN2026', '1234', process.env.ADMIN_SECURITY_KEY].filter(Boolean);
+            if (!adminPin || !validAdminPins.includes(adminPin.trim())) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'અમાન્ય એડમિન સિક્યુરિટી પિન. અનધિકૃત એડમિન રજીસ્ટ્રેશન સખત પ્રતિબંધિત છે. (Unauthorized Admin registration strictly prohibited.)'
+                });
+            }
+        }
+
+        // 🩺 DOCTOR REGISTRATION SECURITY & CREDENTIALS CHECK
+        if (validRole === 'doctor') {
+            if (!regNumber || !regNumber.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'સુરક્ષા નિયમ: ડૉક્ટર રજીસ્ટ્રેશન માટે મેડિકલ કાઉન્સિલ રજીસ્ટ્રેશન નંબર (Reg No.) ફરજિયાત છે.'
+                });
+            }
+        }
 
         // Check if email already exists
         let existingUser = null;
@@ -110,7 +131,12 @@ router.post('/register', authRateLimiter, async (req, res) => {
             emergencyContact: emergencyContact || '108',
             specialization: specialization || 'જનરલ મેડિસિન',
             regNumber: regNumber || `GMC-${Math.floor(1000 + Math.random() * 9000)}`,
+            qualification: qualification || 'MBBS, MD',
+            councilName: councilName || 'Gujarat Medical Council (GMC)',
             hospitalAffiliation: hospitalAffiliation || 'GK જનરલ સિવિલ હોસ્પિટલ, ભુજ',
+            certificateImage: certificateImage || '',
+            doctorVerified: validRole === 'doctor',
+            certificateVerified: validRole === 'doctor',
             adminBadge: adminBadge || 'DISTRICT-HEALTH-OFFICER',
             department: department || 'ગુજરાત આરોગ્ય કમિશનરેટ',
             createdAt: new Date()

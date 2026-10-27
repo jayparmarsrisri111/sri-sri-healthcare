@@ -17,7 +17,12 @@ const UserSchema = new mongoose.Schema({
     // Doctor specific fields
     specialization: { type: String, default: 'જનરલ મેડિસિન (General Medicine)' },
     regNumber: { type: String, default: '' },
+    qualification: { type: String, default: 'MBBS, MD' },
+    councilName: { type: String, default: 'Gujarat Medical Council (GMC)' },
     hospitalAffiliation: { type: String, default: 'GK જનરલ સિવિલ હોસ્પિટલ, ભુજ' },
+    certificateImage: { type: String, default: '' },
+    doctorVerified: { type: Boolean, default: false },
+    certificateVerified: { type: Boolean, default: false },
     // Admin specific fields
     adminBadge: { type: String, default: 'DISTRICT-HEALTH-OFFICER' },
     department: { type: String, default: 'ગુજરાત આરોગ્ય કમિશનરેટ (Dept of Health)' },

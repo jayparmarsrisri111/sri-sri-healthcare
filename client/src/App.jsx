@@ -37,6 +37,12 @@ import { updateSEOMeta } from './services/seoService';
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser());
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalConfig, setAuthModalConfig] = useState({ initialRole: 'patient', initialMode: 'login' });
+
+  const handleOpenAuthModal = (role = 'patient', mode = 'login') => {
+    setAuthModalConfig({ initialRole: role, initialMode: mode });
+    setShowAuthModal(true);
+  };
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -138,7 +144,7 @@ export default function App() {
   const handleLogout = () => {
     authService.logout();
     setCurrentUser(null);
-    setShowAuthModal(true);
+    handleOpenAuthModal('patient', 'login');
   };
 
   const handleEmergency = () => {
@@ -195,6 +201,8 @@ export default function App() {
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
         currentLang={currentLang}
+        initialRole={authModalConfig.initialRole}
+        initialMode={authModalConfig.initialMode}
       />
 
       {/* Global World Language Selector Modal */}
@@ -252,7 +260,7 @@ export default function App() {
         setActiveTab={setActiveTab}
         currentLang={currentLang}
         currentUser={currentUser}
-        onOpenAuthModal={() => setShowAuthModal(true)}
+        onOpenAuthModal={(role, mode) => handleOpenAuthModal(role || 'patient', mode || 'login')}
         onOpenCasesModal={() => setShowCasesModal(true)}
         onOpenEnsembleModal={() => setShowEnsembleModal(true)}
         onOpenPitchModal={() => setShowPitchModal(true)}
@@ -277,7 +285,7 @@ export default function App() {
           onInstallClick={handleInstallClick}
           onOpenLangModal={() => setShowLangModal(true)}
           currentUser={currentUser}
-          onOpenAuthModal={() => setShowAuthModal(true)}
+          onOpenAuthModal={(role, mode) => handleOpenAuthModal(role || 'patient', mode || 'login')}
           onLogout={handleLogout}
           onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
         />
@@ -413,6 +421,7 @@ export default function App() {
               currentUser={currentUser}
               currentLang={currentLang}
               onSelectPatient={() => setActiveTab('history')}
+              onOpenAuthModal={handleOpenAuthModal}
             />
           )}
 
@@ -465,7 +474,7 @@ export default function App() {
             <GlobalDoctorDirectoryTab
               currentLang={currentLang}
               currentUser={currentUser}
-              onOpenAuthModal={(role) => setShowAuthModal(true)}
+              onOpenAuthModal={(role, mode) => handleOpenAuthModal(role || 'doctor', mode || 'signup')}
             />
           )}
 

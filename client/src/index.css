@@ -651,10 +651,10 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, #00C48C 0%, #009F70 100%);
   color: #FFFFFF;
-  border: 2px solid rgba(255, 255, 255, 0.95);
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   padding: 0;
   cursor: pointer;
   overflow: hidden;
@@ -668,7 +668,7 @@ body {
 .floating-chat-bubble-btn.hover-expanded,
 .floating-chat-bubble-btn.active-open {
   width: auto;
-  padding: 6px 14px 6px 8px;
+  padding: 6px 14px 6px 10px;
   gap: 8px;
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 24px rgba(0, 196, 140, 0.5);
@@ -682,17 +682,18 @@ body {
 
 .chat-btn-avatar-wrap {
   position: relative;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .chat-btn-logo {
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   background: #FFFFFF;
@@ -702,10 +703,10 @@ body {
 
 .chat-online-pulse {
   position: absolute;
-  bottom: -1px;
+  top: -1px;
   right: -1px;
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   background-color: #10B981;
   border: 1.5px solid #FFFFFF;
   border-radius: 50%;
@@ -747,12 +748,11 @@ body {
 }
 
 .chat-btn-badge {
-  display: none;
+  display: none !important;
   background: rgba(255, 255, 255, 0.22);
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
+  width: 22px;
+  height: 22px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -760,12 +760,12 @@ body {
   transition: transform 0.2s ease;
 }
 
-
 .floating-chat-bubble-btn:hover .chat-btn-badge,
 .floating-chat-bubble-btn.hover-expanded .chat-btn-badge,
 .floating-chat-bubble-btn.active-open .chat-btn-badge {
-  display: flex;
+  display: flex !important;
 }
+
 .floating-chat-bubble-btn:hover .chat-btn-badge {
   transform: rotate(15deg);
 }

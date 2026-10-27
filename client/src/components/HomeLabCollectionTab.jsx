@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { getTranslation } from '../services/languageService';
 import { patientStorageService } from '../services/patientStorageService';
+import { OfficialMedicalStamp } from './OfficialMedicalStamp';
 
 export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
   const t = getTranslation(currentLang);
@@ -138,13 +139,17 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
     setTimeout(() => setToastMessage(null), 6000);
   };
 
+  // Clean lab title to prevent duplicate emojis beside the dedicated icon container
+  const rawLabTitle = t.homeLabTitle || 'ઘરે બેઠા લેબ બ્લડ સેમ્પલ કલેક્શન (Phygital Lab Diagnostics)';
+  const cleanLabTitle = rawLabTitle.replace(/^[\p{Emoji}\s]+/u, '').trim() || 'ઘરે બેઠા લેબ બ્લડ સેમ્પલ કલેક્શન (Phygital Lab Diagnostics)';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Header Banner */}
-      <div style={{
+      {/* Header Banner - Fully Responsive with Single Icon */}
+      <div className="home-lab-hero-card" style={{
         background: 'linear-gradient(135deg, #0A1128 0%, #0369A1 100%)',
         borderRadius: '22px',
-        padding: '24px',
+        padding: '20px 24px',
         color: '#FFFFFF',
         display: 'flex',
         justifyContent: 'space-between',
@@ -153,24 +158,26 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
         gap: '16px',
         boxShadow: '0 10px 30px rgba(3, 105, 161, 0.25)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 320px', minWidth: 0 }}>
           <div style={{
-            width: '56px',
-            height: '56px',
+            width: '52px',
+            height: '52px',
+            minWidth: '52px',
             borderRadius: '16px',
             background: 'rgba(255, 255, 255, 0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '28px',
-            border: '1.5px solid rgba(255, 255, 255, 0.3)'
+            fontSize: '26px',
+            border: '1.5px solid rgba(255, 255, 255, 0.3)',
+            flexShrink: 0
           }}>
             🧪
           </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 800 }}>
-                {t.homeLabTitle || 'ઘરે બેઠા લેબ બ્લડ સેમ્પલ કલેક્શન (Phygital Lab Diagnostics)'}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h2 style={{ margin: 0, fontSize: 'clamp(17px, 3.5vw, 22px)', fontWeight: 800, wordBreak: 'break-word' }}>
+                {cleanLabTitle}
               </h2>
               <span style={{
                 background: '#00C48C',
@@ -178,12 +185,13 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
                 fontSize: '11px',
                 fontWeight: 800,
                 padding: '3px 9px',
-                borderRadius: '8px'
+                borderRadius: '8px',
+                whiteSpace: 'nowrap'
               }}>
                 {isEn ? 'Advantage #1' : 'એડવાન્ટેજ #1'}
               </span>
             </div>
-            <p style={{ margin: '6px 0 0 0', color: '#BAE6FD', fontSize: '13.5px' }}>
+            <p style={{ margin: '6px 0 0 0', color: '#BAE6FD', fontSize: '13.5px', lineHeight: 1.4 }}>
               {t.homeLabSub || 'ગામડે બેઠા લેબોરેટરી ટેસ્ટ: સરકારી ટેકનિશિયન ઘરે આવીને લોહીના નમૂના લેશે અને ૨ કલાકમાં ડિજિટલ રિપોર્ટ મળશે.'}
             </p>
           </div>
@@ -194,7 +202,8 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
           border: '1px solid rgba(255, 255, 255, 0.25)',
           padding: '10px 18px',
           borderRadius: '14px',
-          textAlign: 'right'
+          textAlign: 'right',
+          flexShrink: 0
         }}>
           <span style={{ fontSize: '11px', color: '#E0F2FE', display: 'block' }}>જન ઔષધિ સબસિડી</span>
           <strong style={{ fontSize: '18px', color: '#38BDF8' }}>૮૫% સુધી બચત</strong>
@@ -747,7 +756,7 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
                 paddingTop: '16px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '14px'
               }}>
@@ -765,14 +774,24 @@ export const HomeLabCollectionTab = ({ currentLang = 'gu', currentUser }) => {
                   }}>
                     <QrCode size={44} color="#00C48C" />
                   </div>
-                  <div style={{ fontSize: '10px', color: '#64748B', maxWidth: '180px' }}>
+                  <div style={{ fontSize: '10px', color: '#64748B', maxWidth: '170px' }}>
                     <div style={{ fontWeight: 800, color: '#0F172A' }}>NABL લેબ વેરિફિકેશન QR</div>
                     <div>આ બિલ NABL સેન્ટ્રલ સર્વર પર ડિજિટલી નોંધાયેલું અને અધિકૃત છે.</div>
                   </div>
                 </div>
 
+                {/* Real Circular Medical Council Stamp (સત્તાવાર સરકારી સિક્કો) */}
+                <OfficialMedicalStamp
+                  size={105}
+                  regNumber="GMC-GUJ-2016-48291"
+                  doctorName="Dr. Jay Parmar"
+                  council="GUJARAT MEDICAL COUNCIL"
+                  color="#1D4ED8"
+                  rotation={-8}
+                />
+
                 {/* Pathologist Signature of Dr. Jay Parmar */}
-                <div style={{ textAlign: 'right', minWidth: '220px' }}>
+                <div style={{ textAlign: 'right', minWidth: '200px' }}>
                   <div style={{
                     fontFamily: "'Brush Script MT', 'Dancing Script', cursive",
                     fontSize: '30px',

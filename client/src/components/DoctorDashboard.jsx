@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
   Stethoscope, Users, AlertTriangle, CheckCircle2, Clock,
   FileText, Search, Pill, PhoneCall, ShieldCheck, Award,
-  Sparkles, HeartPulse, Send, Edit3, Eye, Printer, Activity
+  Sparkles, HeartPulse, Send, Edit3, Eye, Printer, Activity,
+  UserPlus, LogIn
 } from 'lucide-react';
 import { patientStorageService } from '../services/patientStorageService';
 import { apiService } from '../services/api';
 import { DigitalPrescriptionModal } from './DigitalPrescriptionModal';
 import { AddMedicineModal } from './AddMedicineModal';
 
-export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatient }) => {
+export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatient, onOpenAuthModal }) => {
   const [records, setRecords] = useState([]);
   const [search, setSearch] = useState('');
   const [filterUrgency, setFilterUrgency] = useState('ALL');
@@ -92,6 +93,102 @@ export const DoctorDashboard = ({ currentUser, currentLang = 'gu', onSelectPatie
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* If current user is not logged in as a verified doctor, show Doctor Onboarding Gateway */}
+      {currentUser?.role !== 'doctor' && (
+        <div style={{
+          background: 'linear-gradient(135deg, #0A1128 0%, #0369A1 100%)',
+          borderRadius: '20px',
+          padding: '22px 26px',
+          color: '#FFFFFF',
+          boxShadow: '0 10px 30px rgba(3, 105, 161, 0.3)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '18px',
+          border: '1.5px solid rgba(255, 255, 255, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', maxWidth: '640px' }}>
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '30px',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              flexShrink: 0
+            }}>
+              🩺
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h3 style={{ margin: 0, fontSize: '19px', fontWeight: 800 }}>
+                  ડૉક્ટર વેરિફિકેશન & ઓનબોર્ડિંગ ગેટવે (Doctor Gateway)
+                </h3>
+                <span style={{
+                  background: '#00C48C',
+                  color: '#0A1128',
+                  padding: '3px 10px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: 800
+                }}>
+                  NMC & GMC સિક્યુરિટી
+                </span>
+              </div>
+              <p style={{ margin: '6px 0 0 0', color: '#BAE6FD', fontSize: '13px', lineHeight: 1.4 }}>
+                શું તમે અધિકૃત મેડિકલ ડૉક્ટર અથવા સ્પેશિયાલિસ્ટ છો? તમારા સત્તાવાર GMC/NMC રજીસ્ટ્રેશન નંબર અને સર્ટિફિકેટ સાથે નોંધણી કરો અથવા ડૉક્ટર એકાઉન્ટમાં લૉગિન કરો.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={() => onOpenAuthModal && onOpenAuthModal('doctor', 'signup')}
+              style={{
+                background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '11px 18px',
+                borderRadius: '12px',
+                fontWeight: 800,
+                fontSize: '13.5px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(0, 196, 140, 0.35)'
+              }}
+            >
+              <UserPlus size={16} />
+              <span>નવા ડૉક્ટર રજીસ્ટ્રેશન કરો (Register Doctor)</span>
+            </button>
+            <button
+              onClick={() => onOpenAuthModal && onOpenAuthModal('doctor', 'login')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                border: '1.5px solid rgba(255, 255, 255, 0.4)',
+                padding: '11px 16px',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <LogIn size={16} />
+              <span>ડૉક્ટર લૉગિન</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Doctor Header Banner */}
       <div style={{
         background: 'linear-gradient(135deg, #0A1128 0%, #0369A1 100%)',

@@ -1,19 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X, User, Lock, Mail, Shield, Stethoscope, Heart,
   CheckCircle2, AlertCircle, ArrowRight, UserPlus, LogIn,
-  Building, Phone, MapPin, Award, KeyRound, Sparkles
+  Building, Phone, MapPin, Award, KeyRound, Sparkles,
+  Eye, EyeOff, FileText, Check
 } from 'lucide-react';
 import { authService, DEMO_ACCOUNTS } from '../services/authService';
 
-export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }) => {
+export const AuthModal = ({
+  isOpen,
+  onClose,
+  onAuthSuccess,
+  currentLang = 'gu',
+  initialRole = 'patient',
+  initialMode = 'login'
+}) => {
   if (!isOpen) return null;
 
-  const [activeMode, setActiveMode] = useState('login'); // 'login' or 'signup'
-  const [selectedRole, setSelectedRole] = useState('patient'); // 'patient', 'doctor', 'admin'
+  const [activeMode, setActiveMode] = useState(initialMode || 'login'); // 'login' or 'signup'
+  const [selectedRole, setSelectedRole] = useState(initialRole || 'patient'); // 'patient', 'doctor', 'admin'
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Sync role and mode whenever opened with new config
+  useEffect(() => {
+    if (isOpen) {
+      if (initialRole) setSelectedRole(initialRole);
+      if (initialMode) setActiveMode(initialMode);
+      setErrorMessage('');
+      setSuccessMessage('');
+    }
+  }, [isOpen, initialRole, initialMode]);
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -29,6 +47,7 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
   const [hospitalAffiliation, setHospitalAffiliation] = useState('શ્રી શ્રી ક્લિનિક & હોસ્પિટલ નેટવર્ક');
   const [regNumber, setRegNumber] = useState('');
   const [adminPin, setAdminPin] = useState('');
+  const [showAdminPin, setShowAdminPin] = useState(false);
 
   // Doctor Medical Certificate Verification State
   const [certificatePreview, setCertificatePreview] = useState(null);
@@ -114,28 +133,31 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
       return;
     }
 
-    if (selectedRole === 'admin' && adminPin !== 'ADMIN2026' && adminPin !== '1234') {
-      setErrorMessage('અમાન્ય એડમિન સિક્યુરિટી પિન. (Default Demo PIN: ADMIN2026)');
-      setLoading(false);
-      return;
-    }
-
-    if (selectedRole === 'doctor') {
-      if (!certificatePreview) {
-        setErrorMessage('સુરક્ષા નિયમ: ડૉક્ટર તરીકે રજીસ્ટ્રેશન માટે તમારું સત્તાવાર મેડિકલ કાઉન્સિલ સર્ટિફિકેટ અથવા ડિગ્રી અપલોડ કરવી ફરજિયાત છે.');
+    if (selectedRole === 'admin') {
+      const validPins = ['ADMIN2026', '1234'];
+      if (!adminPin || !validPins.includes(adminPin.trim())) {
+        setErrorMessage('અમાન્ય એડમિન સિક્યુરિટી પિન. અનધિકૃત એડમિન રજીસ્ટ્રેશન પ્રતિબંધિત છે. (Default Demo PIN: ADMIN2026)');
         setLoading(false);
         return;
       }
-      if (!regNumber.trim()) {
-        setErrorMessage('કૃપા કરીને તમારો મેડિકલ કાઉન્સિલ રજીસ્ટ્રેશન નંબર (Reg No.) દાખલ કરો.');
+    }
+
+    if (selectedRole === 'doctor') {
+      if (!regNumber.trim() || regNumber.trim().length < 4) {
+        setErrorMessage('સુરક્ષા નિયમ: કૃપા કરીને તમારો સત્તાવાર મેડિકલ કાઉન્સિલ રજીસ્ટ્રેશન નંબર (Reg No. - દા.ત. GMC-GUJ-2016-XXXX) દાખલ કરો.');
+        setLoading(false);
+        return;
+      }
+      if (!certificatePreview) {
+        setErrorMessage('સુરક્ષા નિયમ: ડૉક્ટર તરીકે રજીસ્ટ્રેશન માટે તમારું સત્તાવાર મેડિકલ કાઉન્સિલ સર્ટિફિકેટ અથવા ડિગ્રી અપલોડ કરવી ફરજિયાત છે.');
         setLoading(false);
         return;
       }
     }
 
     const payload = {
-      name,
-      email,
+      name: name.trim(),
+      email: email.trim(),
       password,
       role: selectedRole,
       phone,
@@ -149,8 +171,9 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
       certificateImage: certificatePreview,
       doctorVerified: true,
       verificationStatus: 'verified',
-      regNumber: regNumber || `GMC-${Math.floor(1000 + Math.random() * 9000)}`,
-      adminBadge: `DISTRICT-CHIEF-${Date.now().toString().slice(-4)}`
+      regNumber: regNumber.trim(),
+      adminBadge: `DISTRICT-CHIEF-${Date.now().toString().slice(-4)}`,
+      adminPin: selectedRole === 'admin' ? adminPin.trim() : undefined
     };
 
     try {
@@ -801,24 +824,60 @@ export const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentLang = 'gu' }
             )}
 
             {activeMode === 'signup' && selectedRole === 'admin' && (
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#7C3AED', marginBottom: '4px' }}>
-                  એડમિન ઓથોરાઇઝેશન પિન (Admin PIN) * (Default: ADMIN2026)
+              <div style={{
+                background: '#FAF5FF',
+                border: '1.5px solid #C084FC',
+                borderRadius: '14px',
+                padding: '14px',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6B21A8', fontWeight: 800, fontSize: '13px', marginBottom: '6px' }}>
+                  <Shield size={18} color="#7C3AED" />
+                  <span>ઉચ્ચ સિક્યુરિટી એડમિનિસ્ટ્રેટર વેરિફિકેશન</span>
+                </div>
+                <p style={{ margin: '0 0 10px 0', fontSize: '11px', color: '#64748B', lineHeight: 1.4 }}>
+                  ⚠️ અનધિકૃત એડમિન રજીસ્ટ્રેશન સખત પ્રતિબંધિત છે. ફક્ત અધિકૃત જિલ્લા આરોગ્ય અધિકારીઓ અને કમિશનર પાસે આ માસ્ટર ઓથોરાઇઝેશન કી હોય છે. (ડેમો ટેસ્ટિંગ કી: <strong>ADMIN2026</strong>)
+                </p>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#4C1D95', marginBottom: '4px' }}>
+                  માસ્ટર એડમિન ઓથોરાઇઝેશન પાસકોડ (Security Key) *
                 </label>
-                <input
-                  type="password"
-                  placeholder="ADMIN2026"
-                  value={adminPin}
-                  onChange={(e) => setAdminPin(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: '1.5px solid #C4B5FD',
-                    fontSize: '12px',
-                    boxSizing: 'border-box'
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showAdminPin ? 'text' : 'password'}
+                    required
+                    placeholder="ADMIN2026"
+                    value={adminPin}
+                    onChange={(e) => setAdminPin(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '9px 40px 9px 12px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #A855F7',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminPin(!showAdminPin)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#7C3AED',
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    {showAdminPin ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
             )}
 
