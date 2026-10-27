@@ -65,6 +65,13 @@
       "description": "Optometry and visual acuity AI test",
       "url": "/?tab=eye",
       "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "💊 Jan Aushadhi Radar",
+      "short_name": "Generic Radar",
+      "description": "85% cheaper generic medicines and store finder",
+      "url": "/?tab=medLocator",
+      "icons": [{ "src": "/logo.png", "sizes": "192x192" }]
     }
   ]
 }

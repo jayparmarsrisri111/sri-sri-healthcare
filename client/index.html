@@ -114,8 +114,17 @@
             "Emergency",
             "Pharmacology",
             "Ayurveda",
-            "Optometry"
+            "Optometry",
+            "Dermatology",
+            "Cardiology"
           ],
+          "founder": {
+            "@type": "Physician",
+            "name": "Dr. Jay Parmar",
+            "jobTitle": "Chief Medical AI Director & Physician",
+            "medicalSpecialty": "GeneralPractice",
+            "description": "Lead Clinical Director at Sri Sri HealthCare AI Medical System"
+          },
           "availableService": [
             {
               "@type": "MedicalTherapy",
@@ -132,6 +141,22 @@
             {
               "@type": "MedicalTherapy",
               "name": "AI Optometry Eye Power Check"
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Contactless Face Vitals & Pulse Rate Scanner"
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Home Lab Diagnostic Test Sample Collection"
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Verified Specialist Doctor Directory & Appointments"
+            },
+            {
+              "@type": "MedicalTherapy",
+              "name": "Mind and Emotion Wellness AI Decoder"
             }
           ],
           "contactPoint": [
@@ -149,6 +174,10 @@
           "@id": "https://srisrihealthcare111.netlify.app/#website",
           "name": "Sri Sri HealthCare",
           "url": "https://srisrihealthcare111.netlify.app/",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", "summary", ".speakable-content"]
+          },
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
@@ -254,20 +283,62 @@
             {
               "@type": "ListItem",
               "position": 5,
+              "name": "Verified Doctors Directory",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=doctorDirectory"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "name": "Home Lab Sample Collection",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=homeLab"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
               "name": "Medicine Encyclopedia",
               "item": "https://srisrihealthcare111.netlify.app/?tab=encyclopedia"
             },
             {
               "@type": "ListItem",
-              "position": 6,
+              "position": 8,
               "name": "Eye Power Scanner",
               "item": "https://srisrihealthcare111.netlify.app/?tab=eye"
             },
             {
               "@type": "ListItem",
-              "position": 7,
+              "position": 9,
+              "name": "Contactless Face Vitals Scanner",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=vitals"
+            },
+            {
+              "@type": "ListItem",
+              "position": 10,
+              "name": "AI Medical Vision Diagnostics",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=vision"
+            },
+            {
+              "@type": "ListItem",
+              "position": 11,
+              "name": "Mind and Emotion Decoder",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=emotion"
+            },
+            {
+              "@type": "ListItem",
+              "position": 12,
+              "name": "Gujarat PHC & CHC Hospital Navigator",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=phc"
+            },
+            {
+              "@type": "ListItem",
+              "position": 13,
               "name": "Government Health Schemes PMJAY",
               "item": "https://srisrihealthcare111.netlify.app/?tab=schemes"
+            },
+            {
+              "@type": "ListItem",
+              "position": 14,
+              "name": "Patient Digital Health Record EHR",
+              "item": "https://srisrihealthcare111.netlify.app/?tab=history"
             }
           ]
         },
@@ -357,6 +428,48 @@
                 <a href="/?tab=schemes" style="text-decoration: none; color: inherit;">🛡️ PMJAY આયુષ્માન ભારત &amp; મા અમૃતમ કાર્ડ</a>
               </h3>
               <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">રૂ. ૫ થી ૧૦ લાખ સુધીની મફત સારવાર આપતી સરકારી સ્વાસ્થ્ય યોજનાઓ, યોગ્યતા ચકાસણી અને માન્ય નેટવર્ક હોસ્પિટલો.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=homeLab" style="text-decoration: none; color: inherit;">💉 ઘરે બેઠા લેબ ટેસ્ટ સેમ્પલ કલેક્શન (Home Lab)</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">બ્લડ ટેસ્ટ, ડાયાબિટીસ, લિપિડ પ્રોફાઇલ માટે ઘરેથી ફ્રી સેમ્પલ કલેક્શન બુક કરો અને ઓથેન્ટિક મેડિકલ સિક્કા સાથે રિપોર્ટ મેળવો.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=doctorDirectory" style="text-decoration: none; color: inherit;">👨‍⚕️ ગુજરાતના નિષ્ણાત ડૉક્ટર્સ ડિરેક્ટરી</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">એમ.ડી. ફિઝિશિયન, બાળરોગ નિષ્ણાત અને સુપર સ્પેશિયાલિસ્ટ ડૉક્ટરોની પ્રમાણિત પ્રોફાઇલ, કાઉન્સિલ રજીસ્ટ્રેશન અને એપોઇન્ટમેન્ટ.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=vitals" style="text-decoration: none; color: inherit;">💓 કોન્ટેક્ટલેસ ફેસ વાઇટલ્સ &amp; હાર્ટ રેટ સ્કેનર</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">કેમેરા ઓપ્ટિકલ પલ્સ (rPPG) ટેકનોલોજી દ્વારા માત્ર ચહેરા પરથી હાર્ટ રેટ (BPM), કાર્ડિયાક વેવ્સ અને હેલ્થ મેટ્રિક્સનું ત્વરિત માપન.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=vision" style="text-decoration: none; color: inherit;">🔬 AI વિઝન મેડિકલ ડાયગ્નોસ્ટિક્સ</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">ચામડીના રોગ (Derm), છાતીના એક્સ-રે અને મેડિકલ પ્રિસ્ક્રિપ્શનના ફોટો અપલોડ કરી ક્લિનિકલ AI ઇન્ટરપ્રિટેશન મેળવો.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=emotion" style="text-decoration: none; color: inherit;">🧠 માઇન્ડ &amp; ઇમોશન ડીકોડર AI વેલનેસ</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">ફેસિયલ એક્શન યુનિટ્સ (AU) દ્વારા માનસિક તણાવ, મૂડ અને એકાગ્રતાનું વિશ્લેષણ તથા યોગ, ધ્યાન અને શ્વાસ નિયંત્રણ માર્ગદર્શન.</p>
+            </article>
+
+            <article style="background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h3 style="margin: 0 0 0.5rem; color: #00875A; font-size: 1.1rem;">
+                <a href="/?tab=history" style="text-decoration: none; color: inherit;">📁 દર્દીનો ડિજિટલ હેલ્થ રેકોર્ડ (EHR &amp; ABHA)</a>
+              </h3>
+              <p style="font-size: 0.92rem; color: #64748b; margin: 0; line-height: 1.5;">તમારા તમામ પ્રિસ્ક્રિપ્શન, આંખના પાવર સ્લિપ અને લેબ રિપોર્ટ્સનું સુરક્ષિત સેવિંગ અને પ્રિન્ટ-રેડી ડિજિટલ મેડિકલ વોલેટ.</p>
             </article>
           </div>
         </section>

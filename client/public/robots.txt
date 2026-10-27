@@ -1,17 +1,20 @@
 # ====================================================================
 # Robots.txt for Sri Sri ❤️ HealthCare
-# Domains: https://srisrihealthcare111.netlify.app & https://www.srisri111.com
-# Launch Date: 11-10-2026 (Shubh Muhurat)
+# Official Live Domain: https://srisrihealthcare111.netlify.app
+# Canonical URL:        https://srisrihealthcare111.netlify.app/
+# Custom Domain:        https://www.srisri111.com/
 # ====================================================================
 
 User-agent: *
 Allow: /
+Allow: /logo.png
+Allow: /assets/
 Allow: /api/health
 Disallow: /admin/internal
 Disallow: /.git
 Disallow: /node_modules
 
-# Search Engine Crawlers
+# Primary Search Engine Web Crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -40,6 +43,7 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
+# Social Media Previews & Open Graph Crawlers
 User-agent: Twitterbot
 Allow: /
 
@@ -49,6 +53,34 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
-# Sitemap Index Files
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# Generative AI & Knowledge Engine Crawlers (GEO - Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# XML Sitemaps
 Sitemap: https://srisrihealthcare111.netlify.app/sitemap.xml
 Sitemap: https://www.srisri111.com/sitemap.xml
