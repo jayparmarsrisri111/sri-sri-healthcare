@@ -95,6 +95,12 @@ router.post('/register', authRateLimiter, async (req, res) => {
                     message: 'સુરક્ષા નિયમ: ડૉક્ટર રજીસ્ટ્રેશન માટે મેડિકલ કાઉન્સિલ રજીસ્ટ્રેશન નંબર (Reg No.) ફરજિયાત છે.'
                 });
             }
+            if (!certificateImage || !certificateImage.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'સુરક્ષા નિયમ: ડૉક્ટર તરીકે રજીસ્ટ્રેશન માટે માન્ય મેડિકલ કાઉન્સિલ સર્ટિફિકેટ અથવા ડિગ્રી (Certificate/Degree) અપલોડ કરવી ૧૦૦% ફરજિયાત છે.'
+                });
+            }
         }
 
         // Check if email already exists

@@ -57,7 +57,7 @@ export const TopHeader = ({
 
   return (
     <header className="top-header">
-      {/* Left: Mobile Menu + Brand Logo + Emergency 108 Call + SOS */}
+      {/* Left: Mobile Menu + Brand Logo + SOS */}
       <div className="header-left">
         {onToggleSidebar && (
           <button
@@ -89,20 +89,6 @@ export const TopHeader = ({
           </div>
         </div>
 
-        <a
-          href="tel:108"
-          className="btn-emergency"
-          onClick={(e) => {
-            if (onEmergencyClick) onEmergencyClick();
-          }}
-          title={t.call108 || 'Call 108 Emergency Ambulance'}
-          style={{ textDecoration: 'none' }}
-        >
-          <PhoneCall size={15} style={{ flexShrink: 0 }} />
-          <span className="emergency-label-full">{t.call108}</span>
-          <span className="emergency-label-short">108</span>
-        </a>
-
         <button
           onClick={onSOSClick}
           className="btn-sos-header header-hide-tablet"
@@ -114,31 +100,13 @@ export const TopHeader = ({
       </div>
 
       {/* Center: Live 24/7 Hospital & Emergency Care Ticker */}
-      <div className="header-center-ticker header-hide-mobile header-hide-tablet" style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        background: 'linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)',
-        border: '1.5px solid #A7F3D0',
-        borderRadius: '9999px',
-        padding: '5px 14px',
-        fontSize: '12px',
-        color: '#065F46',
-        fontWeight: 700,
-        boxShadow: '0 2px 6px rgba(0, 196, 140, 0.08)'
-      }}>
-        <span style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          backgroundColor: '#10B981',
-          display: 'inline-block',
-          boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.3)',
-          animation: 'pulse 1.5s infinite'
-        }} />
-        <span>{currentLang === 'gu' ? '૨૪/૭ AI હોસ્પિટલ સેવા સક્રિય' : '24/7 AI Hospital Service Active'}</span>
-        <span style={{ opacity: 0.5 }}>•</span>
-        <span style={{ color: '#047857', fontWeight: 600 }}>
+      <div className="header-center-ticker header-hide-mobile header-hide-tablet">
+        <span className="header-ticker-dot" />
+        <span className="header-ticker-primary">
+          {currentLang === 'gu' ? '૨૪/૭ AI હોસ્પિટલ સેવા સક્રિય' : '24/7 AI Hospital Service Active'}
+        </span>
+        <span className="header-ticker-divider">•</span>
+        <span className="header-ticker-extended">
           {currentLang === 'gu' ? '૧૦૮ ઈમરજન્સી & નિઃશુલ્ક સારવાર ઉપલબ્ધ' : '108 Emergency & Free Care Ready'}
         </span>
       </div>
@@ -164,21 +132,20 @@ export const TopHeader = ({
           </div>
         </div>
 
-        {/* PWA Install Button (Hidden on Laptops to ensure zero-collision spacing) */}
-        <button
-          onClick={onInstallClick}
-          className="header-tool-btn header-hide-laptop header-hide-tablet"
-          style={{
-            background: '#E0F8EE',
-            color: '#009F70',
-            border: '1.5px solid #00C48C',
-            flexShrink: 0
+        {/* 108 Emergency Direct Call Button (Grouped neatly beside Language Select with left breathing space) */}
+        <a
+          href="tel:108"
+          className="btn-emergency"
+          onClick={(e) => {
+            if (onEmergencyClick) onEmergencyClick();
           }}
-          title={t.installApp}
+          title={t.call108 || 'Call 108 Emergency Ambulance'}
+          style={{ textDecoration: 'none', marginLeft: '8px' }}
         >
-          <Smartphone size={15} />
-          <span className="header-btn-label">{t.installApp}</span>
-        </button>
+          <PhoneCall size={15} style={{ flexShrink: 0 }} />
+          <span className="emergency-label-full">{t.call108}</span>
+          <span className="emergency-label-short">108</span>
+        </a>
 
         {/* Global World Languages Trigger Button */}
         <button
@@ -191,24 +158,23 @@ export const TopHeader = ({
             boxShadow: '0 2px 8px rgba(0, 196, 140, 0.08)',
             flexShrink: 0
           }}
-          title={currentLangObj.name}
+          title={`${currentLangObj.name} - ${t.worldLang || 'વિશ્વ ભાષાઓ'}`}
         >
           <Globe size={15} color="#00C48C" />
           <span>{currentLangObj.flag} {currentLangObj.code.toUpperCase()}</span>
-          <span className="header-btn-label">({t.worldLang})</span>
         </button>
 
         {/* User Account & Role Badge Pill (100% Responsive on All Screen Sizes) */}
         {currentUser ? (
           <div
             className="header-user-pill"
-            onClick={onOpenAuthModal}
+            onClick={() => onOpenAuthModal(currentUser.role || 'patient', 'profile')}
             style={{
               background: currentUser.role === 'doctor' ? '#F0F9FF' : currentUser.role === 'admin' ? '#FAF5FF' : '#F0FDF4',
               border: `1.5px solid ${currentUser.role === 'doctor' ? '#7DD3FC' : currentUser.role === 'admin' ? '#D8B4FE' : '#86EFAC'}`,
               cursor: 'pointer'
             }}
-            title={`${currentUser.name} - ${currentUser.village || currentUser.specialization || ''} (${t.switchAccount || 'Switch Profile'})`}
+            title={`${currentUser.name} - ${currentUser.village || currentUser.specialization || ''} (${t.viewProfile || 'વપરાશકર્તા માહિતી - User Profile'})`}
           >
             <span className="header-user-avatar">
               {currentUser.avatar || (currentUser.role === 'doctor' ? '👨‍⚕️' : currentUser.role === 'admin' ? '🛡️' : '👨‍🦰')}
@@ -238,7 +204,7 @@ export const TopHeader = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onOpenAuthModal();
+                onOpenAuthModal(currentUser.role || 'patient', 'profile');
               }}
               title={t.switchAccount || 'Switch Account'}
               className="header-user-switch-btn"
@@ -260,7 +226,7 @@ export const TopHeader = ({
           </div>
         ) : (
           <button
-            onClick={onOpenAuthModal}
+            onClick={() => onOpenAuthModal('patient', 'login')}
             className="header-login-btn"
             style={{
               background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',

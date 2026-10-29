@@ -476,48 +476,172 @@ export const RuralCareLifelineTab = ({ currentLang = 'gu', currentUser }) => {
   const checkDrugInteraction = () => {
     setDdiChecking(true);
     setTimeout(() => {
-      const d1 = drug1.toLowerCase();
-      const d2 = drug2.toLowerCase();
+      const d1 = drug1.toLowerCase().trim();
+      const d2 = drug2.toLowerCase().trim();
 
-      if ((d1.includes('aspirin') && d2.includes('ibuprofen')) || (d1.includes('ibuprofen') && d2.includes('aspirin'))) {
+      const has = (text, keywords) => keywords.some(k => text.includes(k));
+
+      // Drug Classes Helper
+      const isNitrate = has(d1, ['sorbitrate', 'nitroglycerin', 'isosorbide', 'angispan', 'nitro']) || has(d2, ['sorbitrate', 'nitroglycerin', 'isosorbide', 'angispan', 'nitro']);
+      const isPDE5 = has(d1, ['sildenafil', 'tadalafil', 'viagra', 'vardenafil', 'manforce']) || has(d2, ['sildenafil', 'tadalafil', 'viagra', 'vardenafil', 'manforce']);
+
+      const isBloodThinner = has(d1, ['warfarin', 'heparin', 'clopidogrel', 'acitrom', 'dabigatran', 'apixaban', 'rivaroxaban']) || has(d2, ['warfarin', 'heparin', 'clopidogrel', 'acitrom', 'dabigatran', 'apixaban', 'rivaroxaban']);
+      const isNSAID = has(d1, ['aspirin', 'ibuprofen', 'diclofenac', 'combiflam', 'aceclofenac', 'naproxen', 'brufen', 'voveran']) || has(d2, ['aspirin', 'ibuprofen', 'diclofenac', 'combiflam', 'aceclofenac', 'naproxen', 'brufen', 'voveran']);
+
+      const isParacetamol1 = has(d1, ['paracetamol', 'dolo', 'crocin', 'calpol', 'pyrigesic']);
+      const isParacetamol2 = has(d2, ['paracetamol', 'dolo', 'crocin', 'calpol', 'pyrigesic']);
+
+      const isAceInhibitor = has(d1, ['enalapril', 'ramipril', 'lisinopril', 'telmisartan', 'losartan']) || has(d2, ['enalapril', 'ramipril', 'lisinopril', 'telmisartan', 'losartan']);
+      const isPotassiumDiuretic = has(d1, ['spironolactone', 'aldactone', 'potassium', 'k-cit']) || has(d2, ['spironolactone', 'aldactone', 'potassium', 'k-cit']);
+
+      const isStatin = has(d1, ['atorvastatin', 'simvastatin', 'rosuvastatin', 'atorva']) || has(d2, ['atorvastatin', 'simvastatin', 'rosuvastatin', 'atorva']);
+      const isMacrolideOrAzole = has(d1, ['clarithromycin', 'erythromycin', 'ketoconazole', 'itraconazole', 'fluconazole']) || has(d2, ['clarithromycin', 'erythromycin', 'ketoconazole', 'itraconazole', 'fluconazole']);
+
+      const isQuinolone = has(d1, ['ciprofloxacin', 'levofloxacin', 'ofloxacin', 'norfloxacin']) || has(d2, ['ciprofloxacin', 'levofloxacin', 'ofloxacin', 'norfloxacin']);
+      const isAntacid = has(d1, ['gelusil', 'digene', 'antacid', 'calcium', 'iron', 'sucralfate']) || has(d2, ['gelusil', 'digene', 'antacid', 'calcium', 'iron', 'sucralfate']);
+
+      const isDigoxin = has(d1, ['digoxin', 'lanoxin']) || has(d2, ['digoxin', 'lanoxin']);
+      const isAntiarrhythmic = has(d1, ['amiodarone', 'verapamil', 'diltiazem']) || has(d2, ['amiodarone', 'verapamil', 'diltiazem']);
+
+      const isMethotrexate = has(d1, ['methotrexate']) || has(d2, ['methotrexate']);
+      const isAlcohol = has(d1, ['alcohol', 'દારૂ']) || has(d2, ['alcohol', 'દારૂ']);
+      const isMetformin = has(d1, ['metformin', 'glycomet']) || has(d2, ['metformin', 'glycomet']);
+      const isThyroid = has(d1, ['thyronorm', 'eltroxin', 'levothyroxine']) || has(d2, ['thyronorm', 'eltroxin', 'levothyroxine']);
+
+      // 1. FATAL: Nitrates + Sildenafil (Viagra)
+      if (isNitrate && isPDE5) {
+        setDdiResult({
+          level: 'FATAL_RISK',
+          badge: '🚨 અતિ ગંભીર જીવલેણ જોખમ (Fatal Hypotension / Shock)',
+          color: '#DC2626',
+          bg: '#FEF2F2',
+          effect: 'નાઇટ્રોગ્લિસરીન/સોર્બીટ્રેટ સાથે સિલ્ડેનાફીલ (વાયગ્રા) લેવાથી બ્લડ પ્રેશર અચાનક જીવલેણ હદે ઘટી જાય છે (Fatal Cardiovascular Collapse).',
+          advice: 'આ બંને દવાઓ સાથે ક્યારેય ન લો. ઓછામાં ઓછો ૨૪ થી ૪૮ કલાકનો તફાવત ફરજિયાત છે. હાર્ટના દર્દીઓએ તાત્કાલિક ડોક્ટરનો સંપર્ક કરવો.'
+        });
+      }
+      // 2. HIGH: Blood Thinners + NSAIDs
+      else if (isBloodThinner && isNSAID) {
         setDdiResult({
           level: 'HIGH_RISK',
-          badge: '🚨 ગંભીર જોખમ (Severe Risk)',
+          badge: '🚨 ગંભીર રક્તસ્ત્રાવ જોખમ (Severe GI Bleeding Risk)',
           color: '#EF4444',
           bg: '#FEF2F2',
-          effect: 'પેટમાં ચાંદા (Gastric Ulcer) અને આંતરિક રક્તસ્રાવ (Internal Bleeding) નું ખૂબ ઊંચું જોખમ. આઇબ્યુપ્રોફેન એસ્પિરિનની લોહી પાતળું કરવાની અસરને પણ અવરોધે છે.',
-          advice: 'આ બંને દવાઓ એક સાથે ક્યારેય ન લો. દુખાવા માટે Paracetamol 650mg સુરક્ષિત વિકલ્પ છે.'
+          effect: 'લોહી પાતળું કરવાની દવાઓ (Warfarin, Clopidogrel) સાથે પેઇન કિલર (Aspirin, Ibuprofen, Diclofenac) લેવાથી પેટમાં આંતરિક રક્તસ્ત્રાવ અને ચાંદાનું જોખમ ૩૦૦% વધી જાય છે.',
+          advice: 'દુખાવા કે તાવ માટે ડૉક્ટરની સલાહ મુજબ માત્ર Paracetamol 650mg લો. NSAIDs બિલકુલ ન લો.'
         });
-      } else if ((d1.includes('paracetamol') && d2.includes('dolo')) || (d1.includes('dolo') && d2.includes('paracetamol'))) {
+      }
+      // 3. HIGH: Aspirin + Ibuprofen
+      else if ((d1.includes('aspirin') && d2.includes('ibuprofen')) || (d1.includes('ibuprofen') && d2.includes('aspirin'))) {
+        setDdiResult({
+          level: 'HIGH_RISK',
+          badge: '🚨 ગંભીર જોખમ (Ulcer & Loss of Cardioprotection)',
+          color: '#EF4444',
+          bg: '#FEF2F2',
+          effect: 'આઇબ્યુપ્રોફેન એસ્પિરિનની હૃદયરક્ષક (Antiplatelet) અસરને નષ્ટ કરે છે અને હોજરીમાં અલ્સરનું જોખમ વધારે છે.',
+          advice: 'આ બંને દવાઓ સાથે ન લો. જો બંને જરૂરી હોય તો એસ્પિરિન પહેલાં લો અને ૨ કલાક પછી જ બીજી દવા લો.'
+        });
+      }
+      // 4. OVERDOSE: Paracetamol + Dolo / Crocin / Calpol
+      else if (isParacetamol1 && isParacetamol2 && d1 !== d2) {
         setDdiResult({
           level: 'MODERATE_RISK',
-          badge: '⚠️ ઓવરડોઝ જોખમ (Overdose Risk)',
+          badge: '⚠️ ઓવરડોઝ જોખમ (Paracetamol Liver Toxicity)',
           color: '#F59E0B',
           bg: '#FFFBEB',
-          effect: 'બંને દવામાં એક જ કેમિકલ (પેરાસીટામોલ) છે! બંને સાથે લેવાથી લીવર ટોક્સિસિટી (યકૃતને નુકસાન) થઈ શકે છે.',
-          advice: 'કોઈપણ એક જ દવા લો. ૨૪ કલાકમાં વધુમાં વધુ ૩-૪ ગોળીથી વધારે ક્યારેય ન લેવી.'
+          effect: 'બંને દવામાં એક જ સક્રિય તત્વ (પેરાસીટામોલ) છે! બંને સાથે લેવાથી ડબલ ડોઝ થઈ લીવર (યકૃત) ને કાયમી નુકસાન થઈ શકે છે.',
+          advice: 'કોઈપણ એક જ દવા લો. ૨૪ કલાકમાં ૪ ગોળી (૪૦૦૦ mg) થી વધુ ક્યારેય ન લેવી.'
         });
-      } else if (d1.includes('metformin') && (d2.includes('alcohol') || d2.includes('દારૂ'))) {
+      }
+      // 5. HIGH: Metformin + Alcohol
+      else if (isMetformin && isAlcohol) {
         setDdiResult({
           level: 'HIGH_RISK',
           badge: '🚨 જીવલેણ જોખમ (Lactic Acidosis)',
           color: '#EF4444',
           bg: '#FEF2F2',
-          effect: 'મેટફોર્મિન સાથે આલ્કોહોલ લેવાથી લોહીમાં લેક્ટિક એસિડનું પ્રમાણ અતિશય વધી જાય છે જે જીવલેણ નીવડી શકે.',
-          advice: 'ડાયાબિટીસની દવાઓ લેતી વખતે આલ્કોહોલનું સેવન સદંતર બંધ રાખવું.'
+          effect: 'મેટફોર્મિન સાથે આલ્કોહોલનું સેવન કરવાથી શરીરમાં લેક્ટિક એસિડ જમા થાય છે, જેનાથી કિડની ફેઇલ અને જીવલેણ કોમાનું જોખમ રહે છે.',
+          advice: 'ડાયાબિટીસની દવાઓ ચાલુ હોય ત્યારે દારૂ/આલ્કોહોલનું સેવન સદંતર બંધ રાખવું.'
         });
-      } else {
+      }
+      // 6. HIGH: ACE Inhibitors + Potassium Spironolactone
+      else if (isAceInhibitor && isPotassiumDiuretic) {
+        setDdiResult({
+          level: 'HIGH_RISK',
+          badge: '🚨 હૃદય લય જોખમ (Severe Hyperkalemia)',
+          color: '#EF4444',
+          bg: '#FEF2F2',
+          effect: 'આ સંયોજનથી લોહીમાં પોટેશિયમનું સ્તર અતિશય વધી જાય છે, જે હૃદયના ધબકારા અનિયમિત (Cardiac Arrhythmia) કરી શકે છે.',
+          advice: 'ડૉક્ટરની સીધી દેખરેખ અને નિયમિત સીરમ પોટેશિયમ લેબ ટેસ્ટ વગર આ બંને દવાઓ સાથે ન લેવી.'
+        });
+      }
+      // 7. HIGH: Statins + Clarithromycin / Antifungals
+      else if (isStatin && isMacrolideOrAzole) {
+        setDdiResult({
+          level: 'HIGH_RISK',
+          badge: '⚠️ સ્નાયુ અને કિડની જોખમ (Rhabdomyolysis)',
+          color: '#F59E0B',
+          bg: '#FFFBEB',
+          effect: 'એન્ટિબાયોટિક/એન્ટિફંગલ દવાઓ સ્ટેટિનનું મેટાબોલિઝમ બ્લોક કરે છે, જેનાથી સ્નાયુ તૂટવા (Rhabdomyolysis) અને કિડની ડેમેજનું જોખમ રહે છે.',
+          advice: 'એન્ટિબાયોટિકનો કોર્સ ચાલુ હોય તે દિવસો પૂરતી સ્ટેટિનની દવા કામચલાઉ બંધ કરવા ડૉક્ટરની સલાહ લો.'
+        });
+      }
+      // 8. INTERACTION: Quinolone Antibiotics + Antacids / Calcium / Iron
+      else if (isQuinolone && isAntacid) {
+        setDdiResult({
+          level: 'MODERATE_RISK',
+          badge: '⚠️ દવા બિનઅસરકારક થવાનું જોખમ (Chelation Interaction)',
+          color: '#F59E0B',
+          bg: '#FFFBEB',
+          effect: 'એન્ટાસિડ (જેલુસીલ/ડાયજીન) કે કેલ્શિયમ-આયર્ન સાથે એન્ટિબાયોટિક લેવાથી કેમિકલ બોન્ડ બને છે અને એન્ટિબાયોટિકનું શોષણ ૮૦% ઘટી જાય છે.',
+          advice: 'એન્ટિબાયોટિક અને એન્ટાસિડ વચ્ચે ઓછામાં ઓછો ૨ કલાકનો તફાવત રાખો.'
+        });
+      }
+      // 9. HIGH: Digoxin + Amiodarone
+      else if (isDigoxin && isAntiarrhythmic) {
+        setDdiResult({
+          level: 'HIGH_RISK',
+          badge: '🚨 ડીગોક્સિન ઝેરી અસર (Digoxin Toxicity)',
+          color: '#EF4444',
+          bg: '#FEF2F2',
+          effect: 'એમિયોડેરોન શરીરમાં ડીગોક્સિનનું પ્રમાણ બમણું કરી દે છે, જે હૃદયના ધબકારા ખતરનાક રીતે ધીમા કરી શકે છે.',
+          advice: 'ડીગોક્સિનનો ડોઝ અડધો કરવો પડે છે. ડૉક્ટર પાસે ઇસીજી અને બ્લડ લેવલ ટેસ્ટ કરાવો.'
+        });
+      }
+      // 10. HIGH: Methotrexate + NSAIDs
+      else if (isMethotrexate && isNSAID) {
+        setDdiResult({
+          level: 'HIGH_RISK',
+          badge: '🚨 બોન મેરો ઝેરી અસર (Methotrexate Toxicity)',
+          color: '#EF4444',
+          bg: '#FEF2F2',
+          effect: 'પેઇન કિલર્સ કિડનીમાંથી મેથોટ્રેક્સેટ બહાર નીકળવા દેતી નથી, જેનાથી લોહીના કણો ઘટી જવાનું ગંભીર જોખમ સર્જાય છે.',
+          advice: 'આ બંને દવાઓ સાથે ક્યારેય ન લેવી. માત્ર રૂમેટોલોજિસ્ટની સૂચનાનું પાલન કરો.'
+        });
+      }
+      // 11. Thyroid + Calcium / Iron
+      else if (isThyroid && isAntacid) {
+        setDdiResult({
+          level: 'MODERATE_RISK',
+          badge: '⚠️ થાઈરોઈડ દવા નિષ્ક્રિય થવાનું જોખમ (Malabsorption)',
+          color: '#F59E0B',
+          bg: '#FFFBEB',
+          effect: 'કેલ્શિયમ કે આયર્નની ગોળીઓ થાઈરોઈડ હોર્મોન (Thyronorm) નું શોષણ અટકાવે છે.',
+          advice: 'થાઈરોઈડની દવા સવારે નરણા કોઠે લો અને કેલ્શિયમ/આયર્ન ઓછામાં ઓછી ૪ કલાક પછી જ લેવી.'
+        });
+      }
+      // 12. Compatible Combination
+      else {
         setDdiResult({
           level: 'SAFE',
-          badge: '🟢 સુરક્ષિત સંયોજન (Compatible Combination)',
+          badge: '🟢 સુરક્ષિત સંયોજન (Clinically Compatible Combination)',
           color: '#00C48C',
           bg: '#F0FDF4',
-          effect: 'આ બંને દવાઓ વચ્ચે કોઈ પ્રતિકૂળ આડઅસર (Harmful Interaction) નોંધાયેલ નથી.',
-          advice: 'ડોક્ટરના નિર્દેશ મુજબ પૂરતા પાણી સાથે ભોજન બાદ લઈ શકો છો.'
+          effect: `દવા ૧: ${drug1} અને દવા ૨: ${drug2} વચ્ચે કોઈ પ્રતિકૂળ આડઅસર (Harmful Interaction) નોંધાયેલ નથી.`,
+          advice: 'ડોક્ટરના પ્રિસ્ક્રિપ્શન મુજબ પૂરતા પાણી સાથે સમયસર લઈ શકો છો. કોઈ અસ્વસ્થતા જણાય તો ડૉક્ટરની સલાહ લો.'
         });
       }
       setDdiChecking(false);
-    }, 400);
+    }, 350);
   };
 
   const handleSpeak = (text) => {

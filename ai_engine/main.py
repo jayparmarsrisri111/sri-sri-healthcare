@@ -488,6 +488,17 @@ def run_auto_refractor(req: AutoRefractorRequest):
         base_cyl = 0.00
         acuity_od = "6/9 (20/30)"
         acuity_os = "6/9 (20/30)"
+    elif req.vision_status == "near_blur" or (req.symptoms and "near_blur" in req.symptoms):
+        if req.user_age < 40:
+            base_od_sph = +0.75
+            base_os_sph = +1.00
+            acuity_od = "6/9 (20/30)"
+            acuity_os = "6/9 (20/30)"
+        else:
+            base_od_sph = 0.00
+            base_os_sph = 0.00
+            acuity_od = "6/6 (20/20 Perfect)"
+            acuity_os = "6/6 (20/20 Perfect)"
 
     # 5. Red-Green Duochrome Precision Fine-Tuning (±0.25 D)
     if req.duochrome_preference == "red":
@@ -611,6 +622,19 @@ def run_auto_refractor(req: AutoRefractorRequest):
         }
     ]
 
+    def calc_kera(cyl_val, axis_val):
+        abs_c = abs(float(cyl_val or 0))
+        flat_axis = (int(axis_val or 180) % 180) or 180
+        steep_axis = ((flat_axis + 90) % 180) or 180
+        k1_d = 43.50
+        r1 = round(337.5 / k1_d, 2)
+        k2_d = round(k1_d + abs_c, 2)
+        r2 = round(337.5 / k2_d, 2)
+        return f"{r1:.2f} mm / {k1_d:.2f} D @ {flat_axis}°", f"{r2:.2f} mm / {k2_d:.2f} D @ {steep_axis}°"
+
+    r_k1, r_k2 = calc_kera(base_cyl, base_axis_od)
+    l_k1, l_k2 = calc_kera(base_cyl, base_axis_os)
+
     return {
         "success": True,
         "machine_model": "Topcon / Nidek Japanese Optical Simulation (Auto-Fogging Sensor)",
@@ -628,16 +652,16 @@ def run_auto_refractor(req: AutoRefractorRequest):
                 "cyl": fmt(base_cyl),
                 "axis": f"{base_axis_od}°",
                 "acuity": acuity_od,
-                "k1": f"{corneal_curvature_r1:.2f} mm / 43.50 D",
-                "k2": f"{corneal_curvature_r2:.2f} mm / 44.00 D"
+                "k1": r_k1,
+                "k2": r_k2
             },
             "leftEye": {
                 "sph": fmt(base_os_sph),
                 "cyl": fmt(base_cyl),
                 "axis": f"{base_axis_os}°",
                 "acuity": acuity_os,
-                "k1": f"{corneal_curvature_r1:.2f} mm / 43.50 D",
-                "k2": f"{corneal_curvature_r2:.2f} mm / 44.00 D"
+                "k1": l_k1,
+                "k2": l_k2
             }
         },
         "condition": condition_title,

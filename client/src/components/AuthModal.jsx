@@ -3,7 +3,7 @@ import {
   X, User, Lock, Mail, Shield, Stethoscope, Heart,
   CheckCircle2, AlertCircle, ArrowRight, UserPlus, LogIn,
   Building, Phone, MapPin, Award, KeyRound, Sparkles,
-  Eye, EyeOff, FileText, Check
+  Eye, EyeOff, FileText, Check, LogOut, RefreshCw
 } from 'lucide-react';
 import { authService, DEMO_ACCOUNTS } from '../services/authService';
 
@@ -13,12 +13,29 @@ export const AuthModal = ({
   onAuthSuccess,
   currentLang = 'gu',
   initialRole = 'patient',
-  initialMode = 'login'
+  initialMode = 'login',
+  currentUser = null,
+  onLogout = null,
+  onNavigateTab = null
 }) => {
   if (!isOpen) return null;
 
-  const [activeMode, setActiveMode] = useState(initialMode || 'login'); // 'login' or 'signup'
-  const [selectedRole, setSelectedRole] = useState(initialRole || 'patient'); // 'patient', 'doctor', 'admin'
+  const getSafeRole = (role) => {
+    if (typeof role === 'string' && ['patient', 'doctor', 'admin'].includes(role)) {
+      return role;
+    }
+    return currentUser?.role || 'patient';
+  };
+
+  const getSafeMode = (mode) => {
+    if (typeof mode === 'string' && ['login', 'signup', 'profile'].includes(mode)) {
+      return mode;
+    }
+    return currentUser ? 'profile' : 'login';
+  };
+
+  const [activeMode, setActiveMode] = useState(() => getSafeMode(initialMode));
+  const [selectedRole, setSelectedRole] = useState(() => getSafeRole(initialRole));
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -26,8 +43,8 @@ export const AuthModal = ({
   // Sync role and mode whenever opened with new config
   useEffect(() => {
     if (isOpen) {
-      if (initialRole) setSelectedRole(initialRole);
-      if (initialMode) setActiveMode(initialMode);
+      setSelectedRole(getSafeRole(initialRole));
+      setActiveMode(getSafeMode(initialMode));
       setErrorMessage('');
       setSuccessMessage('');
     }
@@ -235,20 +252,28 @@ export const AuthModal = ({
               width: '40px',
               height: '40px',
               borderRadius: '12px',
-              background: '#00C48C',
+              background: activeMode === 'profile'
+                ? (currentUser?.role === 'doctor' ? '#0284C7' : currentUser?.role === 'admin' ? '#7C3AED' : '#00C48C')
+                : '#00C48C',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#FFFFFF'
             }}>
-              {activeMode === 'login' ? <LogIn size={22} /> : <UserPlus size={22} />}
+              {activeMode === 'profile' ? <User size={22} /> : activeMode === 'login' ? <LogIn size={22} /> : <UserPlus size={22} />}
             </div>
             <div>
               <h3 style={{ margin: 0, color: '#0A1128', fontSize: '18px', fontWeight: 800 }}>
-                {activeMode === 'login' ? '🔐 સ્વાસ્થ્યસેતુ લૉગિન (User Login)' : '📝 નવું એકાઉન્ટ બનાવો (Sign Up)'}
+                {activeMode === 'profile'
+                  ? '👤 વપરાશકર્તા માહિતી (User Profile)'
+                  : activeMode === 'login'
+                    ? '🔐 સ્વાસ્થ્યસેતુ લૉગિન (User Login)'
+                    : '📝 નવું એકાઉન્ટ બનાવો (Sign Up)'}
               </h3>
               <p style={{ margin: '2px 0 0 0', color: '#64748B', fontSize: '12px', fontWeight: 600 }}>
-                પેશન્ટ, ડૉક્ટર અને એડમિન માટે સુરક્ષિત સ્વાસ્થ્ય પોર્ટલ
+                {activeMode === 'profile'
+                  ? 'શ્રી શ્રી ❤️ હેલ્થકેર ડિજિટલ પ્રોફાઇલ & ખાતા વિગતો'
+                  : 'પેશન્ટ, ડૉક્ટર અને એડમિન માટે સુરક્ષિત સ્વાસ્થ્ય પોર્ટલ'}
               </p>
             </div>
           </div>
@@ -273,150 +298,341 @@ export const AuthModal = ({
 
         {/* Content Body */}
         <div style={{ padding: '24px' }}>
-          {/* Quick Demo 1-Click Launchers */}
-          <div style={{
-            background: '#F8FAFC',
-            border: '1.5px dashed #00C48C',
-            borderRadius: '16px',
-            padding: '14px',
-            marginBottom: '20px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-              <Sparkles size={16} color="#00C48C" />
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase' }}>
-                ⚡ ૧-ક્લિક ડેમો લૉગિન (Instant Test Logins)
-              </span>
-            </div>
-            <div className="auth-demo-grid" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
-              width: '100%'
-            }}>
-              <button
-                type="button"
-                onClick={() => handleQuickDemo('patient')}
-                disabled={loading}
-                style={{
-                  background: '#FFFFFF',
-                  border: '1.5px solid #A7F3D0',
-                  borderRadius: '12px',
-                  padding: '10px 8px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '3px'
-                }}
-              >
-                <div style={{ fontSize: '24px', lineHeight: 1 }}>👨‍🦰</div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#065F46' }}>દર્દી (Patient)</div>
-                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>રામજીભાઈ</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickDemo('doctor')}
-                disabled={loading}
-                style={{
-                  background: '#FFFFFF',
-                  border: '1.5px solid #BAE6FD',
-                  borderRadius: '12px',
-                  padding: '10px 8px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '3px'
-                }}
-              >
-                <div style={{ fontSize: '24px', lineHeight: 1 }}>👨‍⚕️</div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#0369A1' }}>ડોક્ટર (Doctor)</div>
-                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>Dr. રાજેશ મહેતા</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickDemo('admin')}
-                disabled={loading}
-                style={{
-                  background: '#FFFFFF',
-                  border: '1.5px solid #DDD6FE',
-                  borderRadius: '12px',
-                  padding: '10px 8px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '3px'
-                }}
-              >
-                <div style={{ fontSize: '24px', lineHeight: 1 }}>🛡️</div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#6D28D9' }}>એડમિન (Admin)</div>
-                <div style={{ fontSize: '10.5px', color: '#64748B', fontWeight: 600 }}>Chief Officer</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Mode Switcher Tabs (Login vs SignUp) */}
+          {/* Mode Switcher Tabs */}
           <div style={{
             display: 'flex',
             background: '#F1F5F9',
             borderRadius: '12px',
             padding: '4px',
-            marginBottom: '20px'
+            marginBottom: '20px',
+            gap: '4px'
           }}>
+            {currentUser && (
+              <button
+                type="button"
+                onClick={() => { setActiveMode('profile'); setErrorMessage(''); setSuccessMessage(''); }}
+                style={{
+                  flex: 1,
+                  padding: '9px 12px',
+                  border: 'none',
+                  borderRadius: '10px',
+                  background: activeMode === 'profile' ? '#FFFFFF' : 'transparent',
+                  color: activeMode === 'profile' ? '#00C48C' : '#64748B',
+                  fontWeight: 800,
+                  fontSize: '12.5px',
+                  cursor: 'pointer',
+                  boxShadow: activeMode === 'profile' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '5px'
+                }}
+              >
+                <User size={15} />
+                <span>માહિતી (Profile)</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => { setActiveMode('login'); setErrorMessage(''); setSuccessMessage(''); }}
               style={{
                 flex: 1,
-                padding: '10px',
+                padding: '9px 12px',
                 border: 'none',
                 borderRadius: '10px',
                 background: activeMode === 'login' ? '#FFFFFF' : 'transparent',
                 color: activeMode === 'login' ? '#00C48C' : '#64748B',
                 fontWeight: 800,
-                fontSize: '13px',
+                fontSize: '12.5px',
                 cursor: 'pointer',
                 boxShadow: activeMode === 'login' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '5px'
               }}
             >
-              🔑 લૉગિન (Login)
+              <LogIn size={15} />
+              <span>લૉગિન (Login)</span>
             </button>
             <button
               type="button"
               onClick={() => { setActiveMode('signup'); setErrorMessage(''); setSuccessMessage(''); }}
               style={{
                 flex: 1,
-                padding: '10px',
+                padding: '9px 12px',
                 border: 'none',
                 borderRadius: '10px',
                 background: activeMode === 'signup' ? '#FFFFFF' : 'transparent',
                 color: activeMode === 'signup' ? '#00C48C' : '#64748B',
                 fontWeight: 800,
-                fontSize: '13px',
+                fontSize: '12.5px',
                 cursor: 'pointer',
                 boxShadow: activeMode === 'signup' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '5px'
               }}
             >
-              📝 નવું રજીસ્ટ્રેશન (Sign Up)
+              <UserPlus size={15} />
+              <span>સાઇન અપ (Sign Up)</span>
             </button>
           </div>
+
+          {activeMode === 'profile' && currentUser ? (
+            /* User Profile & Account Details View */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Profile Card Header */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px',
+                background: currentUser.role === 'doctor' ? '#F0F9FF' : currentUser.role === 'admin' ? '#FAF5FF' : '#F0FDF4',
+                border: `1.5px solid ${currentUser.role === 'doctor' ? '#BAE6FD' : currentUser.role === 'admin' ? '#DDD6FE' : '#A7F3D0'}`,
+                borderRadius: '16px'
+              }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '32px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  border: '2px solid #FFFFFF',
+                  flexShrink: 0
+                }}>
+                  {currentUser.avatar || (currentUser.role === 'doctor' ? '👨‍⚕️' : currentUser.role === 'admin' ? '🛡️' : '👨‍🦰')}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#0F172A' }}>
+                      {currentUser.name}
+                    </h4>
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      padding: '2px 8px',
+                      borderRadius: '6px',
+                      background: currentUser.role === 'doctor' ? '#0284C7' : currentUser.role === 'admin' ? '#7C3AED' : '#00C48C',
+                      color: '#FFFFFF'
+                    }}>
+                      {currentUser.role === 'doctor' ? 'ડૉક્ટર (Doctor)' : currentUser.role === 'admin' ? 'મુખ્ય એડમિન (Admin)' : 'દર્દી (Patient)'}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#64748B', fontWeight: 600 }}>
+                    {currentUser.village || currentUser.specialization || currentUser.department || 'શ્રી શ્રી હેલ્થકેર નેટવર્ક'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Information Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px'
+              }}>
+                <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>📱 મોબાઈલ નંબર</div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>{currentUser.phone || '9876543210'}</div>
+                </div>
+                <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>✉️ ઇમેઇલ આઈડી</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {currentUser.email || 'patient@swasthyasetu.ai'}
+                  </div>
+                </div>
+
+                {currentUser.role === 'patient' && (
+                  <>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>🩸 બ્લડ ગ્રુપ & ઉંમર</div>
+                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
+                        {currentUser.bloodGroup || 'B+'} • {currentUser.age || 48} વર્ષ ({currentUser.gender === 'Female' ? 'સ્ત્રી' : 'પુરુષ'})
+                      </div>
+                    </div>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>📍 ગામ / જિલ્લો</div>
+                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
+                        {currentUser.village || 'ભુજ ગ્રામીણ'}, {currentUser.district || 'કચ્છ'}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {currentUser.role === 'doctor' && (
+                  <>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>📜 રજીસ્ટ્રેશન નંબર (Reg No)</div>
+                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#0284C7' }}>
+                        {currentUser.regNumber || 'GMC-GUJ-2014-9842'}
+                      </div>
+                    </div>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>🏥 હોસ્પિટલ જોડાણ</div>
+                      <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A' }}>
+                        {currentUser.hospitalAffiliation || 'GK જનરલ સિવિલ હોસ્પિટલ'}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {currentUser.role === 'admin' && (
+                  <>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>🛡️ એડમિન બેજ કોડ</div>
+                      <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#7C3AED' }}>
+                        {currentUser.adminBadge || 'DISTRICT-HEALTH-DIRECTOR-KUTCH'}
+                      </div>
+                    </div>
+                    <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '2px' }}>🏛️ સરકારી વિભાગ</div>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>
+                        {currentUser.department || 'ગુજરાત જાહેર આરોગ્ય વિભાગ'}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Quick Role Switcher section */}
+              <div style={{
+                background: '#F0FDF8',
+                border: '1.5px dashed #00C48C',
+                borderRadius: '16px',
+                padding: '14px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                  <RefreshCw size={15} color="#00C48C" />
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#065F46', textTransform: 'uppercase' }}>
+                    🔄 ૧-ક્લિક ખાતું બદલો / સ્વિચ કરો (Instant Switch Profile)
+                  </span>
+                </div>
+                <div className="auth-demo-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '8px',
+                  width: '100%'
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemo('patient')}
+                    disabled={loading}
+                    style={{
+                      background: currentUser.role === 'patient' ? '#ECFDF5' : '#FFFFFF',
+                      border: currentUser.role === 'patient' ? '2px solid #00C48C' : '1.5px solid #A7F3D0',
+                      borderRadius: '12px',
+                      padding: '8px 6px',
+                      cursor: 'pointer',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px' }}>👨‍🦰</div>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#065F46' }}>દર્દી (Patient)</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemo('doctor')}
+                    disabled={loading}
+                    style={{
+                      background: currentUser.role === 'doctor' ? '#F0F9FF' : '#FFFFFF',
+                      border: currentUser.role === 'doctor' ? '2px solid #0284C7' : '1.5px solid #BAE6FD',
+                      borderRadius: '12px',
+                      padding: '8px 6px',
+                      cursor: 'pointer',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px' }}>👨‍⚕️</div>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#0369A1' }}>ડોક્ટર (Doctor)</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemo('admin')}
+                    disabled={loading}
+                    style={{
+                      background: currentUser.role === 'admin' ? '#FAF5FF' : '#FFFFFF',
+                      border: currentUser.role === 'admin' ? '2px solid #7C3AED' : '1.5px solid #DDD6FE',
+                      borderRadius: '12px',
+                      padding: '8px 6px',
+                      cursor: 'pointer',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{ fontSize: '20px' }}>🛡️</div>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#6D28D9' }}>એડમિન (Admin)</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Portal Link & Sign Out Buttons */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                {onNavigateTab && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetTab = currentUser.role === 'doctor' ? 'doctorPortal' : currentUser.role === 'admin' ? 'adminHub' : 'history';
+                      onNavigateTab(targetTab);
+                    }}
+                    style={{
+                      flex: 1,
+                      background: 'linear-gradient(135deg, #00C48C 0%, #009F70 100%)',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '11px 14px',
+                      fontWeight: 800,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: '0 4px 12px rgba(0, 196, 140, 0.25)'
+                    }}
+                  >
+                    📋 {currentUser.role === 'doctor' ? 'ડૉક્ટર પોર્ટલ ખોલો' : currentUser.role === 'admin' ? 'એડમિન હબ ખોલો' : 'મારું હેલ્થ પાસપોર્ટ ખોલો'}
+                  </button>
+                )}
+
+                {onLogout && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onLogout();
+                      setActiveMode('login');
+                    }}
+                    style={{
+                      background: '#FEE2E2',
+                      color: '#DC2626',
+                      border: '1.5px solid #FCA5A5',
+                      borderRadius: '12px',
+                      padding: '11px 16px',
+                      fontWeight: 800,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <LogOut size={16} />
+                    લૉગ આઉટ
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <>
 
           {/* Role Selector Pills */}
           <div style={{ marginBottom: '16px' }}>
@@ -912,7 +1128,7 @@ export const AuthModal = ({
               ) : activeMode === 'login' ? (
                 <>
                   <LogIn size={18} />
-                  <span>{selectedRole.toUpperCase()} તરીકે લૉગિન કરો</span>
+                  <span>{(typeof selectedRole === 'string' ? selectedRole : 'PATIENT').toUpperCase()} તરીકે લૉગિન કરો</span>
                 </>
               ) : (
                 <>
@@ -922,6 +1138,8 @@ export const AuthModal = ({
               )}
             </button>
           </form>
+          </>
+          )}
         </div>
       </div>
     </div>

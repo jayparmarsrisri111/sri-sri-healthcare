@@ -40,7 +40,13 @@ export default function App() {
   const [authModalConfig, setAuthModalConfig] = useState({ initialRole: 'patient', initialMode: 'login' });
 
   const handleOpenAuthModal = (role = 'patient', mode = 'login') => {
-    setAuthModalConfig({ initialRole: role, initialMode: mode });
+    const safeRole = (typeof role === 'string' && ['patient', 'doctor', 'admin'].includes(role))
+      ? role
+      : (currentUser?.role || 'patient');
+    const safeMode = (typeof mode === 'string' && ['login', 'signup', 'profile'].includes(mode))
+      ? mode
+      : (currentUser ? 'profile' : 'login');
+    setAuthModalConfig({ initialRole: safeRole, initialMode: safeMode });
     setShowAuthModal(true);
   };
   const [activeTab, setActiveTab] = useState(() => {
@@ -195,7 +201,7 @@ export default function App() {
         currentLang={currentLang}
       />
 
-      {/* Login & Sign Up Modal with Patient, Doctor, Admin Personas */}
+      {/* Login & Sign Up Modal with Patient, Doctor, Admin Personas & User Profile */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -203,6 +209,12 @@ export default function App() {
         currentLang={currentLang}
         initialRole={authModalConfig.initialRole}
         initialMode={authModalConfig.initialMode}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        onNavigateTab={(tab) => {
+          setActiveTab(tab);
+          setShowAuthModal(false);
+        }}
       />
 
       {/* Global World Language Selector Modal */}
